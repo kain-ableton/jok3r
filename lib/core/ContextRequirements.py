@@ -202,7 +202,7 @@ class ContextRequirements:
         if not target.get_os() or not self.osfamily:
             return True
 
-        return (self.osfamily.lower() in target.get_os().lower())
+        return self.osfamily.lower() in target.get_os().lower()
 
     # ------------------------------------------------------------------------------------
     # Unit checkers

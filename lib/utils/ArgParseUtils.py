@@ -71,7 +71,7 @@ class Store1or2Append(argparse._AppendAction):
     """
 
     def __call__(self, parser, namespace, values, option_string=None):
-        if not (1 <= len(values) <= 2):
+        if not 1 <= len(values) <= 2:
             raise argparse.ArgumentError(self, "%s takes 1 or 2 values, %d given" %
                                          (option_string, len(values)))
         super(Store1or2Append, self).__call__(
@@ -85,7 +85,7 @@ class Store2or3Append(argparse._AppendAction):
     """
 
     def __call__(self, parser, namespace, values, option_string=None):
-        if not (2 <= len(values) <= 3):
+        if not 2 <= len(values) <= 3:
             raise argparse.ArgumentError(self, "%s takes 2 or 3 values, %d given" %
                                          (option_string, len(values)))
         super(Store2or3Append, self).__call__(

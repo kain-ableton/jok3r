@@ -53,10 +53,10 @@ class VersionUtils:
 
         # When the version must be known but no requirement on its value
         elif requirement.lower() == 'version_known':
-            return (version_number != '')
+            return version_number != ''
         # When the version is unknown
         elif requirement.lower() == 'version_unknown':
-            return (version_number == '')
+            return version_number == ''
 
         elif '*' in requirement:
             pattern = requirement.replace('.', '[.]').replace('*', '.*')
@@ -103,4 +103,4 @@ class VersionUtils:
         if new_major != old_major:
             return True
         else:
-            return (len(str(new)) >= len(str(old)))
+            return len(str(new)) >= len(str(old))
