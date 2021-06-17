@@ -213,12 +213,6 @@ creds_match['http'] = {
             'pass': '$2',
             'type': 'opencart',
         },
-        'admin/index\.php\s+.*User:\s*(?P<m1>\S+)\s*Pass:\s*(?P<m2>\S*)': {
-            'meth': 'finditer',
-            'user': '$1',
-            'pass': '$2',
-            'type': 'opencart',
-        },
         '/admin\s+.*User:\s*(?P<m1>\S+)\s*Pass:\s*(?P<m2>\S*)': {
             'meth': 'finditer',
             'user': '$1',

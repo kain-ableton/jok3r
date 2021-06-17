@@ -602,11 +602,6 @@ products_match['http']['web-application-firewall'] = {
             WAFW00F_REGEXP.format('ZScaler \(Accenture\)'),
         ],
     },
-    'Accenture/ZScaler': {
-        'wafw00f': [
-            WAFW00F_REGEXP.format('ZScaler \(Accenture\)'),
-        ],
-    },
     'West263 Content Delivery Network': {
         'wafw00f': [
             WAFW00F_REGEXP.format('West263 Content Delivery Network'),
