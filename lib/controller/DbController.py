@@ -1765,7 +1765,8 @@ class DbController(cmd2.Cmd):
 
     # ------------------------------------------------------------------------------------
 
-    def __confirm_for_all(self, action):
+    @staticmethod
+    def __confirm_for_all(action):
         """
         Print a prompt to confirm an action
 

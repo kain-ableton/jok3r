@@ -425,7 +425,8 @@ class Command:
         if cmd != '':
             self.formatted_cmdline = cmd
 
-    def __replace_tag_username(self, cmd, username):
+    @staticmethod
+    def __replace_tag_username(cmd, username):
         """
         Replace tag [USERNAME] in command line.
 
@@ -437,7 +438,8 @@ class Command:
         pattern = re.compile('\[USERNAME\]', re.IGNORECASE)
         return pattern.sub(username, cmd)
 
-    def __replace_tag_password(self, cmd, password):
+    @staticmethod
+    def __replace_tag_password(cmd, password):
         """
         Replace tag [PASSWORD] in command line.
 
