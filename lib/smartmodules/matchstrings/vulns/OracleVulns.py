@@ -18,4 +18,4 @@ vulns_match['oracle'] = {
         '\]\s*(?P<m1>.*)\s*\?.*\n.*\[\+\]\s*OK': 'Oracle: $1',
     },
 
-} 
+}

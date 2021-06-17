@@ -14,10 +14,11 @@ class VersionUtils:
         """
         Extract name and version separately from a syntax [name][delim][version]
         """
-        name = full_name[:full_name.index(delim)] if delim in full_name else full_name
-        version = full_name[full_name.index(delim)+1:] if delim in full_name else ''
+        name = full_name[:full_name.index(
+            delim)] if delim in full_name else full_name
+        version = full_name[full_name.index(
+            delim)+1:] if delim in full_name else ''
         return name, version
-
 
     @staticmethod
     def extract_vendor_name_version(full_name, delim1='/', delim2='|'):
@@ -25,12 +26,13 @@ class VersionUtils:
         Extract vendor, name and version separately from a syntax
         [vendor][delim1][name][delim2][version]
         """
-        vendor = full_name[:full_name.index(delim1)] if delim1 in full_name else ''
+        vendor = full_name[:full_name.index(
+            delim1)] if delim1 in full_name else ''
         name, version = VersionUtils.extract_name_version(
-            full_name[full_name.index(delim1)+1:] if delim1 in full_name else full_name,
+            full_name[full_name.index(
+                delim1)+1:] if delim1 in full_name else full_name,
             delim=delim2)
         return vendor, name, version
-
 
     @staticmethod
     def check_version_requirement(version_number, requirement):
@@ -72,7 +74,6 @@ class VersionUtils:
             print(requirement)
             return LooseVersion(version_number) == LooseVersion(requirement)
 
-
     @staticmethod
     def is_version_more_accurate(old_version, new_version):
         """
@@ -92,7 +93,7 @@ class VersionUtils:
             return False
         if len(str(old)) == 0:
             return False
-        
+
         try:
             old_major = int(str(old)[0])
             new_major = int(str(new)[0])

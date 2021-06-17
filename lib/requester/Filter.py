@@ -21,8 +21,7 @@ class Filter:
         self.conditions = list()
         self.operator = operator
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def add_condition(self, condition):
         """
@@ -31,9 +30,8 @@ class Filter:
         """
         self.conditions.append(condition)
 
+    # ------------------------------------------------------------------------------------
 
-    #------------------------------------------------------------------------------------
-    
     def translate(self):
         """Combine all conditions together to create Sqlalchemy filter"""
         result = None

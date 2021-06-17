@@ -24,8 +24,7 @@ class VulnsRequester(Requester):
         query = sqlsession.query(Vuln).join(Service).join(Host).join(Mission)
         super().__init__(sqlsession, query)
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def show(self, truncation=True):
         """Display selected vulnerabilities"""
@@ -39,7 +38,7 @@ class VulnsRequester(Requester):
                 'IP',
                 'Service',
                 'Port',
-                'Proto',    
+                'Proto',
                 'Vulnerability',
             ]
             for r in results:
@@ -47,13 +46,13 @@ class VulnsRequester(Requester):
                     r.service.host.ip,
                     r.service.name,
                     r.service.port,
-                    {Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(r.service.protocol),
+                    {Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(
+                        r.service.protocol),
                     StringUtils.wrap(r.name, 140) if truncation else r.name,
                 ])
             Output.table(columns, data, hrules=False)
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def delete(self):
         """Delete selected vulnerabilities"""
@@ -62,19 +61,18 @@ class VulnsRequester(Requester):
             logger.error('No matching vulnerability')
         else:
             for r in results:
-                logger.info('Vulnerability deleted: "{vuln}" for service={service} ' \
-                    'host={ip} port={port}/{proto}'.format(
-                        vuln=StringUtils.shorten(r.name, 50),
-                        service=r.service.name,
-                        ip=r.service.host.ip,
-                        port=r.service.port,
-                        proto={Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(
-                            r.service.protocol)))
+                logger.info('Vulnerability deleted: "{vuln}" for service={service} '
+                            'host={ip} port={port}/{proto}'.format(
+                                vuln=StringUtils.shorten(r.name, 50),
+                                service=r.service.name,
+                                ip=r.service.host.ip,
+                                port=r.service.port,
+                                proto={Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(
+                                    r.service.protocol)))
                 self.sqlsess.delete(r)
             self.sqlsess.commit()
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def order_by(self, column):
         """
@@ -82,12 +80,12 @@ class VulnsRequester(Requester):
         :param str column: Column name to order by
         """
         mapping = {
-            'ip'       : Host.ip,
-            #'hostname' : Host.hostname,
-            'service'  : Service.name,
-            'port'     : Service.port,
-            'proto'    : Service.protocol,
-            'vuln'     : Vuln.name,
+            'ip': Host.ip,
+            # 'hostname' : Host.hostname,
+            'service': Service.name,
+            'port': Service.port,
+            'proto': Service.protocol,
+            'vuln': Vuln.name,
         }
 
         if column.lower() not in mapping.keys():

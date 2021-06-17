@@ -25,16 +25,14 @@ class MissionsRequester(Requester):
         query = sqlsession.query(Mission)
         super().__init__(sqlsession, query)
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def get_list_mission_names(self):
         """Get list of missions in the database"""
         results = self.get_results()
-        return [ r.name for r in results ]
+        return [r.name for r in results]
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def show(self, highlight=None):
         """
@@ -58,21 +56,22 @@ class MissionsRequester(Requester):
                 data.append([
                     Output.colored(mission.name, color=color),
                     Output.colored(str(mission.creation_date), color=color),
-                    Output.colored(StringUtils.wrap(mission.comment, 50), color=color),
+                    Output.colored(StringUtils.wrap(
+                        mission.comment, 50), color=color),
                     Output.colored(len(mission.hosts), color=color),
-                    Output.colored(mission.get_nb_services(), color=color),                
+                    Output.colored(mission.get_nb_services(), color=color),
                 ])
             Output.table(columns, data, hrules=False)
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def add(self, name):
         """
         Add new mission.
         :param str name: Name of the mission to add
         """
-        mission = self.sqlsess.query(Mission).filter(Mission.name == name).first()
+        mission = self.sqlsess.query(Mission).filter(
+            Mission.name == name).first()
         if mission:
             logger.warning('A mission named "{name}" already exists'.format(
                 name=mission.name))
@@ -80,11 +79,11 @@ class MissionsRequester(Requester):
         else:
             self.sqlsess.add(Mission(name=name))
             self.sqlsess.commit()
-            logger.success('Mission "{name}" successfully added'.format(name=name))
+            logger.success(
+                'Mission "{name}" successfully added'.format(name=name))
             return True
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def delete(self):
         """Delete selected missions in database"""
@@ -96,7 +95,6 @@ class MissionsRequester(Requester):
                 self.sqlsess.delete(r)
             self.sqlsess.commit()
             logger.success('Mission deleted')
-
 
     def reset(self):
         """Delete all missions in database (re-create a fresh "default" mission)"""
@@ -113,8 +111,8 @@ class MissionsRequester(Requester):
         self.sqlsess.commit()
         self.sqlsess.add(Mission(name='default', comment='Default scope'))
         self.sqlsess.commit()
-        logger.success('All missions deleted & fresh "default" mission created')
-
+        logger.success(
+            'All missions deleted & fresh "default" mission created')
 
     def rename(self, old, new):
         """
@@ -126,21 +124,24 @@ class MissionsRequester(Requester):
             logger.warning('Default mission cannot be renamed')
             return False
 
-        mission = self.sqlsess.query(Mission).filter(Mission.name == old).first()
+        mission = self.sqlsess.query(Mission).filter(
+            Mission.name == old).first()
         if mission:
-            new_mission = self.sqlsess.query(Mission).filter(Mission.name == new).first()
+            new_mission = self.sqlsess.query(
+                Mission).filter(Mission.name == new).first()
             if new_mission:
-                logger.warning('A mission named "{name}" already exists'.format(name=new))
+                logger.warning(
+                    'A mission named "{name}" already exists'.format(name=new))
                 return False
             else:
                 mission.name = new
                 self.sqlsess.commit()
-                logger.success('Mission renamed: {old} -> {new}'.format(old=old, new=new))
+                logger.success(
+                    'Mission renamed: {old} -> {new}'.format(old=old, new=new))
                 return True
         else:
             logger.warning('Mission "{name}" doesn\'t exists'.format(name=old))
             return False
-
 
     def edit_comment(self, comment):
         """

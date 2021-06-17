@@ -15,5 +15,5 @@ vulns_match['mysql'] = {
     },
     'nmap': {
         'Authentication bypass in MySQL servers\.\s*(\r\n|\r|\n)\|\s*State: (LIKELY )?VULNERABLE': 'MySQL Authentication Bypass (CVE-2012-2122)',
- 	}
+    }
 }

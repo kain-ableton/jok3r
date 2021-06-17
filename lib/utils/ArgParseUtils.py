@@ -16,9 +16,8 @@ class LineWrapRawTextHelpFormatter(argparse.RawDescriptionHelpFormatter):
         For custom max width
         """
         #text = self._whitespace_matcher.sub(' ', text).strip()
-        #return textwrap.wrap(text, ARGPARSE_MAX_WIDTH)
+        # return textwrap.wrap(text, ARGPARSE_MAX_WIDTH)
         return text.splitlines()
-
 
     def _format_args(self, action, default_metavar):
         """
@@ -29,7 +28,6 @@ class LineWrapRawTextHelpFormatter(argparse.RawDescriptionHelpFormatter):
             return get_metavar(1)[0]
         else:
             return super()._format_args(action, default_metavar)
-
 
     def _format_action_invocation(self, action):
         """
@@ -57,27 +55,27 @@ class LineWrapRawTextHelpFormatter(argparse.RawDescriptionHelpFormatter):
 
             return ', '.join(parts)
 
-
     def _get_default_metavar_for_optional(self, action):
         return action.dest.upper()
-
 
     def _get_default_metavar_for_positional(self, action):
         return action.dest.upper()
 
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 
 class Store1or2Append(argparse._AppendAction):
     """
     Dirty hack !
     Custom action for 1-2 length for argparse option in append mode
     """
+
     def __call__(self, parser, namespace, values, option_string=None):
         if not (1 <= len(values) <= 2):
-            raise argparse.ArgumentError(self, "%s takes 1 or 2 values, %d given" % \
-                (option_string, len(values)))
-        super(Store1or2Append, self).__call__(parser, namespace, values, option_string)
+            raise argparse.ArgumentError(self, "%s takes 1 or 2 values, %d given" %
+                                         (option_string, len(values)))
+        super(Store1or2Append, self).__call__(
+            parser, namespace, values, option_string)
 
 
 class Store2or3Append(argparse._AppendAction):
@@ -85,14 +83,16 @@ class Store2or3Append(argparse._AppendAction):
     Dirty hack !
     Custom action for 2-3 length for argparse option in append mode
     """
+
     def __call__(self, parser, namespace, values, option_string=None):
         if not (2 <= len(values) <= 3):
-            raise argparse.ArgumentError(self, "%s takes 2 or 3 values, %d given" % \
-                (option_string, len(values)))
-        super(Store2or3Append, self).__call__(parser, namespace, values, option_string)
+            raise argparse.ArgumentError(self, "%s takes 2 or 3 values, %d given" %
+                                         (option_string, len(values)))
+        super(Store2or3Append, self).__call__(
+            parser, namespace, values, option_string)
 
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 
 def nargs_req_length(nmin, nmax):
     """
@@ -111,13 +111,9 @@ def nargs_req_length(nmin, nmax):
     """
     class RequiredLength(argparse.Action):
         def __call__(self, parser, args, values, option_string=None):
-            if not nmin<=len(values)<=nmax:
-                msg='argument "{f}" requires between {nmin} and {nmax} arguments'.format(
+            if not nmin <= len(values) <= nmax:
+                msg = 'argument "{f}" requires between {nmin} and {nmax} arguments'.format(
                     f=self.dest, nmin=nmin, nmax=nmax)
                 raise argparse.ArgumentTypeError(msg)
             setattr(args, self.dest, values)
     return RequiredLength
-
-
-
-

@@ -27,38 +27,37 @@ class Protocol(enum.Enum):
 class Service(Base):
     __tablename__ = 'services'
 
-    id            = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True)
     # Service name as used in Jok3r
-    name          = Column(String(100), nullable=False, default='')
+    name = Column(String(100), nullable=False, default='')
     # Original service name as given by Nmap/Shodan
     name_original = Column(String(100), nullable=False, default='')
-    port          = Column(Integer, nullable=False)
-    protocol      = Column(sqlalchemy.types.Enum(Protocol), nullable=False)
-    url           = Column(String(3000), nullable=False, default='')
-    up            = Column(Boolean, default=True)
-    banner        = Column(String(255), nullable=False, default='')
-    html_title    = Column(String(255), nullable=False, default='')
-    http_headers  = Column(Text, nullable=False, default='')
-    web_technos   = Column(Text, nullable=False, default='')
-    comment       = Column(Text, nullable=False, default='')
-    host_id       = Column(Integer, ForeignKey('hosts.id'))
+    port = Column(Integer, nullable=False)
+    protocol = Column(sqlalchemy.types.Enum(Protocol), nullable=False)
+    url = Column(String(3000), nullable=False, default='')
+    up = Column(Boolean, default=True)
+    banner = Column(String(255), nullable=False, default='')
+    html_title = Column(String(255), nullable=False, default='')
+    http_headers = Column(Text, nullable=False, default='')
+    web_technos = Column(Text, nullable=False, default='')
+    comment = Column(Text, nullable=False, default='')
+    host_id = Column(Integer, ForeignKey('hosts.id'))
 
-    host          = relationship('Host', back_populates='services')
-    credentials   = relationship('Credential', order_by=Credential.username, 
-        back_populates='service', cascade='save-update, merge, delete, delete-orphan')
-    options       = relationship('Option', order_by=Option.name, 
-        back_populates='service', cascade='save-update, merge, delete, delete-orphan')
-    products      = relationship('Product', order_by=Product.type, 
-        back_populates='service', cascade='save-update, merge, delete, delete-orphan')
-    results       = relationship('Result', order_by=Result.id, 
-        back_populates='service', cascade='save-update, merge, delete, delete-orphan')
-    vulns         = relationship('Vuln', order_by=Vuln.id, 
-        back_populates='service', cascade='save-update, merge, delete, delete-orphan')
-    screenshot    = relationship('Screenshot', uselist=False, 
-        back_populates='service', cascade='save-update, merge, delete, delete-orphan')
+    host = relationship('Host', back_populates='services')
+    credentials = relationship('Credential', order_by=Credential.username,
+                               back_populates='service', cascade='save-update, merge, delete, delete-orphan')
+    options = relationship('Option', order_by=Option.name,
+                           back_populates='service', cascade='save-update, merge, delete, delete-orphan')
+    products = relationship('Product', order_by=Product.type,
+                            back_populates='service', cascade='save-update, merge, delete, delete-orphan')
+    results = relationship('Result', order_by=Result.id,
+                           back_populates='service', cascade='save-update, merge, delete, delete-orphan')
+    vulns = relationship('Vuln', order_by=Vuln.id,
+                         back_populates='service', cascade='save-update, merge, delete, delete-orphan')
+    screenshot = relationship('Screenshot', uselist=False,
+                              back_populates='service', cascade='save-update, merge, delete, delete-orphan')
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     @hybrid_method
     def merge(self, dst):
@@ -74,13 +73,13 @@ class Service(Base):
         if dst.up != self.up:
             self.up = dst.up
 
-        if dst.banner: 
+        if dst.banner:
             self.banner = dst.banner
 
         if dst.html_title:
             self.html_title = dst.html_title
 
-        if dst.http_headers: 
+        if dst.http_headers:
             self.http_headers = dst.http_headers
 
         if dst.web_technos:
@@ -103,8 +102,7 @@ class Service(Base):
 
         return
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     @hybrid_method
     def add_credential(self, cred):
@@ -122,7 +120,6 @@ class Service(Base):
             self.credentials.append(cred)
             cred.service_id = self.id
 
-
     @hybrid_method
     def add_option(self, option):
         """
@@ -138,7 +135,6 @@ class Service(Base):
         else:
             self.options.append(option)
             option.service_id = self.id
-
 
     @hybrid_method
     def add_product(self, product):
@@ -157,8 +153,8 @@ class Service(Base):
             self.products.append(product)
             product.service_id = self.id
 
+    # ------------------------------------------------------------------------------------
 
-    #------------------------------------------------------------------------------------
     @hybrid_method
     def is_encrypted(self):
         """
@@ -171,8 +167,7 @@ class Service(Base):
                 return True
         return False
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Getters
 
     @hybrid_method
@@ -188,7 +183,6 @@ class Service(Base):
                 return opt
         return None
 
-
     @hybrid_method
     def get_product(self, product_type):
         """
@@ -201,7 +195,6 @@ class Service(Base):
             if prod.type == product_type.lower():
                 return prod
         return None
-
 
     @hybrid_method
     def get_vuln(self, name):
@@ -216,7 +209,6 @@ class Service(Base):
                 return vuln
         return None
 
-
     @hybrid_method
     def get_credential(self, username, auth_type=None):
         """
@@ -230,7 +222,6 @@ class Service(Base):
             if cred.type == auth_type and cred.username == username:
                 return cred
         return None
-
 
     @hybrid_method
     def get_nb_credentials(self, single_username=False):
@@ -251,19 +242,18 @@ class Service(Base):
                     nb += 1
         return nb
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def __repr__(self):
         return '<Service(name="{name}", port="{port}", protocol="{protocol}", ' \
             'url="{url}", up="{up}", banner="{banner}", ' \
             'http_headers="{http_headers}", comment="{comment}")>'.format(
-                    name         = self.name, 
-                    port         = self.port, 
-                    protocol     = self.protocol, 
-                    url          = self.url,
-                    up           = self.up, 
-                    banner       = self.banner, 
-                    http_headers = self.http_headers,
-                    #info         = self.info,
-                    comment      = self.comment)
+                name=self.name,
+                port=self.port,
+                protocol=self.protocol,
+                url=self.url,
+                up=self.up,
+                banner=self.banner,
+                http_headers=self.http_headers,
+                #info         = self.info,
+                comment=self.comment)

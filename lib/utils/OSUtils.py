@@ -6,7 +6,6 @@
 
 class OSUtils:
 
-
     @staticmethod
     def os_from_nmap_banner(banner):
         """
@@ -43,7 +42,6 @@ class OSUtils:
                     return os
 
         return ''
-
 
     @staticmethod
     def get_device_type(os, os_family, nmap_device_type):
@@ -102,16 +100,15 @@ class OSUtils:
             'Windows',
         ]
         if nmap_device_type == 'general purpose' \
-            and os_family in os_patterns_desktops:
-                if 'server' in os.lower():
-                    return 'Server'
-                else:
-                    return 'Desktop'
+                and os_family in os_patterns_desktops:
+            if 'server' in os.lower():
+                return 'Server'
+            else:
+                return 'Desktop'
 
         else:
             # Default to "Server"
             return DEVICE_TYPE_NMAP_TO_JOKER.get(nmap_device_type, 'Server')
-
 
     @staticmethod
     def get_os_vendor(os):
@@ -142,7 +139,6 @@ class OSUtils:
                 return matches[m]
 
         return ''
-
 
     @staticmethod
     def get_os_family(os):

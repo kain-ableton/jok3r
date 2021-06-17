@@ -14,27 +14,27 @@ from lib.db.IPAddressType import IPAddressType
 from lib.db.Service import Service, Protocol
 from lib.db.Session import Base
 
+
 class Host(Base):
     __tablename__ = 'hosts'
 
-    id         = Column(Integer, primary_key=True)
-    ip         = Column(IPAddressType, nullable=False, default='')
-    hostname   = Column(String(255), nullable=False, default='')
-    os         = Column(String(255), nullable=False, default='')
-    os_vendor  = Column(String(255), nullable=False, default='')
-    os_family  = Column(String(255), nullable=False, default='')
-    mac        = Column(String(255), nullable=False, default='')
-    vendor     = Column(String(255), nullable=False, default='')
-    type       = Column(String(255), nullable=False, default='')
-    comment    = Column(Text, nullable=False, default='')
+    id = Column(Integer, primary_key=True)
+    ip = Column(IPAddressType, nullable=False, default='')
+    hostname = Column(String(255), nullable=False, default='')
+    os = Column(String(255), nullable=False, default='')
+    os_vendor = Column(String(255), nullable=False, default='')
+    os_family = Column(String(255), nullable=False, default='')
+    mac = Column(String(255), nullable=False, default='')
+    vendor = Column(String(255), nullable=False, default='')
+    type = Column(String(255), nullable=False, default='')
+    comment = Column(Text, nullable=False, default='')
     mission_id = Column(Integer, ForeignKey('missions.id'))
 
-    mission    = relationship('Mission', back_populates='hosts')
-    services   = relationship('Service', order_by=Service.port, back_populates='host',
-                              cascade='save-update, merge, delete, delete-orphan')
+    mission = relationship('Mission', back_populates='hosts')
+    services = relationship('Service', order_by=Service.port, back_populates='host',
+                            cascade='save-update, merge, delete, delete-orphan')
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     @hybrid_method
     def merge(self, dst):
@@ -42,15 +42,21 @@ class Host(Base):
         Merge with another Host.
         :param Host dst: Host to merge with
         """
-        if dst.hostname: self.hostname = dst.hostname
-        if dst.os: self.os = dst.os
-        if dst.os_vendor: self.os_vendor = dst.os_vendor
-        if dst.os_family: self.os_family = dst.os_family
-        if dst.mac: self.mac = dst.mac
-        if dst.vendor: self.vendor = dst.vendor
-        if dst.type: self.type = dst.type
+        if dst.hostname:
+            self.hostname = dst.hostname
+        if dst.os:
+            self.os = dst.os
+        if dst.os_vendor:
+            self.os_vendor = dst.os_vendor
+        if dst.os_family:
+            self.os_family = dst.os_family
+        if dst.mac:
+            self.mac = dst.mac
+        if dst.vendor:
+            self.vendor = dst.vendor
+        if dst.type:
+            self.type = dst.type
         return
-
 
     @hybrid_method
     def is_in_ip_range(self, ip_range):
@@ -63,9 +69,8 @@ class Host(Base):
         """
         net = ipaddress.ip_network(ip_range, strict=False)
 
-        # return min(net) <= self.ip <= max(net) # Too slow  
+        # return min(net) <= self.ip <= max(net) # Too slow
         return net[0] <= self.ip <= net[-1]
-
 
     @is_in_ip_range.expression
     def is_in_ip_range(cls, ip_range):
@@ -79,8 +84,7 @@ class Host(Base):
         net = ipaddress.ip_network(ip_range, strict=False)
         return cls.ip.between(net[0], net[-1])
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Getters
 
     @hybrid_method
@@ -97,7 +101,6 @@ class Host(Base):
                 nb += 1
 
         return nb
-
 
     @hybrid_method
     def get_nb_credentials(self, single_username=False):
@@ -119,7 +122,6 @@ class Host(Base):
                         nb += 1
         return nb
 
-
     @hybrid_method
     def get_nb_vulns(self):
         """
@@ -130,22 +132,21 @@ class Host(Base):
         nb = 0
         for s in self.services:
             nb += len(s.vulns)
-            
+
         return nb
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def __repr__(self):
         return '<Host(ip="{ip}", hostname="{hostname}", os="{os}", ' \
             'os_vendor="{os_vendor}", os_family="{os_family}", mac="{mac}", ' \
             'vendor="{vendor}", type="{type}", comment="{comment}")>'.format(
-                ip        = self.ip, 
-                hostname  = self.hostname, 
-                os        = self.os, 
-                os_vendor = self.os_vendor, 
-                os_family = self.os_family,
-                mac       = self.mac,
-                vendor    = self.vendor,
-                type      = self.type,
-                comment   = self.comment)
+                ip=self.ip,
+                hostname=self.hostname,
+                os=self.os,
+                os_vendor=self.os_vendor,
+                os_family=self.os_family,
+                mac=self.mac,
+                vendor=self.vendor,
+                type=self.type,
+                comment=self.comment)

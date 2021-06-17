@@ -47,9 +47,8 @@ class Target:
             if self.service.url:
                 self.initialized_with_url = True
                 self.__init_with_url()
-            else: 
-                self.__init_with_ip()   
-
+            else:
+                self.__init_with_ip()
 
     def __init_with_url(self):
         """
@@ -64,20 +63,21 @@ class Target:
 
         if NetUtils.is_valid_ip(url.hostname):
             self.service.host.ip = url.hostname
-            self.service.host.hostname = url.hostname # updated in smart_check
+            self.service.host.hostname = url.hostname  # updated in smart_check
 
         else:
             self.service.host.ip = NetUtils.dns_lookup(url.hostname)
             if not self.service.host.ip:
-                raise TargetException('Unable to resolve {}'.format(url.hostname))
+                raise TargetException(
+                    'Unable to resolve {}'.format(url.hostname))
             self.service.host.hostname = url.hostname
 
         # Determine port number
         if not self.service.port:
             self.service.port = WebUtils.get_port_from_url(self.service.url)
             if not NetUtils.is_valid_port(self.service.port):
-                raise TargetException('Invalid port number {}'.format(self.service.port))
-
+                raise TargetException(
+                    'Invalid port number {}'.format(self.service.port))
 
     def __init_with_ip(self):
         """
@@ -87,15 +87,16 @@ class Target:
         :raises TargetException: Exception raised if DNS lookup fails
         """
         if NetUtils.is_valid_ip(self.service.host.ip):
-            self.service.host.hostname = str(self.service.host.ip) 
+            self.service.host.hostname = str(self.service.host.ip)
             # updated in smart_check
         else:
             # host.ip actually stores a hostname at this point, a DNS lookup is needed
             self.service.host.hostname = self.service.host.ip
-            self.service.host.ip = NetUtils.dns_lookup(self.service.host.hostname) 
+            self.service.host.ip = NetUtils.dns_lookup(
+                self.service.host.hostname)
             if self.service.host.ip:
                 logger.info('DNS lookup on {hostname} -> IP: {ip}'.format(
-                    hostname=self.service.host.hostname, 
+                    hostname=self.service.host.hostname,
                     ip=self.service.host.ip))
             else:
                 raise TargetException('Unable to resolve {}'.format(
@@ -112,29 +113,23 @@ class Target:
             self.service.url = '{proto}://{ip}:{port}'.format(
                 proto=proto, ip=self.service.host.hostname, port=self.service.port)
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Basic Getters
 
     def get_ip(self):
         return str(self.service.host.ip)
 
-
     def get_url(self):
         return self.service.url
-
 
     def get_host(self):
         return self.service.host.hostname
 
-
     def get_os(self):
         return self.service.host.os
 
-
     def get_port(self):
         return self.service.port
-
 
     def get_protocol(self):
         proto = {
@@ -143,40 +138,31 @@ class Target:
         }
         return proto[self.service.protocol]
 
-
     def get_protocol2(self):
         return self.service.protocol
-
 
     def get_service_name(self):
         return self.service.name
 
-
     def get_banner(self):
         return self.service.banner
-
 
     def get_http_headers(self):
         return self.service.http_headers
 
-
     def get_credentials(self):
         return self.service.credentials
-
 
     def get_specific_options(self):
         return self.service.options
 
-
     def get_products(self):
         return self.service.products
-
 
     def get_mission_name(self):
         return self.service.host.mission.name
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Context-Information Getters
 
     def get_specific_option_value(self, option_name):
@@ -206,7 +192,6 @@ class Target:
             else:
                 return None
 
-
     def get_product_name_version(self, product_type):
         """
         Get the product name and version for a given product type.
@@ -222,7 +207,6 @@ class Target:
         else:
             return (None, None)
 
-
     def get_usernames_only(self, auth_type=None):
         """
         Get the list of usernames with no associated password
@@ -231,7 +215,7 @@ class Target:
         :return: Usernames with no associated password
         :rtype: list
         """
-        if self.service.name == 'http' and auth_type is None: 
+        if self.service.name == 'http' and auth_type is None:
             return list()
 
         usernames = list()
@@ -240,7 +224,6 @@ class Target:
                 if self.service.name != 'http' or auth_type == cred.type:
                     usernames.append(cred.username)
         return usernames
-
 
     def get_userpass(self, auth_type=None):
         """
@@ -251,7 +234,7 @@ class Target:
         :return: Credentials (username, password)
         :rtype: list(tuple)
         """
-        if self.service.name == 'http' and auth_type is None: 
+        if self.service.name == 'http' and auth_type is None:
             return list()
 
         userpass = list()
@@ -261,13 +244,12 @@ class Target:
                     userpass.append((cred.username, cred.password))
         return userpass
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Target checker and information updater
 
-    def smart_check(self, 
-                    reverse_dns_lookup=True, 
-                    availability_check=True, 
+    def smart_check(self,
+                    reverse_dns_lookup=True,
+                    availability_check=True,
                     nmap_banner_grabbing=True,
                     html_title_grabbing=True,
                     web_technos_detection=True,
@@ -293,7 +275,7 @@ class Target:
         """
 
         # If no IP, means that DNS lookup has failed
-        if not self.service.host.ip: 
+        if not self.service.host.ip:
             return False
 
         # Perform reverse DNS lookup if hostname not defined
@@ -307,16 +289,15 @@ class Target:
                     ip=str(self.service.host.ip)))
                 self.__reverse_dns_lookup()
 
-
         # Perform service availability check
         if availability_check and self.service.name != 'http':
             logger.info('Check if service is reachable...')
             self.__availability_check()
 
-        # For HTTP, also grab HTML title and HTTP response headers 
+        # For HTTP, also grab HTML title and HTTP response headers
         elif (html_title_grabbing or availability_check) \
-            and self.service.name == 'http':
-            
+                and self.service.name == 'http':
+
             logger.info('Check if URL is reachable (grab HTTP response)...')
             self.__grab_html_title_and_headers()
         else:
@@ -340,15 +321,15 @@ class Target:
         # Perform Web technologies detection for HTTP, if no technologies
         # are already stored in database
         if web_technos_detection \
-            and self.service.name == 'http' \
-            and not self.service.web_technos:
+                and self.service.name == 'http' \
+                and not self.service.web_technos:
 
             logger.info('Web technologies detection using Wappalyzer...')
             detector = WebTechnoDetector(self.service.url)
             technos = detector.detect()
             self.service.web_technos = str(technos)
             detector.print_technos()
-            
+
             # # Try to deduce OS from detected web technologies
             # if not self.service.host.os:
             #     detected_os = detector.get_os()
@@ -371,7 +352,6 @@ class Target:
 
         return self.service.up
 
-
     def __reverse_dns_lookup(self):
         """
         Attempt to perform reverse DNS lookup (i.e. IP -> Hostname)
@@ -388,7 +368,6 @@ class Target:
             logger.info('No DNS name found for IP')
 
         self.service.host.hostname = hostname
-
 
     def __availability_check(self):
         """
@@ -407,7 +386,6 @@ class Target:
             self.service.up = NetUtils.is_udp_port_open(
                 str(self.service.host.ip), self.service.port)
 
-
     def __grab_html_title_and_headers(self):
         """
         Grab HTML title and HTTP headers for service HTTP.
@@ -418,7 +396,7 @@ class Target:
             - self.service.http_headers
             - self.service.html_title
         """
-        if self.service.url: 
+        if self.service.url:
             # For HTTP: Check URL availability
             try:
                 is_reachable, status, resp_headers = WebUtils.is_url_reachable(
@@ -427,8 +405,8 @@ class Target:
                 # give a new try, i.e. :
                 # http(s)://hostname:port/ -> http(s)://ip:port/
                 if not is_reachable \
-                    and not self.initialized_with_url \
-                    and self.service.host.hostname != self.service.host.ip:
+                        and not self.initialized_with_url \
+                        and self.service.host.hostname != self.service.host.ip:
 
                     new_url = WebUtils.replace_hostname_by_ip(
                         self.service.url,
@@ -440,7 +418,7 @@ class Target:
                     if is_reachable:
                         self.service.url = new_url
 
-                #print(is_reachable)
+                # print(is_reachable)
                 self.service.up = is_reachable
             except:
                 self.service.up = False
@@ -449,15 +427,14 @@ class Target:
             # Grab HTML title and HTTP Headers
             if is_reachable:
                 if resp_headers:
-                    self.service.http_headers = '\n'.join('{}: {}'.format(key,val) \
-                        for (key,val) in resp_headers.items())
+                    self.service.http_headers = '\n'.join('{}: {}'.format(key, val)
+                                                          for (key, val) in resp_headers.items())
                 else:
                     self.service.http_headers = ''
 
                 if not self.service.html_title:
                     self.service.html_title = WebUtils.grab_html_title(
                         self.service.url)
-
 
     def __run_nmap(self):
         """
@@ -478,14 +455,14 @@ class Target:
         # Run Nmap scan
         nmap_info = NetUtils.grab_nmap_info(
             str(self.service.host.ip), self.service.port)
-        
+
         # Get original service name as returned by Nmap
         self.service.name_original = nmap_info['service_name']
 
-        # Get banner 
+        # Get banner
         self.service.banner = NetUtils.clean_nmap_banner(nmap_info['banner'])
         logger.info('Banner = {banner}'.format(banner=self.service.banner))
-        
+
         # Get OS information
         if nmap_info['os']:
             if not self.service.host.os:
@@ -519,8 +496,7 @@ class Target:
         #         self.service.host.os_family = OSUtils.get_os_family(detected_os)
         #         logger.info('Detected OS from banner = {os}'.format(os=detected_os))
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Output methods
 
     def __repr__(self):
@@ -530,7 +506,6 @@ class Target:
             proto=self.get_protocol(),
             service=self.get_service_name())
 
-
     def print_http_headers(self):
         """Print HTTP Response Headers if available"""
         if self.get_http_headers():
@@ -538,7 +513,6 @@ class Target:
             for l in self.get_http_headers().splitlines():
                 Output.print('    | {}'.format(l))
             print()
-
 
     def print_context(self):
         """Print target's context information"""
@@ -548,7 +522,8 @@ class Target:
             logger.info('Credentials set for this target:')
             data = list()
             columns = ['Username', 'Password']
-            if self.get_service_name() == 'http': columns.append('auth-type')
+            if self.get_service_name() == 'http':
+                columns.append('auth-type')
             for c in self.get_credentials():
                 username = '<empty>' if c.username == '' else c.username
                 if c.password is None:
@@ -557,7 +532,8 @@ class Target:
                     password = '<empty>' if c.password == '' else c.password
 
                 line = [username, password]
-                if self.get_service_name() == 'http': line.append(c.type)
+                if self.get_service_name() == 'http':
+                    line.append(c.type)
                 data.append(line)
             Output.table(columns, data, hrules=False)
 

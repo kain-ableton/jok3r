@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
-### Core > Attack Controller
+# Core > Attack Controller
 ###
 import datetime
 from humanfriendly import format_timespan
@@ -30,25 +30,24 @@ class AttackController(Controller):
         logger.debug(args)
 
         # Attack configuration: Categories of checks to run
-        categories = self.settings.services.list_all_categories() # default: all
+        categories = self.settings.services.list_all_categories()  # default: all
 
         if args.cat_only:
-            categories = [ cat for cat in categories if cat in args.cat_only ]
+            categories = [cat for cat in categories if cat in args.cat_only]
         elif args.cat_exclude:
-            categories = [ cat for cat in categories if cat not in args.cat_exclude ]
-
+            categories = [
+                cat for cat in categories if cat not in args.cat_exclude]
 
         # Create the attack scope
         self.attack_scope = AttackScope(
-            self.settings, 
+            self.settings,
             self.arguments,
             self.sqlsess,
             args.mission or args.add,
-            filter_categories=categories, 
-            filter_checks=args.checks, 
+            filter_categories=categories,
+            filter_checks=args.checks,
             attack_profile=args.profile,
             fast_mode=args.fast_mode)
-
 
         # Run the attack
         begin = datetime.datetime.now()
@@ -56,38 +55,39 @@ class AttackController(Controller):
             self.__run_for_single_target(args)
         else:
             self.__run_for_multi_targets(args)
-            
+
         print()
         duration = datetime.datetime.now() - begin
-        logger.info('Finished. Duration: {}'.format(format_timespan(duration.seconds)))
+        logger.info('Finished. Duration: {}'.format(
+            format_timespan(duration.seconds)))
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Single-Target mode
 
     def __run_for_single_target(self, args):
         """Run attack against a single target specified into args"""
-        
+
         req = ServicesRequester(self.sqlsess)
         mission = None
 
         # Get Mission if target must be added into a mission scope
         if args.add:
-            mission = self.sqlsess.query(Mission).filter(Mission.name == args.add).first()
+            mission = self.sqlsess.query(Mission).filter(
+                Mission.name == args.add).first()
             if not mission:
-                raise AttackException('The specified mission does not exist in the ' \
-                    'database. You should create it if needed')
+                raise AttackException('The specified mission does not exist in the '
+                                      'database. You should create it if needed')
 
-        # Create new Service/Host objects (if service already exist, 
+        # Create new Service/Host objects (if service already exist,
         # will be merged by ServicesRequester.add_target)
         url = args.target_ip_or_url if args.target_mode == TargetMode.URL else ''
-        ip  = args.target_ip_or_url if args.target_mode == TargetMode.IP else ''
+        ip = args.target_ip_or_url if args.target_mode == TargetMode.IP else ''
         service = Service(
             name=args.service,
             port=int(args.target_port),
             protocol=self.settings.services.get_protocol2(args.service),
             url=url)
-        host = Host(ip=ip) # Will be updated when initializing Target()
+        host = Host(ip=ip)  # Will be updated when initializing Target()
         host.services.append(service)
 
         # Update context (credentials, options, products) if specified in command-line
@@ -96,15 +96,15 @@ class AttackController(Controller):
                 self.sqlsess.add(c)
                 service.credentials.append(c)
         if args.users:
-            for u in args.users[args.service]: 
+            for u in args.users[args.service]:
                 self.sqlsess.add(u)
                 service.credentials.append(u)
         if args.products:
-            for p in args.products[args.service]: 
+            for p in args.products[args.service]:
                 self.sqlsess.add(p)
                 service.products.append(p)
         if args.options:
-            for o in args.options[args.service]: 
+            for o in args.options[args.service]:
                 self.sqlsess.add(o)
                 service.options.append(o)
 
@@ -123,10 +123,11 @@ class AttackController(Controller):
         # - Web technologies detection: always
         # - Context initialization via SmartStart: always
         reachable = target.smart_check(
-            reverse_dns_lookup=(args.reverse_dns is None or args.reverse_dns == 'on'),
-            availability_check=True, 
-            nmap_banner_grabbing=(args.nmap_banner_grab is None \
-                or args.nmap_banner_grab == 'on'),
+            reverse_dns_lookup=(
+                args.reverse_dns is None or args.reverse_dns == 'on'),
+            availability_check=True,
+            nmap_banner_grabbing=(args.nmap_banner_grab is None
+                                  or args.nmap_banner_grab == 'on'),
             html_title_grabbing=True,
             web_technos_detection=True,
             smart_context_initialize=True)
@@ -143,15 +144,15 @@ class AttackController(Controller):
 
         if reachable:
             logger.success(msg)
-        else: 
+        else:
             logger.error(msg)
             return
 
-        # Commit the target with updated information inside the appropriate 
+        # Commit the target with updated information inside the appropriate
         # mission in the database
         if mission:
-            logger.info('Results from this attack will be saved under mission ' \
-                '"{mission}" in database'.format(mission=mission.name))
+            logger.info('Results from this attack will be saved under mission '
+                        '"{mission}" in database'.format(mission=mission.name))
             req.select_mission(mission.name)
             req.add_target(target)
 
@@ -160,8 +161,7 @@ class AttackController(Controller):
         self.attack_scope.attack()
         return
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Multi-Targets mode
 
     def __run_for_multi_targets(self, args):
@@ -169,13 +169,13 @@ class AttackController(Controller):
 
         # Get Mission from which targets must be extracted
         mission = self.sqlsess.query(Mission)\
-                    .filter(Mission.name == args.mission).first()
+            .filter(Mission.name == args.mission).first()
         if mission:
             logger.info('Extracting targets from mission "{mission}" ...'.format(
                 mission=mission.name))
         else:
-            raise AttackException('Mission {mission} does not exist into the ' \
-                'database'.format(mission=args.mission))
+            raise AttackException('Mission {mission} does not exist into the '
+                                  'database'.format(mission=args.mission))
 
         # Initialize Services requester and add filter if provided
         req = ServicesRequester(self.sqlsess)
@@ -192,27 +192,27 @@ class AttackController(Controller):
         # Retrieve targeted services from database
         services = req.get_results()
         if not services:
-            raise AttackException('There is no matching service to target into the ' \
-                'database')
+            raise AttackException('There is no matching service to target into the '
+                                  'database')
 
-        # Add each targeted service into Attack scope 
+        # Add each targeted service into Attack scope
         for service in services:
 
             # Update credentials, options, products if specified in command-line
             if args.creds:
-                for c in args.creds[service.name]: 
+                for c in args.creds[service.name]:
                     service.add_credential(c.clone())
             if args.users:
-                for u in args.users[service.name]: 
+                for u in args.users[service.name]:
                     service.add_credential(u.clone())
             if args.products:
-                for p in args.products[service.name]: 
+                for p in args.products[service.name]:
                     service.add_product(p.clone())
             if args.options:
-                for o in args.options[service.name]: 
+                for o in args.options[service.name]:
                     service.add_option(o.clone())
 
-            # Initialize Target 
+            # Initialize Target
             try:
                 target = Target(service, self.settings.services)
             except TargetException as e:

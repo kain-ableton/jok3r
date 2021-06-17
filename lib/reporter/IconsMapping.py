@@ -8,7 +8,7 @@
 
 
 class IconsMapping:
-    
+
     ICONS = {
         'os_family': {
             'Android':      'android',
@@ -38,7 +38,7 @@ class IconsMapping:
             'Print server': 'printer-settings',
             'Printer':      'printer',
             'Proxy server': 'directions-fork',
-            'Server':       'desktop-tower', #'server',
+            'Server':       'desktop-tower',  # 'server',
             'VoIP':         'phone-voip',
             'Webcam':       'webcam',
         },
@@ -80,7 +80,6 @@ class IconsMapping:
             return default
 
         return IconsMapping.ICONS[icon_type].get(value, default)
-
 
     @staticmethod
     def get_icon_html(icon_type, value, default=''):

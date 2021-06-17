@@ -4,7 +4,7 @@ from lib.smartmodules.matchstrings.MatchStrings import options_match
 
 
 options_match['smtp'] = {
-    
+
     'service-name-original': {
         'smtps': {
             'name': 'smtps',

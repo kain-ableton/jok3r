@@ -3,9 +3,8 @@
 from lib.smartmodules.matchstrings.MatchStrings import products_match
 
 
-# m = re.search('CMS: Joomla(.*Version: (?P<version>[0-9.]+)?)?', textjoomla, re.DOTALL) 
+# m = re.search('CMS: Joomla(.*Version: (?P<version>[0-9.]+)?)?', textjoomla, re.DOTALL)
 # m = re.search('CMS: Microsoft Sharepoint(.*Version: (?P<version>[0-9.]+)?)?', text, re.DOTALL)
-
 
 
 #CMSEEK_REGEXP = 'CMS: {}([\s\S]*Version:\s*[VERSION])?'
@@ -29,9 +28,9 @@ CMSEEK_REGEXP = '"cms_name":\s*"{}"(,[\s\S]*"cms_version":\s*"[VERSION]")?'
 # - Found version: WordPress 4.1.3
 # - Found version: WordPress 4.1.2
 # - Found version: WordPress 4.1.1
-WIG_REGEXP = '{}\s*[VERSION]\s*CMS' 
+WIG_REGEXP = '{}\s*[VERSION]\s*CMS'
 WIG_REGEXP2 = '- Found CMS match: {}\s*(Determining CMS version \.\.\.(\s*- Found version: (\S+)\s+[VERSION])?)?'
-WIG_REGEXP3 = '{}\s*[VERSION]\s*Platform' 
+WIG_REGEXP3 = '{}\s*[VERSION]\s*Platform'
 WIG_REGEXP4 = '- Found platform {}(\s*[VERSION])?'
 
 products_match['http']['web-cms'] = {
@@ -233,7 +232,7 @@ products_match['http']['web-cms'] = {
         # 7.57
         # 7.58
         # 7.59
-        #'droopescan': '',
+        # 'droopescan': '',
     },
     'E107': {
         'wappalyzer': 'e107',
@@ -329,7 +328,7 @@ products_match['http']['web-cms'] = {
     },
     'Kooboo Cms': {
         'wappalyzer': 'Kooboo CMS',
-        'cmseek':CMSEEK_REGEXP.format('Kooboo CMS'),
+        'cmseek': CMSEEK_REGEXP.format('Kooboo CMS'),
     },
     'Lepton-cms/Lepton': {
         'wappalyzer': 'LEPTON',

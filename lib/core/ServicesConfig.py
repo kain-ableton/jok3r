@@ -26,20 +26,20 @@ class ServicesConfig:
 
         :param list list_services: List of service names
         """
-        self.services = OrderedDefaultDict(list, {k:{
-            'default_port'           : None,
-            'protocol'               : None,
-            'specific_options'       : dict(), # { specific option : type }
-            'supported_list_options' : dict(), # { specific option : [ values ] }
-            'products'               : dict(), # { product type : [ product names ] }
-            'auth_types'             : None,
-            'checks'                 : None, 
+        self.services = OrderedDefaultDict(list, {k: {
+            'default_port': None,
+            'protocol': None,
+            'specific_options': dict(),  #  { specific option : type }
+            # { specific option : [ values ] }
+            'supported_list_options': dict(),
+            'products': dict(),  # { product type : [ product names ] }
+            'auth_types': None,
+            'checks': None,
         } for k in list_services})
 
         #self.services['multi'] = None
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Dict-like accessors for self.services
 
     def __getitem__(self, key):
@@ -66,14 +66,13 @@ class ServicesConfig:
     def values(self):
         return self.services.values()
 
+    # ------------------------------------------------------------------------------------
 
-    #------------------------------------------------------------------------------------
-
-    def add_service(self, 
-                    name, 
-                    default_port, 
-                    protocol, 
-                    specific_options, 
+    def add_service(self,
+                    name,
+                    default_port,
+                    protocol,
+                    specific_options,
                     supported_list_options,
                     products,
                     auth_types,
@@ -104,8 +103,7 @@ class ServicesConfig:
         self.services[service]['auth_types'] = auth_types
         self.services[service]['checks'] = service_checks
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Getters
 
     def list_services(self, multi=False):
@@ -123,7 +121,6 @@ class ServicesConfig:
             l.remove('multi')
             return sorted(l)
 
-
     def list_all_categories(self):
         """
         List all categories of checks supported accross all services
@@ -136,37 +133,31 @@ class ServicesConfig:
             categories.update(self.services[svc]['checks'].categories)
         return categories
 
-
     def get_default_port(self, service):
         if not self.is_service_supported(service, multi=False):
             return None
         return self.services[service]['default_port']
-
 
     def get_protocol(self, service):
         if not self.is_service_supported(service, multi=False):
             return None
         return self.services[service]['protocol']
 
-
     def get_protocol2(self, service):
         if not self.is_service_supported(service, multi=False):
-            return None        
+            return None
         return {'tcp': Protocol.TCP, 'udp': Protocol.UDP}.get(
             self.get_protocol(service))
-
 
     def get_authentication_types(self, service='http'):
         if not self.is_service_supported(service, multi=False):
             return []
         return self.services[service]['auth_types']
 
-
     def get_service_checks(self, service):
         if not self.is_service_supported(service, multi=False):
             return None
-        return self.services[service]['checks']      
-
+        return self.services[service]['checks']
 
     def get_service_from_port(self, port, protocol='tcp'):
         """
@@ -184,8 +175,7 @@ class ServicesConfig:
                 return service
         return None
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Services/Security checks existence checkers
 
     def is_service_supported(self, service, multi=True):
@@ -201,7 +191,6 @@ class ServicesConfig:
         """
         return service.lower() in self.list_services(multi)
 
-
     def is_existing_check(self, check_name):
         """
         Check if a given check name is existing for any supported service. 
@@ -212,12 +201,11 @@ class ServicesConfig:
         :rtype: bool
         """
         for svc in self.list_services():
-            if self.services[svc]['checks'].is_existing_check(check_name): 
+            if self.services[svc]['checks'].is_existing_check(check_name):
                 return True
         return False
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Authentication type checker
 
     def is_valid_auth_type(self, auth_type):
@@ -231,8 +219,7 @@ class ServicesConfig:
         """
         return auth_type.lower() in self.get_authentication_types('http')
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Specific-options checkers/accessors
 
     def is_specific_option_name_supported(self, option, service=None):
@@ -254,7 +241,6 @@ class ServicesConfig:
                 return True
         return False
 
-
     def is_specific_option_value_supported(self, name, value):
         """
         Check if the value for a given context-specific option is valid
@@ -275,7 +261,6 @@ class ServicesConfig:
                 return True
         return False
 
-
     def get_specific_option_type(self, option, service):
         """
         Get the type of a context-specific option
@@ -289,7 +274,6 @@ class ServicesConfig:
         else:
             return None
 
-
     def get_service_for_specific_option(self, name):
         """
         Get the service name on which a specific option is applied
@@ -301,8 +285,7 @@ class ServicesConfig:
                 return service
         return None
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Products checkers/accessors
 
     def is_product_type_supported(self, product_type, service=None):
@@ -328,7 +311,6 @@ class ServicesConfig:
                 return True
         return False
 
-
     def is_product_name_supported(self, product_type, product_name):
         """
         Check if a product name associated to a given type is valid.
@@ -342,10 +324,9 @@ class ServicesConfig:
         """
         service = self.get_service_for_product_type(product_type)
         if service:
-            return product_name.lower() in list(map(lambda x: x.lower(), 
-                self.services[service]['products'][product_type]))
+            return product_name.lower() in list(map(lambda x: x.lower(),
+                                                    self.services[service]['products'][product_type]))
         return False
-
 
     def get_service_for_product_type(self, product_type):
         """
@@ -361,8 +342,7 @@ class ServicesConfig:
                 return service
         return None
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Output methods
 
     def show_services(self, toolbox):
@@ -382,19 +362,18 @@ class ServicesConfig:
             data.append([
                 service,
                 'N/A' if service == 'multi' else '{port}/{proto}'.format(
-                    port  = self.services[service]['default_port'],
-                    proto = self.services[service]['protocol']),
+                    port=self.services[service]['default_port'],
+                    proto=self.services[service]['protocol']),
                 '{nb_installed}/{nb_tools}'.format(
-                    nb_installed = toolbox.nb_tools(filter_service=service, 
-                                                    only_installed=True),
-                    nb_tools     = toolbox.nb_tools(filter_service=service)),
-                'N/A' if service == 'multi' \
-                      else self.services[service]['checks'].nb_checks(),
+                    nb_installed=toolbox.nb_tools(filter_service=service,
+                                                  only_installed=True),
+                    nb_tools=toolbox.nb_tools(filter_service=service)),
+                'N/A' if service == 'multi'
+                else self.services[service]['checks'].nb_checks(),
             ])
 
         Output.title1('Supported services')
         Output.table(columns, data, hrules=False)
-
 
     def show_categories(self, filter_service=None):
         """
@@ -407,17 +386,18 @@ class ServicesConfig:
             'Category',
             'Services',
         ]
-        services = self.list_services() if filter_service is None else [filter_service]
+        services = self.list_services() if filter_service is None else [
+            filter_service]
         svcbycat = defaultdict(list)
         for service in services:
             for category in self.services[service]['checks'].categories:
                 svcbycat[category].append(service)
 
         for category in svcbycat:
-            data.append([category, StringUtils.wrap(', '.join(svcbycat[category]), 100)])
+            data.append([category, StringUtils.wrap(
+                ', '.join(svcbycat[category]), 100)])
 
         Output.table(columns, data)
-
 
     def show_specific_options(self, filter_service=None):
         """
@@ -431,7 +411,8 @@ class ServicesConfig:
             'Service',
             'Supported values',
         ]
-        services = self.list_services() if filter_service is None else [filter_service]
+        services = self.list_services() if filter_service is None else [
+            filter_service]
         for service in services:
             options = self.services[service]['specific_options']
             for opt in options:
@@ -444,18 +425,17 @@ class ServicesConfig:
                     values = StringUtils.wrap(', '.join(values), 80)
 
                 else:
-                    values = '<anything>' 
+                    values = '<anything>'
                 data.append([opt, service, values])
 
         Output.title1('Available context-specific options for {filter}'.format(
-            filter='all services' if filter_service is None \
+            filter='all services' if filter_service is None
                    else 'service ' + filter_service))
-        
+
         if not data:
             logger.warning('No specific option')
         else:
             Output.table(columns, data, hrules=False)
-
 
     def show_products(self, filter_service=None):
         """
@@ -468,24 +448,25 @@ class ServicesConfig:
             'Type',
             'Product Names',
         ]
-        services = self.list_services() if filter_service is None else [filter_service]
+        services = self.list_services() if filter_service is None else [
+            filter_service]
         for service in services:
             products = self.services[service]['products']
             for product_type in products:
-                names = sorted(self.services[service]['products'][product_type])
+                names = sorted(self.services[service]
+                               ['products'][product_type])
                 names = StringUtils.wrap(', '.join(names), 100)
 
                 data.append([product_type, names])
 
         Output.title1('Available products for {filter}'.format(
-            filter='all services' if filter_service is None \
+            filter='all services' if filter_service is None
                    else 'service ' + filter_service))
-        
+
         if not data:
             logger.warning('No product')
         else:
             Output.table(columns, data)
-
 
     def show_authentication_types(self, service='http'):
         """Display list of authentication types for HTTP."""
@@ -504,6 +485,3 @@ class ServicesConfig:
             for t in sorted(self.services[service]['auth_types']):
                 data.append([t])
             Output.table(['Authentication types'], data, hrules=False)
-
-
-

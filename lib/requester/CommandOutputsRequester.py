@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
-### Requester > Command Outputs
+# Requester > Command Outputs
 ###
 from lib.requester.Requester import Requester
 from lib.db.CommandOutput import CommandOutput
@@ -21,8 +21,7 @@ class CommandOutputsRequester(Requester):
                           .join(Mission)
         super().__init__(sqlsession, query)
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def show_search_results(self, string, nb_words=12):
         """
@@ -51,7 +50,8 @@ class CommandOutputsRequester(Requester):
                 'Matching text',
             ]
             for r in results:
-                match = StringUtils.surrounding_text(r.outputraw, string, nb_words)
+                match = StringUtils.surrounding_text(
+                    r.outputraw, string, nb_words)
                 # There might have several matches in one command result (one row
                 # per match)
                 for m in match:
@@ -74,4 +74,4 @@ class CommandOutputsRequester(Requester):
         #         check=o.result.check, cmdline=o.cmdline))
         #     print()
         #     print(o.output)
-        #     print()   
+        #     print()

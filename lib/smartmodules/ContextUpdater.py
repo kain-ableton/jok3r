@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ###
-### SmartModules > Context Updater
+# SmartModules > Context Updater
 ###
 from lib.db.Credential import Credential
 from lib.db.Option import Option
@@ -30,26 +30,23 @@ class ContextUpdater:
         self.vulns = list()
         self.os = ''
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Add detected element
 
     def add_option(self, name, value):
         self.specific_options.append(Option(name=name, value=value))
-
 
     def add_username(self, username, auth_type=None):
         # Do not add too times the same username
         for u in self.usernames:
             if u.type == auth_type and u.username == username and u.password == None:
                 return
-                
+
         if auth_type:
             auth_type = auth_type.lower()
 
         self.usernames.append(
             Credential(type=auth_type, username=username, password=None))
-
 
     def add_credentials(self, username, password, auth_type=None):
         # Do not add too times the same credentials
@@ -59,25 +56,21 @@ class ContextUpdater:
 
         if auth_type:
             auth_type = auth_type.lower()
-            
+
         self.credentials.append(
             Credential(type=auth_type, username=username, password=password))
-
 
     def add_product(self, type_, name, version):
         self.products.append(
             Product(type=type_, name=name, version=version))
 
-
     def add_vuln(self, name):
         self.vulns.append(Vuln(name=name))
-
 
     def add_os(self, os):
         self.os = os
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Update database
 
     def update(self):
@@ -89,8 +82,7 @@ class ContextUpdater:
         self.__update_vulns()
         self.__update_os()
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def __update_specific_options(self):
         """Update service's specific options (table "options")"""
@@ -98,8 +90,8 @@ class ContextUpdater:
             match_option = self.service.get_option(option.name)
             if match_option:
                 if match_option.value == option.value:
-                    logger.smartinfo('Detected option (already known): {name} = ' \
-                        '{old}'.format(name=option.name, old=match_option.value))
+                    logger.smartinfo('Detected option (already known): {name} = '
+                                     '{old}'.format(name=option.name, old=match_option.value))
                 else:
                     logger.smartsuccess('Change option: {name} = {old} -> {new}'.format(
                         name=option.name, old=match_option.value, new=option.value))
@@ -109,8 +101,7 @@ class ContextUpdater:
                     name=option.name, new=option.value))
                 self.service.options.append(option)
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def __update_usernames(self):
         """
@@ -123,20 +114,21 @@ class ContextUpdater:
                 username=username.username or '<empty>',
                 auth_type='(type='+username.type+')' if username.type else '')
 
-            match_cred = self.service.get_credential(username.username, username.type)
+            match_cred = self.service.get_credential(
+                username.username, username.type)
             if match_cred:
                 if match_cred.password is None:
                     logger.smartinfo('Detected username (already known): {}'.format(
                         username_str))
                 else:
-                    logger.smartinfo('Detected username (password already ' \
-                        'known): {}'.format(username_str))
+                    logger.smartinfo('Detected username (password already '
+                                     'known): {}'.format(username_str))
             else:
-                logger.smartsuccess('New detected username: {}'.format(username_str))
+                logger.smartsuccess(
+                    'New detected username: {}'.format(username_str))
                 self.service.credentials.append(username)
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def __update_credentials(self):
         """Update service's credentials (username+password) (in table "credentials")"""
@@ -150,8 +142,8 @@ class ContextUpdater:
                 credential.username, credential.type)
             if match_cred:
                 if match_cred.password is None:
-                    logger.smartsuccess('Credentials found (username already ' \
-                        'known): {}'.format(credential_str))
+                    logger.smartsuccess('Credentials found (username already '
+                                        'known): {}'.format(credential_str))
                     match_cred.password = credential.password
                 elif match_cred.password != credential.password:
                     logger.smartsuccess('Credentials found (new password): {}'.format(
@@ -161,11 +153,11 @@ class ContextUpdater:
                     logger.smartinfo('Credentials detected (already in db): {}'.format(
                         credential_str))
             else:
-                logger.smartsuccess('New Credentials found: {}'.format(credential_str))
+                logger.smartsuccess(
+                    'New Credentials found: {}'.format(credential_str))
                 self.service.credentials.append(credential)
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def __update_products(self):
         """Update service's products (in table "products")"""
@@ -186,33 +178,33 @@ class ContextUpdater:
 
                         # Version freshly detected
                         if match_product.version == '':
-                            logger.smartsuccess('Version detected for product ' \
-                                '{product}: {version}'.format(
-                                    product=product_str,
-                                    version=product.version))
+                            logger.smartsuccess('Version detected for product '
+                                                '{product}: {version}'.format(
+                                                    product=product_str,
+                                                    version=product.version))
                             match_product.version = product.version
 
-                        # Update version if new version is "more accurate" than the 
+                        # Update version if new version is "more accurate" than the
                         # one already known
                         elif match_product.version != product.version:
                             if VersionUtils.is_version_more_accurate(
-                                old_version=match_product.version, 
-                                new_version=product.version):
-                                logger.smartsuccess('Version for product ' \
-                                    '{product} updated: {oldvers} -> {newvers}'.format(
-                                        product=product_str,
-                                        oldvers=match_product.version,
-                                        newvers=product.version))
+                                    old_version=match_product.version,
+                                    new_version=product.version):
+                                logger.smartsuccess('Version for product '
+                                                    '{product} updated: {oldvers} -> {newvers}'.format(
+                                                        product=product_str,
+                                                        oldvers=match_product.version,
+                                                        newvers=product.version))
                                 match_product.version = product.version
                             else:
-                                logger.smartinfo('Version detected for product ' \
-                                    '{product}: {newvers}. Not updated in db ' \
-                                    'because less accurate than {oldvers}'.format(
-                                        product=product_str,
-                                        newvers=product.version,
-                                        oldvers=match_product.version))
+                                logger.smartinfo('Version detected for product '
+                                                 '{product}: {newvers}. Not updated in db '
+                                                 'because less accurate than {oldvers}'.format(
+                                                     product=product_str,
+                                                     newvers=product.version,
+                                                     oldvers=match_product.version))
 
-                        # Version detected is superior (newer version) to the one in 
+                        # Version detected is superior (newer version) to the one in
                         # db, no update
                         # elif match_product.version < product.version:
                         #     logger.smartsuccess('Version for product ' \
@@ -225,30 +217,30 @@ class ContextUpdater:
 
                         # Same version as already detected
                         else:
-                            logger.smartinfo('Product detected: {product} ' \
-                                '{version}. Not updated because already in db'.format(
-                                    product=product_str,
-                                    version=product.version))
+                            logger.smartinfo('Product detected: {product} '
+                                             '{version}. Not updated because already in db'.format(
+                                                 product=product_str,
+                                                 version=product.version))
 
                     # Version not detected
                     else:
-                        logger.smartinfo('Product detected (already in db): ' \
-                            '{product} (version unknown)'.format(product=product_str))
+                        logger.smartinfo('Product detected (already in db): '
+                                         '{product} (version unknown)'.format(product=product_str))
 
                 # Different product name detected
                 else:
                     oldprod = '{name}{vers}'.format(
-                        name=match_product.name, 
+                        name=match_product.name,
                         vers=' '+match_product.version if match_product.version else '')
                     newprod = '{name}{vers}'.format(
                         name=product.name,
                         vers=' '+product.version if product.version else '')
 
-                    logger.smartsuccess('Change product {type}: {oldprod} -> ' \
-                        '{newprod}'.format(
-                            type=product.type,
-                            oldprod=oldprod,
-                            newprod=newprod))
+                    logger.smartsuccess('Change product {type}: {oldprod} -> '
+                                        '{newprod}'.format(
+                                            type=product.type,
+                                            oldprod=oldprod,
+                                            newprod=newprod))
                     match_product.name = product.name
                     match_product.version = product.version
 
@@ -260,8 +252,7 @@ class ContextUpdater:
                     version=product.version))
                 self.service.products.append(product)
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def __update_vulns(self):
         """Update service's vulnerabilities (table "vulns")"""
@@ -275,8 +266,7 @@ class ContextUpdater:
                     name=vuln.name))
                 self.service.vulns.append(vuln)
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def __update_os(self):
         """Update OS (Service.host.os)"""
@@ -289,6 +279,3 @@ class ContextUpdater:
             #             self.service.host.os,
             #             self.service.host.os_family,
             #             '')
-
-
-                

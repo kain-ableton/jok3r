@@ -32,7 +32,7 @@
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.autodoc',
-    'sphinx.ext.viewcode']
+              'sphinx.ext.viewcode']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -97,8 +97,8 @@ html_theme = 'sphinx_rtd_theme'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 html_sidebars = {
-   '**': ['globaltoc.html', 'sourcelink.html', 'searchbox.html'],
-   'using/windows': ['windowssidebar.html', 'searchbox.html'],
+    '**': ['globaltoc.html', 'sourcelink.html', 'searchbox.html'],
+    'using/windows': ['windowssidebar.html', 'searchbox.html'],
 }
 
 # -- Options for HTMLHelp output ------------------------------------------
@@ -156,6 +156,3 @@ texinfo_documents = [
      author, 'jok3r', 'One line description of project.',
      'Miscellaneous'),
 ]
-
-
-

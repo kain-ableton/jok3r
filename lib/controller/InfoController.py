@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
-### Core > Info Controller
+# Core > Info Controller
 ###
 from lib.controller.Controller import Controller
 
@@ -22,7 +22,7 @@ class InfoController(Controller):
         # --attack-profiles [<service>]
         elif self.arguments.args.show_attack_profiles:
             svc = self.arguments.args.show_attack_profiles
-            self.settings.attack_profiles.show(None if svc=='all' else svc)
+            self.settings.attack_profiles.show(None if svc == 'all' else svc)
 
         # --options
         elif self.arguments.args.show_specific_options:
@@ -35,4 +35,3 @@ class InfoController(Controller):
         # --http-auth-types
         elif self.arguments.args.show_http_auth_types:
             self.settings.services.show_authentication_types()
-

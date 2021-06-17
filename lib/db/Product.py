@@ -14,16 +14,15 @@ from lib.db.Session import Base
 class Product(Base):
     __tablename__ = 'products'
 
-    id         = Column(Integer, primary_key=True)
-    type       = Column(String(100), nullable=False, default='')
-    name       = Column(String(255), nullable=False, default='')
-    version    = Column(String(100), nullable=False, default='')
+    id = Column(Integer, primary_key=True)
+    type = Column(String(100), nullable=False, default='')
+    name = Column(String(255), nullable=False, default='')
+    version = Column(String(100), nullable=False, default='')
     service_id = Column(Integer, ForeignKey('services.id'))
 
-    service    = relationship('Service', back_populates='products')
+    service = relationship('Service', back_populates='products')
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     @hybrid_method
     def clone(self):
@@ -36,11 +35,10 @@ class Product(Base):
             version=self.version,
             service_id=None)
 
+    # ------------------------------------------------------------------------------------
 
-    #------------------------------------------------------------------------------------
-    
     def __repr__(self):
         return '<Product(type="{type}", name="{name}", version="{version}">'.format(
-            type    = self.type, 
-            name    = self.name, 
-            version = self.version)
+            type=self.type,
+            name=self.name,
+            version=self.version)

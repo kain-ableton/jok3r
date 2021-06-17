@@ -31,11 +31,10 @@ class NmapResultsParser:
         self.nmap_file = nmap_file
         self.services_config = services_config
 
+    # ------------------------------------------------------------------------------------
 
-    #------------------------------------------------------------------------------------
-
-    def parse(self, 
-              http_recheck=True, 
+    def parse(self,
+              http_recheck=True,
               html_title_grabbing=True,
               nmap_banner_grabbing=False,
               web_technos_detection=True):
@@ -87,7 +86,7 @@ class NmapResultsParser:
                             os_matchs[0].osclasses[0].type)
 
             # Create Host object
-            host = Host(ip=h.ipv4, 
+            host = Host(ip=h.ipv4,
                         hostname=h.hostnames[0] if h.hostnames else h.ipv4,
                         os=os,
                         os_vendor=os_vendor,
@@ -95,13 +94,13 @@ class NmapResultsParser:
                         mac=h.mac,
                         vendor=h.vendor,
                         type=device_type)
-            logger.info('[File {file} | Host {current_host}/{total_host}] ' \
-                'Parsing host: {ip}{hostname} ...'.format(
-                    file=FileUtils.extract_filename(self.nmap_file),
-                    current_host=host_id,
-                    total_host=len(nmap_report.hosts),
-                    ip=host.ip, 
-                    hostname=' ('+host.hostname+')' if host.hostname != host.ip else ''))
+            logger.info('[File {file} | Host {current_host}/{total_host}] '
+                        'Parsing host: {ip}{hostname} ...'.format(
+                            file=FileUtils.extract_filename(self.nmap_file),
+                            current_host=host_id,
+                            total_host=len(nmap_report.hosts),
+                            ip=host.ip,
+                            hostname=' ('+host.hostname+')' if host.hostname != host.ip else ''))
 
             # Loop over open ports
             port_id = 0
@@ -115,18 +114,19 @@ class NmapResultsParser:
 
                 # Print current processed service
                 print()
-                logger.info('[File {file} | Host {current_host}/{total_host} | ' \
-                    'Service {current_svc}/{total_svc}] Parsing service: ' \
-                    'host {ip} | port {port}/{proto} | service {service} ...'.format(
-                        file=FileUtils.extract_filename(self.nmap_file),
-                        current_host=host_id,
-                        total_host=len(nmap_report.hosts),
-                        current_svc=port_id,
-                        total_svc=len(h.get_open_ports()),
-                        ip=h.ipv4, 
-                        port=s.port, 
-                        proto=s.protocol, 
-                        service=name))
+                logger.info('[File {file} | Host {current_host}/{total_host} | '
+                            'Service {current_svc}/{total_svc}] Parsing service: '
+                            'host {ip} | port {port}/{proto} | service {service} ...'.format(
+                                file=FileUtils.extract_filename(
+                                    self.nmap_file),
+                                current_host=host_id,
+                                total_host=len(nmap_report.hosts),
+                                current_svc=port_id,
+                                total_svc=len(h.get_open_ports()),
+                                ip=h.ipv4,
+                                port=s.port,
+                                proto=s.protocol,
+                                service=name))
 
                 # Get URL for http services
                 if name == 'http':
@@ -146,15 +146,15 @@ class NmapResultsParser:
 
                     url = WebUtils.is_returning_http_data(host.ip, s.port)
                     if url:
-                        logger.success('{url} seems to return HTTP data, marking it ' \
-                            'as http service'.format(url=url))
+                        logger.success('{url} seems to return HTTP data, marking it '
+                                       'as http service'.format(url=url))
                         name = 'http'
 
                 # Only keep services supported by Jok3r
                 if not self.services_config.is_service_supported(name, multi=False):
-                    logger.warning('Service not supported: host {ip} | port ' \
-                        '{port}/{proto} | service {service}'.format(
-                            ip = h.ipv4, port=s.port, proto=s.protocol, service=name))
+                    logger.warning('Service not supported: host {ip} | port '
+                                   '{port}/{proto} | service {service}'.format(
+                                       ip=h.ipv4, port=s.port, proto=s.protocol, service=name))
                     continue
 
                 # # Deduce OS from banner if possible
@@ -172,7 +172,8 @@ class NmapResultsParser:
                     name=name,
                     name_original=s.service,
                     port=s.port,
-                    protocol={'tcp': Protocol.TCP,'udp': Protocol.UDP}.get(s.protocol),
+                    protocol={'tcp': Protocol.TCP,
+                              'udp': Protocol.UDP}.get(s.protocol),
                     url=url,
                     up=True,
                     banner=banner,
@@ -181,7 +182,7 @@ class NmapResultsParser:
                 host.services.append(service)
 
                 # Target smart check:
-                # - Nmap banner grabbing if specified by user and banner is missing in 
+                # - Nmap banner grabbing if specified by user and banner is missing in
                 #   imported results;
                 # - HTML title and HTTP response headers grabbing for HTTP service;
                 # - Web technologies detection for HTTP service, except if disabled by
@@ -190,11 +191,11 @@ class NmapResultsParser:
                 #   information already known (i.e. banner, web technologies...)
                 target = Target(service, self.services_config)
                 up = target.smart_check(
-                    reverse_dns_lookup=False, # Done by Nmap 
-                    availability_check=False, # Done by Nmap
-                    nmap_banner_grabbing=nmap_banner_grabbing, # Default: False
+                    reverse_dns_lookup=False,  # Done by Nmap
+                    availability_check=False,  # Done by Nmap
+                    nmap_banner_grabbing=nmap_banner_grabbing,  # Default: False
                     html_title_grabbing=html_title_grabbing,
-                    web_technos_detection=web_technos_detection, # Default: True
+                    web_technos_detection=web_technos_detection,  # Default: True
                     smart_context_initialize=True)
                 if not up:
                     logger.warning('Service not reachable')

@@ -1,10 +1,59 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+from lib.smartmodules.matchstrings.os.OS import *
+from lib.smartmodules.matchstrings.vulns.SshVulns import *
+from lib.smartmodules.matchstrings.vulns.SmtpVulns import *
+from lib.smartmodules.matchstrings.vulns.SmbVulns import *
+from lib.smartmodules.matchstrings.vulns.RdpVulns import *
+from lib.smartmodules.matchstrings.vulns.PostgresqlVulns import *
+from lib.smartmodules.matchstrings.vulns.OracleVulns import *
+from lib.smartmodules.matchstrings.vulns.MysqlVulns import *
+from lib.smartmodules.matchstrings.vulns.MssqlVulns import *
+from lib.smartmodules.matchstrings.vulns.JdwpVulns import *
+from lib.smartmodules.matchstrings.vulns.JavaRmiVulns import *
+from lib.smartmodules.matchstrings.vulns.HttpVulns import *
+from lib.smartmodules.matchstrings.vulns.FtpVulns import *
+from lib.smartmodules.matchstrings.products.SshServerProducts import *
+from lib.smartmodules.matchstrings.products.SmtpServerProducts import *
+from lib.smartmodules.matchstrings.products.PostgresqlServerProducts import *
+from lib.smartmodules.matchstrings.products.OracleServerProducts import *
+from lib.smartmodules.matchstrings.products.MysqlServerProducts import *
+from lib.smartmodules.matchstrings.products.MssqlServerProducts import *
+from lib.smartmodules.matchstrings.products.JavaRmiServerProducts import *
+from lib.smartmodules.matchstrings.products.HttpWebServerProducts import *
+from lib.smartmodules.matchstrings.products.HttpWebLanguageProducts import *
+from lib.smartmodules.matchstrings.products.HttpWebJslibProducts import *
+from lib.smartmodules.matchstrings.products.HttpWebFrameworkProducts import *
+from lib.smartmodules.matchstrings.products.HttpWebCmsProducts import *
+from lib.smartmodules.matchstrings.products.HttpWebApplicationFirewallProducts import *
+from lib.smartmodules.matchstrings.products.HttpWebAppserverProducts import *
+from lib.smartmodules.matchstrings.products.FtpServerProducts import *
+from lib.smartmodules.matchstrings.products.AjpServerProducts import *
+from lib.smartmodules.matchstrings.options.TelnetOptions import *
+from lib.smartmodules.matchstrings.options.SmtpOptions import *
+from lib.smartmodules.matchstrings.options.SmbOptions import *
+from lib.smartmodules.matchstrings.options.OracleOptions import *
+from lib.smartmodules.matchstrings.options.JavaRmiOptions import *
+from lib.smartmodules.matchstrings.options.HttpOptions import *
+from lib.smartmodules.matchstrings.options.FtpOptions import *
+from lib.smartmodules.matchstrings.creds.VncCreds import *
+from lib.smartmodules.matchstrings.creds.TelnetCreds import *
+from lib.smartmodules.matchstrings.creds.SshCreds import *
+from lib.smartmodules.matchstrings.creds.SnmpCreds import *
+from lib.smartmodules.matchstrings.creds.SmtpCreds import *
+from lib.smartmodules.matchstrings.creds.PostgresqlCreds import *
+from lib.smartmodules.matchstrings.creds.OracleCreds import *
+from lib.smartmodules.matchstrings.creds.MysqlCreds import *
+from lib.smartmodules.matchstrings.creds.MssqlCreds import *
+from lib.smartmodules.matchstrings.creds.JavaRmiCreds import *
+from lib.smartmodules.matchstrings.creds.HttpCreds import *
+from lib.smartmodules.matchstrings.creds.FtpCreds import *
+from lib.smartmodules.matchstrings.creds.AjpCreds import *
 from collections import defaultdict
 
 VERSION_REGEXP = '(?P<version>[0-9.]*[0-9])?'
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 # Credentials
 #
 # Sample:
@@ -22,22 +71,9 @@ VERSION_REGEXP = '(?P<version>[0-9.]*[0-9])?'
 # }
 
 creds_match = dict()
-from lib.smartmodules.matchstrings.creds.AjpCreds import *
-from lib.smartmodules.matchstrings.creds.FtpCreds import *
-from lib.smartmodules.matchstrings.creds.HttpCreds import *
-from lib.smartmodules.matchstrings.creds.JavaRmiCreds import *
-from lib.smartmodules.matchstrings.creds.MssqlCreds import *
-from lib.smartmodules.matchstrings.creds.MysqlCreds import *
-from lib.smartmodules.matchstrings.creds.OracleCreds import *
-from lib.smartmodules.matchstrings.creds.PostgresqlCreds import *
-from lib.smartmodules.matchstrings.creds.SmtpCreds import *
-from lib.smartmodules.matchstrings.creds.SnmpCreds import *
-from lib.smartmodules.matchstrings.creds.SshCreds import *
-from lib.smartmodules.matchstrings.creds.TelnetCreds import *
-from lib.smartmodules.matchstrings.creds.VncCreds import *
 
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 # Specific Options
 #
 # Sample:
@@ -51,16 +87,9 @@ from lib.smartmodules.matchstrings.creds.VncCreds import *
 # }
 
 options_match = dict()
-from lib.smartmodules.matchstrings.options.FtpOptions import *
-from lib.smartmodules.matchstrings.options.HttpOptions import *
-from lib.smartmodules.matchstrings.options.JavaRmiOptions import *
-from lib.smartmodules.matchstrings.options.OracleOptions import *
-from lib.smartmodules.matchstrings.options.SmbOptions import *
-from lib.smartmodules.matchstrings.options.SmtpOptions import *
-from lib.smartmodules.matchstrings.options.TelnetOptions import *
 
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 # Products
 #
 # Sample:
@@ -70,7 +99,7 @@ from lib.smartmodules.matchstrings.options.TelnetOptions import *
 #         'tool-name2': 'lorem ipsum',
 #     }
 # }
-# 
+#
 # For a given product-name, and a given tool-name, it is also possible to specify
 # several matchstrings using list as follows:
 #     'Apache/Tomcat' : {
@@ -81,26 +110,9 @@ from lib.smartmodules.matchstrings.options.TelnetOptions import *
 #      }
 
 products_match = defaultdict(dict)
-from lib.smartmodules.matchstrings.products.AjpServerProducts import *
-from lib.smartmodules.matchstrings.products.FtpServerProducts import *
-from lib.smartmodules.matchstrings.products.HttpWebAppserverProducts import *
-from lib.smartmodules.matchstrings.products.HttpWebApplicationFirewallProducts import *
-from lib.smartmodules.matchstrings.products.HttpWebCmsProducts import *
-from lib.smartmodules.matchstrings.products.HttpWebFrameworkProducts import *
-from lib.smartmodules.matchstrings.products.HttpWebJslibProducts import *
-from lib.smartmodules.matchstrings.products.HttpWebLanguageProducts import *
-from lib.smartmodules.matchstrings.products.HttpWebServerProducts import *
-from lib.smartmodules.matchstrings.products.JavaRmiServerProducts import *
-from lib.smartmodules.matchstrings.products.MssqlServerProducts import *
-from lib.smartmodules.matchstrings.products.MysqlServerProducts import *
-from lib.smartmodules.matchstrings.products.OracleServerProducts import *
-from lib.smartmodules.matchstrings.products.PostgresqlServerProducts import *
-from lib.smartmodules.matchstrings.products.SmtpServerProducts import *
-from lib.smartmodules.matchstrings.products.SshServerProducts import *
 
 
-
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 # Vulnerabilities
 #
 # Sample:
@@ -108,24 +120,12 @@ from lib.smartmodules.matchstrings.products.SshServerProducts import *
 #     'tool-name': {
 #         'match string (?P<m1>\S+) lorem ispum': 'MS17-010: $1',
 #     }
-# } 
+# }
 
 vulns_match = dict()
-from lib.smartmodules.matchstrings.vulns.FtpVulns import *
-from lib.smartmodules.matchstrings.vulns.HttpVulns import *
-from lib.smartmodules.matchstrings.vulns.JavaRmiVulns import *
-from lib.smartmodules.matchstrings.vulns.JdwpVulns import *
-from lib.smartmodules.matchstrings.vulns.MssqlVulns import *
-from lib.smartmodules.matchstrings.vulns.MysqlVulns import *
-from lib.smartmodules.matchstrings.vulns.OracleVulns import *
-from lib.smartmodules.matchstrings.vulns.PostgresqlVulns import *
-from lib.smartmodules.matchstrings.vulns.RdpVulns import *
-from lib.smartmodules.matchstrings.vulns.SmbVulns import *
-from lib.smartmodules.matchstrings.vulns.SmtpVulns import *
-from lib.smartmodules.matchstrings.vulns.SshVulns import *
 
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 # OS
 #
 # Sample:
@@ -139,6 +139,5 @@ from lib.smartmodules.matchstrings.vulns.SshVulns import *
 # 		       'Windows',
 # 		   ],
 #     }
-# } 
+# }
 os_match = dict()
-from lib.smartmodules.matchstrings.os.OS import *
