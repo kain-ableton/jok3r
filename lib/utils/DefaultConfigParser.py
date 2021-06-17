@@ -87,7 +87,7 @@ class DefaultConfigParser(configparser.ConfigParser):
             option_basename_2=
             ...
         """
-        res = list()
+        res = []
         i = 1
         while True:
             cur = self.safe_get(section, '{0}_{1}'.format(

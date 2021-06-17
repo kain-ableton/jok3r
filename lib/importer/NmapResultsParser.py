@@ -59,7 +59,7 @@ class NmapResultsParser:
             logger.error('Error when parsing the Nmap file: {0}'.format(e))
             return None
 
-        results = list()
+        results = []
         host_id = 0
         for h in nmap_report.hosts:
 

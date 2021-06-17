@@ -23,11 +23,11 @@ class ContextUpdater:
         :param Service service: Service model
         """
         self.service = service
-        self.specific_options = list()
-        self.usernames = list()
-        self.credentials = list()
-        self.products = list()
-        self.vulns = list()
+        self.specific_options = []
+        self.usernames = []
+        self.credentials = []
+        self.products = []
+        self.vulns = []
         self.os = ''
 
     # ------------------------------------------------------------------------------------

@@ -18,7 +18,7 @@ class Filter:
         :param FilterOperator operator: Combination between conditions is 
             performed using AND/OR operator        
         """
-        self.conditions = list()
+        self.conditions = []
         self.operator = operator
 
     # ------------------------------------------------------------------------------------

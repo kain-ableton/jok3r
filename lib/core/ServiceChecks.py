@@ -429,7 +429,7 @@ class ServiceChecks:
 
     def show(self):
         """Display a table with all the checks for the service."""
-        data = list()
+        data = []
         columns = [
             'Name',
             'Category',

@@ -34,7 +34,7 @@ class ProductsRequester(Requester):
         if not results:
             logger.warning('No product to display')
         else:
-            data = list()
+            data = []
             columns = [
                 'IP',
                 'Hostname',

@@ -29,10 +29,10 @@ class ServicesConfig:
         self.services = OrderedDefaultDict(list, {k: {
             'default_port': None,
             'protocol': None,
-            'specific_options': dict(),  #  { specific option : type }
+            'specific_options': {},  #  { specific option : type }
             # { specific option : [ values ] }
-            'supported_list_options': dict(),
-            'products': dict(),  # { product type : [ product names ] }
+            'supported_list_options': {},
+            'products': {},  # { product type : [ product names ] }
             'auth_types': None,
             'checks': None,
         } for k in list_services})
@@ -351,7 +351,7 @@ class ServicesConfig:
 
         :param Toolbox toolbox: Toolbox
         """
-        data = list()
+        data = []
         columns = [
             'Service',
             'Default port',
@@ -381,7 +381,7 @@ class ServicesConfig:
         :param filter_service: None or given service
         :return: None
         """
-        data = list()
+        data = []
         columns = [
             'Category',
             'Services',
@@ -405,7 +405,7 @@ class ServicesConfig:
 
         :param list filter_service: Filter on services (default: all)
         """
-        data = list()
+        data = []
         columns = [
             'Option',
             'Service',
@@ -443,7 +443,7 @@ class ServicesConfig:
 
         :param list filter_service: Filter on services (default: all)
         """
-        data = list()
+        data = []
         columns = [
             'Type',
             'Product Names',
@@ -481,7 +481,7 @@ class ServicesConfig:
             logger.warning('No special authentication type for this service')
 
         else:
-            data = list()
+            data = []
             for t in sorted(self.services[service]['auth_types']):
                 data.append([t])
             Output.table(['Authentication types'], data, hrules=False)

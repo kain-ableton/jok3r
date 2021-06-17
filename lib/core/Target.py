@@ -216,9 +216,9 @@ class Target:
         :rtype: list
         """
         if self.service.name == 'http' and auth_type is None:
-            return list()
+            return []
 
-        usernames = list()
+        usernames = []
         for cred in self.service.credentials:
             if cred.password is None:
                 if self.service.name != 'http' or auth_type == cred.type:
@@ -235,9 +235,9 @@ class Target:
         :rtype: list(tuple)
         """
         if self.service.name == 'http' and auth_type is None:
-            return list()
+            return []
 
-        userpass = list()
+        userpass = []
         for cred in self.service.credentials:
             if cred.password is not None:
                 if self.service.name != 'http' or auth_type == cred.type:
@@ -520,7 +520,7 @@ class Target:
         # Print credentials if available
         if self.get_credentials():
             logger.info('Credentials set for this target:')
-            data = list()
+            data = []
             columns = ['Username', 'Password']
             if self.get_service_name() == 'http':
                 columns.append('auth-type')
@@ -540,7 +540,7 @@ class Target:
         # Print specific options if available
         if self.get_specific_options():
             logger.info('Context-specific options set for this target:')
-            data = list()
+            data = []
             columns = ['Option', 'Value']
             for o in self.get_specific_options():
                 data.append([o.name, o.value])
@@ -549,7 +549,7 @@ class Target:
         # Print products if available
         if self.get_products():
             logger.info('Products detected for this target:')
-            data = list()
+            data = []
             columns = ['Type', 'Name', 'Version']
             for p in self.get_products():
                 data.append([p.type, p.name, p.version])

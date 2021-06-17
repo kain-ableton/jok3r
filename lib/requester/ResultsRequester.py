@@ -30,7 +30,7 @@ class ResultsRequester(Requester):
         if not results:
             logger.warning('No results to display')
         else:
-            data = list()
+            data = []
             columns = [
                 'IP',
                 'Port',

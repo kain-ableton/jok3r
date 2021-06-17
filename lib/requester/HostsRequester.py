@@ -27,7 +27,7 @@ class HostsRequester(Requester):
         if not results:
             logger.warning('No host to display')
         else:
-            data = list()
+            data = []
             columns = [
                 'IP',
                 'Hostname',

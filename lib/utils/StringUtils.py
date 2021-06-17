@@ -131,7 +131,7 @@ class StringUtils:
             pattern=pattern,
             after=after), text, re.MULTILINE | re.IGNORECASE)
 
-        results = list()
+        results = []
         for a in m:
             results.append(a.group(0).replace(a.group('search'),
                                               colored.stylize(a.group('search'),

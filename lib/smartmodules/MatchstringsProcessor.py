@@ -114,7 +114,7 @@ class MatchstringsProcessor:
                     if method == 'finditer':
                         for match in m:
                             pattern_match = True
-                            cred = dict()
+                            cred = {}
 
                             # Replace tokens in user, pass, type
                             cred['user'] = self.__replace_tokens_from_matchobj(
@@ -160,7 +160,7 @@ class MatchstringsProcessor:
                         nb_groups = len(matchs['m1'])
 
                         for i in range(nb_groups):
-                            cred = dict()
+                            cred = {}
 
                             # Replace tokens in user, pass, type
                             cred['user'] = self.__replace_tokens_from_captdict(

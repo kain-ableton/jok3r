@@ -29,7 +29,7 @@ class CredentialsRequester(Requester):
         if not results:
             logger.warning('No credential to display')
         else:
-            data = list()
+            data = []
             columns = [
                 'IP',
                 'Hostname',
