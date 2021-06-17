@@ -601,7 +601,7 @@ class ArgumentsParser:
             # Extract port
             if len(s) == 2:
                 self.args.target_port = int(s[1])
-                if not (0 <= self.args.target_port <= 65535):
+                if not 0 <= self.args.target_port <= 65535:
                     logger.error('Target port is not valid. Must be in the '
                                  'range [0-65535]')
                     return False

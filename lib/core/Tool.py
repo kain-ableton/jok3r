@@ -409,7 +409,7 @@ class Tool:
             logger.success('Check command has finished with success exit code')
 
         if fast_mode:
-            return (returncode == 0)
+            return returncode == 0
         else:
             return Output.prompt_confirm('Does the tool {tool} seem to be running '
                                          'correctly ?'.format(tool=self.name), default=True)

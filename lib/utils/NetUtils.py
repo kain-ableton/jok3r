@@ -37,7 +37,7 @@ class NetUtils:
         """Check if given string represents a valid port number"""
         try:
             port = int(string)
-            return (0 <= port <= 65535)
+            return 0 <= port <= 65535
         except:
             return False
 
