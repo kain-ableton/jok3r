@@ -33,7 +33,8 @@ from lib.utils.ImageUtils import ImageUtils
 from lib.utils.StringUtils import StringUtils
 
 
-warnings.filterwarnings("ignore",category=FutureWarning)
+warnings.filterwarnings("ignore", category=FutureWarning)
+
 
 class Reporter:
 
@@ -53,13 +54,12 @@ class Reporter:
         self.output_path = output_path
         self.do_screens = do_screens
 
-
     def run(self):
 
         # Create report directory
         dirname = '{mission}-{datetime}'.format(
-            mission=StringUtils.clean(self.mission.replace(' ','_'), 
-                allowed_specials=('_', '-')),
+            mission=StringUtils.clean(self.mission.replace(' ', '_'),
+                                      allowed_specials=('_', '-')),
             datetime=datetime.datetime.now().strftime('%Y%m%d%H%M%S'))
         self.output_path = self.output_path + '/' + dirname
 
@@ -73,7 +73,7 @@ class Reporter:
         req.select_mission(self.mission)
         services = req.get_results()
 
-        # Generate screenshots 
+        # Generate screenshots
         processor = ScreenshotsProcessor(self.mission, self.sqlsession)
         processor.run()
 
@@ -128,16 +128,15 @@ class Reporter:
 
         logger.success('HTML Report written with success in: {path}'.format(
             path=self.output_path))
-        logger.info('Important: If running from Docker container, make sure to run ' \
-            '"xhost +" on the host before')
-        if Output.prompt_confirm('Would you like to open the report now ?', 
-                default=True):
+        logger.info('Important: If running from Docker container, make sure to run '
+                    '"xhost +" on the host before')
+        if Output.prompt_confirm('Would you like to open the report now ?',
+                                 default=True):
             webbrowser.open(self.output_path + '/index.html')
 
         return True
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Index.html generation
 
     def __generate_index(self):
@@ -147,16 +146,21 @@ class Reporter:
         tpl = FileUtils.read(REPORT_TPL_DIR + '/index.tpl.html')
 
         tpl = tpl.replace('{{MISSION_NAME}}', self.mission)
-        tpl = tpl.replace('{{TABLE_SERVICES_CONTENT}}', self.__generate_table_services())
-        tpl = tpl.replace('{{TABLE_HOSTS_CONTENT}}', self.__generate_table_hosts())
+        tpl = tpl.replace('{{TABLE_SERVICES_CONTENT}}',
+                          self.__generate_table_services())
+        tpl = tpl.replace('{{TABLE_HOSTS_CONTENT}}',
+                          self.__generate_table_hosts())
         tpl = tpl.replace('{{TABLE_WEB_CONTENT}}', self.__generate_table_web())
-        tpl = tpl.replace('{{TABLE_OPTIONS_CONTENT}}', self.__generate_table_options())
-        tpl = tpl.replace('{{TABLE_PRODUCTS_CONTENT}}', self.__generate_table_products())
-        tpl = tpl.replace('{{TABLE_CREDS_CONTENT}}', self.__generate_table_credentials())
-        tpl = tpl.replace('{{TABLE_VULNS_CONTENT}}', self.__generate_table_vulns())
+        tpl = tpl.replace('{{TABLE_OPTIONS_CONTENT}}',
+                          self.__generate_table_options())
+        tpl = tpl.replace('{{TABLE_PRODUCTS_CONTENT}}',
+                          self.__generate_table_products())
+        tpl = tpl.replace('{{TABLE_CREDS_CONTENT}}',
+                          self.__generate_table_credentials())
+        tpl = tpl.replace('{{TABLE_VULNS_CONTENT}}',
+                          self.__generate_table_vulns())
 
         return tpl
-
 
     def __generate_table_services(self):
         """
@@ -186,15 +190,16 @@ class Reporter:
                     nb_checks = '<span class="mdi mdi-window-close"></span>'
 
                 # Number of creds
-                nb_userpass  = service.get_nb_credentials(single_username=False)
+                nb_userpass = service.get_nb_credentials(single_username=False)
                 nb_usernames = service.get_nb_credentials(single_username=True)
                 nb_creds = '{}{}{}'.format(
-                    '<span class="text-green">{}</span>'.format(str(nb_userpass)) \
-                        if nb_userpass > 0 else '',
+                    '<span class="text-green">{}</span>'.format(
+                        str(nb_userpass))
+                    if nb_userpass > 0 else '',
                     '/' if nb_userpass > 0 and nb_usernames > 0 else '',
                     '<span class="text-yellow">{}</span>'.format(
                         str(nb_usernames)) if nb_usernames > 0 else '')
-                #if nb_creds == '':
+                # if nb_creds == '':
                 #    nb_creds = '<span class="mdi mdi-window-close"></span>'
 
                 # Number of vulns
@@ -210,7 +215,8 @@ class Reporter:
                     if service.is_encrypted() else ''
 
                 # Service name
-                service_name = IconsMapping.get_icon_html('service', service.name)
+                service_name = IconsMapping.get_icon_html(
+                    'service', service.name)
                 service_name += str(service.name)
 
                 # Technologies
@@ -234,8 +240,8 @@ class Reporter:
                                 '{name}{version}</span>'.format(
                                     type=t,
                                     name=product.name,
-                                    version=' '+str(product.version) \
-                                        if product.version else '')
+                                    version=' '+str(product.version)
+                                    if product.version else '')
                 else:
                     for p in service.products:
                         technos += '<span class="badge badge-generic badge-light">' \
@@ -285,15 +291,14 @@ class Reporter:
                     banner=service.banner,
                     technos=technos,
                     url='<a href="{}" title="{}">{}</a>'.format(
-                        service.url, service.url, StringUtils.shorten(service.url, 40)) \
-                        if service.url else '',
+                        service.url, service.url, StringUtils.shorten(service.url, 40))
+                    if service.url else '',
                     comment=StringUtils.shorten(comment, 40),
                     nb_checks=nb_checks,
                     nb_creds=nb_creds,
                     nb_vulns=nb_vulns)
 
         return html
-
 
     def __generate_table_hosts(self):
         """
@@ -318,15 +323,17 @@ class Reporter:
                 os += str(host.os)
 
                 # Device type
-                device_type = IconsMapping.get_icon_html('device_type', host.type)
+                device_type = IconsMapping.get_icon_html(
+                    'device_type', host.type)
                 device_type += str(host.type)
 
                 # Number of creds
-                nb_userpass  = host.get_nb_credentials(single_username=False)
+                nb_userpass = host.get_nb_credentials(single_username=False)
                 nb_usernames = host.get_nb_credentials(single_username=True)
                 nb_creds = '{}{}{}'.format(
-                    '<span class="text-green">{}</span>'.format(str(nb_userpass)) \
-                        if nb_userpass > 0 else '',
+                    '<span class="text-green">{}</span>'.format(
+                        str(nb_userpass))
+                    if nb_userpass > 0 else '',
                     '/' if nb_userpass > 0 and nb_usernames > 0 else '',
                     '<span class="text-yellow">{}</span>'.format(
                         str(nb_usernames)) if nb_usernames > 0 else '')
@@ -334,7 +341,8 @@ class Reporter:
                 # Number of vulns
                 nb_vulns = host.get_nb_vulns()
                 if nb_vulns > 0:
-                    nb_vulns = '<span class="text-green">{}</span>'.format(nb_vulns)
+                    nb_vulns = '<span class="text-green">{}</span>'.format(
+                        nb_vulns)
                 else:
                     nb_vulns = ''
 
@@ -353,7 +361,8 @@ class Reporter:
                 </tr>
                 """.format(
                     ip=host.ip,
-                    hostname=host.hostname if host.hostname != str(host.ip) else '',
+                    hostname=host.hostname if host.hostname != str(
+                        host.ip) else '',
                     os=os,
                     type=device_type,
                     vendor=host.vendor,
@@ -364,7 +373,6 @@ class Reporter:
                     nb_vulns=nb_vulns)
 
         return html
-
 
     def __generate_table_web(self):
         """
@@ -404,7 +412,7 @@ class Reporter:
                     if service.is_encrypted() else ''
 
                 # Web technos (in a specific order)
-                
+
                 # try:
                 #     technos = ast.literal_eval(service.web_technos)
                 # except Exception as e:
@@ -437,8 +445,8 @@ class Reporter:
                             '{name}{version}</span>'.format(
                                 type=t,
                                 name=product.name,
-                                version=' '+str(product.version) \
-                                    if product.version else '')
+                                version=' '+str(product.version)
+                                if product.version else '')
 
                 # Web Application Firewall
                 product = service.get_product('web-application-firewall')
@@ -447,14 +455,14 @@ class Reporter:
                     waf = '<span class="badge badge-web-application-firewall ' \
                         'badge-light">{name}{version}</span>'.format(
                             name=product.name,
-                            version=' '+str(product.version) \
-                                if product.version else '')
+                            version=' '+str(product.version)
+                            if product.version else '')
 
                 # Screenshot
                 img_name = 'scren-{ip}-{port}-{id}'.format(
-                        ip=str(service.host.ip),
-                        port=service.port,
-                        id=service.id)
+                    ip=str(service.host.ip),
+                    port=service.port,
+                    id=service.id)
                 path = self.output_path + '/screenshots'
 
                 if service.screenshot is not None \
@@ -492,8 +500,8 @@ class Reporter:
                     clickable=' class="clickable-row" data-href="{results}"'.format(
                         results=results) if len(service.results) > 0 else '',
                     url='<a href="{}" title="{}">{}</a>'.format(
-                        service.url, service.url, StringUtils.shorten(service.url, 50)) \
-                        if service.url else '',
+                        service.url, service.url, StringUtils.shorten(service.url, 50))
+                    if service.url else '',
                     enc=enc,
                     title=StringUtils.shorten(service.html_title, 40),
                     webtechnos=webtechnos,
@@ -502,7 +510,6 @@ class Reporter:
                     checks=len(service.results))
 
         return html
-
 
     def __generate_table_options(self):
         """
@@ -523,7 +530,8 @@ class Reporter:
             for option in options:
 
                 # Service name
-                service_name = IconsMapping.get_icon_html('service', option.service.name)
+                service_name = IconsMapping.get_icon_html(
+                    'service', option.service.name)
                 service_name += str(option.service.name)
 
                 html += """
@@ -537,8 +545,8 @@ class Reporter:
                 </tr>
                 """.format(
                     ip=option.service.host.ip,
-                    hostname=option.service.host.hostname \
-                        if option.service.host.hostname != str(option.service.host.ip) \
+                    hostname=option.service.host.hostname
+                        if option.service.host.hostname != str(option.service.host.ip)
                         else '',
                     service=service_name,
                     port=option.service.port,
@@ -548,7 +556,6 @@ class Reporter:
                     optionvalue=option.value)
 
         return html
-
 
     def __generate_table_products(self):
         """
@@ -569,7 +576,8 @@ class Reporter:
             for product in products:
 
                 # Service name
-                service_name = IconsMapping.get_icon_html('service', product.service.name)
+                service_name = IconsMapping.get_icon_html(
+                    'service', product.service.name)
                 service_name += str(product.service.name)
 
                 html += """
@@ -584,8 +592,8 @@ class Reporter:
                 </tr>
                 """.format(
                     ip=product.service.host.ip,
-                    hostname=product.service.host.hostname \
-                        if product.service.host.hostname != str(product.service.host.ip)\
+                    hostname=product.service.host.hostname
+                        if product.service.host.hostname != str(product.service.host.ip)
                         else '',
                     service=service_name,
                     port=product.service.port,
@@ -597,12 +605,11 @@ class Reporter:
 
         return html
 
-
     def __generate_table_credentials(self):
         """
         Generate the table with all credentials registered in the mission 
         """
-        
+
         req = CredentialsRequester(self.sqlsession)
         req.select_mission(self.mission)
         credentials = req.get_results()
@@ -618,7 +625,8 @@ class Reporter:
             for cred in credentials:
 
                 # Service name
-                service_name = IconsMapping.get_icon_html('service', cred.service.name)
+                service_name = IconsMapping.get_icon_html(
+                    'service', cred.service.name)
                 service_name += str(cred.service.name)
 
                 # Add color to username/password
@@ -647,8 +655,8 @@ class Reporter:
                 </tr>
                 """.format(
                     ip=cred.service.host.ip,
-                    hostname=cred.service.host.hostname \
-                        if cred.service.host.hostname != str(cred.service.host.ip)\
+                    hostname=cred.service.host.hostname
+                        if cred.service.host.hostname != str(cred.service.host.ip)
                         else '',
                     service=service_name,
                     port=cred.service.port,
@@ -658,19 +666,18 @@ class Reporter:
                     username=username,
                     password=password,
                     url='<a href="{}" title="{}">{}</a>'.format(
-                        cred.service.url, cred.service.url, 
-                        StringUtils.shorten(cred.service.url, 50)) \
-                            if cred.service.url else '',
-                    comment=cred.comment)                    
+                        cred.service.url, cred.service.url,
+                        StringUtils.shorten(cred.service.url, 50))
+                    if cred.service.url else '',
+                    comment=cred.comment)
 
         return html
-
 
     def __generate_table_vulns(self):
         """
         Generate the table with all vulnerabilities registered in the mission 
         """
-        
+
         req = VulnsRequester(self.sqlsession)
         req.select_mission(self.mission)
         vulnerabilities = req.get_results()
@@ -686,7 +693,8 @@ class Reporter:
             for vuln in vulnerabilities:
 
                 # Service name
-                service_name = IconsMapping.get_icon_html('service', vuln.service.name)
+                service_name = IconsMapping.get_icon_html(
+                    'service', vuln.service.name)
                 service_name += str(vuln.service.name)
 
                 html += """
@@ -706,8 +714,7 @@ class Reporter:
 
         return html
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Results-<service>.html files generation
 
     def __generate_results_page(self, service):
@@ -726,21 +733,22 @@ class Reporter:
         #         port=service.port,
         #         proto={Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(
         #             service.protocol),
-        #         service=service.name) 
+        #         service=service.name)
 
         tpl = tpl.replace('{{MISSION_NAME}}', self.mission)
-        tpl = tpl.replace('{{SERVICE_ICON}}', 
+        tpl = tpl.replace('{{SERVICE_ICON}}',
                           IconsMapping.get_icon_html('service', service.name))
         tpl = tpl.replace('{{SERVICE_IP}}', str(service.host.ip))
         tpl = tpl.replace('{{SERVICE_PORT}}', str(service.port))
-        tpl = tpl.replace('{{SERVICE_PROTO}}', 
-            {Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(service.protocol))
+        tpl = tpl.replace('{{SERVICE_PROTO}}',
+                          {Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(service.protocol))
         tpl = tpl.replace('{{SERVICE_NAME}}', service.name)
-        tpl = tpl.replace('{{SIDEBAR_CHECKS}}', self.__generate_sidebar_checks(service))
-        tpl = tpl.replace('{{RESULTS}}', self.__generate_command_outputs(service))
+        tpl = tpl.replace('{{SIDEBAR_CHECKS}}',
+                          self.__generate_sidebar_checks(service))
+        tpl = tpl.replace(
+            '{{RESULTS}}', self.__generate_command_outputs(service))
 
         return tpl
-
 
     def __generate_sidebar_checks(self, service):
         """
@@ -770,14 +778,13 @@ class Reporter:
                 <a href="#{id}">{icon}{check}</a>
             </li>  
             """.format(
-                class_=' class="active"' if i==0 else '',
+                class_=' class="active"' if i == 0 else '',
                 id=r.check,
                 icon=icon,
-                check=StringUtils.shorten(r.check, 28))    
+                check=StringUtils.shorten(r.check, 28))
             i += 1
 
         return html
-
 
     def __generate_command_outputs(self, service):
         """
@@ -797,19 +804,19 @@ class Reporter:
         html = ''
         i = 0
         for r in results:
-            
+
             # Icon category
             icon = IconsMapping.get_icon_html('category', r.category)
 
             # Description/Tool of check
             if service.name in self.settings.services:
-                check = self.settings.services[service.name]['checks'].get_check(r.check)
+                check = self.settings.services[service.name]['checks'].get_check(
+                    r.check)
                 if check is not None:
                     description = check.description
                     tool = check.tool.name
                 else:
                     description = tool = ''
-
 
             html += """
             <div class="tab-pane{active}" id="{id}">
@@ -823,7 +830,7 @@ class Reporter:
                                 (using tool: {tool}).
                             </p>
             """.format(
-                active=' active' if i==0 else '',
+                active=' active' if i == 0 else '',
                 id=r.check,
                 icon=icon,
                 category=r.category,
@@ -839,8 +846,8 @@ class Reporter:
 
                 # Warning: ansi2html generates HTML document with <html>, <style>...
                 # tags. We only keep the content inside <pre> ... </pre>
-                m = re.search('<pre class="ansi2html-content">(?P<output>.*)' \
-                    '</pre>\n</body>', output, re.DOTALL)
+                m = re.search('<pre class="ansi2html-content">(?P<output>.*)'
+                              '</pre>\n</body>', output, re.DOTALL)
                 if m:
                     output = m.group('output')
 
@@ -854,7 +861,7 @@ class Reporter:
                     </div>
                 </div>
             </div>
-            """   
-            i += 1       
+            """
+            i += 1
 
         return html

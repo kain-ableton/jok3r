@@ -5,12 +5,12 @@ from lib.smartmodules.matchstrings.MatchStrings import products_match
 # List of most common web servers: https://en.wikipedia.org/wiki/Comparison_of_web_server_software
 
 # Examples:
-# product: Microsoft IIS httpd version: 6.0 ostype: Windows 
+# product: Microsoft IIS httpd version: 6.0 ostype: Windows
 # product: Apache httpd version: 2.2.4 extrainfo: (Unix) DAV/2
 # product: Apache httpd version: 2.0.63 extrainfo: DAV/2 hostname
 
 WIG_REGEXP = '{}\s*[VERSION]\s*Platform'
-WIG_REGEXP2 = '- Found platform {}(\s*[VERSION])?' 
+WIG_REGEXP2 = '- Found platform {}(\s*[VERSION])?'
 
 products_match['http']['web-server'] = {
 

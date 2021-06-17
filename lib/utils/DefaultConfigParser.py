@@ -14,7 +14,6 @@ class DefaultConfigParser(configparser.ConfigParser):
     def __init__(self):
         configparser.ConfigParser.__init__(self, allow_no_value=True)
 
-
     def safe_get(self, section, option, default, allowed=None):
         """Get a string with exception handling"""
         try:
@@ -25,7 +24,6 @@ class DefaultConfigParser(configparser.ConfigParser):
                 return result
         except (configparser.NoSectionError, configparser.NoOptionError):
             return default
-
 
     def safe_get_lower(self, section, option, default, allowed=None):
         """Get a string in lowercase with exception handling"""
@@ -40,7 +38,6 @@ class DefaultConfigParser(configparser.ConfigParser):
         except (configparser.NoSectionError, configparser.NoOptionError):
             return default
 
-
     def safe_get_float(self, section, option, default, allowed=None):
         """Get a float with exception handling"""
         try:
@@ -52,15 +49,14 @@ class DefaultConfigParser(configparser.ConfigParser):
         except (configparser.NoSectionError, configparser.NoOptionError):
             return default
 
-
     def safe_get_boolean(self, section, option, default):
         """Get a boolean with exception handling"""
         try:
-            result = configparser.ConfigParser.getboolean(self, section, option)
+            result = configparser.ConfigParser.getboolean(
+                self, section, option)
             return result if isinstance(result, bool) else default
         except (configparser.NoSectionError, configparser.NoOptionError):
             return default
-
 
     def safe_get_int(self, section, option, default, allowed=None):
         """Get an integer with exception handling"""
@@ -73,18 +69,16 @@ class DefaultConfigParser(configparser.ConfigParser):
         except (configparser.NoSectionError, configparser.NoOptionError):
             return default
 
-
     def safe_get_list(self, section, option, sep=',', default=None):
         """Get a list with exception handling"""
         try:
             result_str = self.safe_get(section, option, None, None)
             if result_str is not None:
-                return [ e.strip() for e in result_str.split(sep) ]
+                return [e.strip() for e in result_str.split(sep)]
             else:
                 return default
         except:
             return default
-
 
     def safe_get_multi(self, section, option_basename, default=None):
         """
@@ -96,13 +90,13 @@ class DefaultConfigParser(configparser.ConfigParser):
         res = list()
         i = 1
         while True:
-            cur = self.safe_get(section, '{0}_{1}'.format(option_basename,i), None, allowed=None)
+            cur = self.safe_get(section, '{0}_{1}'.format(
+                option_basename, i), None, allowed=None)
             if not cur:
                 break
             res.append(cur)
             i += 1
         return res
-
 
     def safe_get_dict(self, section, option, default=None):
         """Get a dictionary (must be well formed python dict) with exception handling"""
@@ -115,12 +109,11 @@ class DefaultConfigParser(configparser.ConfigParser):
         else:
             return default
 
-
     def safe_set(self, section, option, value):
         """Set the given option to the specified value"""
         try:
             configparser.ConfigParser.set(self, section, option, str(value))
             return True
         except:
-            #traceback.print_exc()
+            # traceback.print_exc()
             return False

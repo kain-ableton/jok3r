@@ -120,4 +120,4 @@ vulns_match['http'] = {
         '\[!\] Title: (?P<m1>.*)': 'Wordpress: $1',
     },
 
-} 
+}

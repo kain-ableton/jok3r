@@ -20,7 +20,7 @@ from lib.output.Logger import logger
 
 class Tool:
 
-    def __init__(self, 
+    def __init__(self,
                  name,
                  description,
                  target_service,
@@ -44,23 +44,22 @@ class Tool:
         :param Command update_command: Update command (optional)
         :param Command check_command: Command to check install (optional)
         """
-        self.name            = name
-        self.description     = description
-        self.target_service  = target_service
-        self.installed       = installed if isinstance(installed, bool) else False
-        self.last_update     = last_update
-        self.virtualenv      = virtualenv
+        self.name = name
+        self.description = description
+        self.target_service = target_service
+        self.installed = installed if isinstance(installed, bool) else False
+        self.last_update = last_update
+        self.virtualenv = virtualenv
         self.install_command = install_command
-        self.update_command  = update_command
-        self.check_command   = check_command
-        self.tool_dir        = FileUtils.absolute_path(
+        self.update_command = update_command
+        self.check_command = check_command
+        self.tool_dir = FileUtils.absolute_path(
             '{toolbox}/{service}/{name}'.format(
-                toolbox  = TOOLBOX_DIR,
-                service  = self.target_service,
-                name     = self.name)) if self.install_command else ''
+                toolbox=TOOLBOX_DIR,
+                service=self.target_service,
+                name=self.name)) if self.install_command else ''
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Operations
 
     def install(self, settings, fast_mode=False):
@@ -72,12 +71,14 @@ class Tool:
         :return: Install status
         :rtype: bool
         """
-        if not self.__check_pre_install(settings, fast_mode): return False
+        if not self.__check_pre_install(settings, fast_mode):
+            return False
         if self.install_command:
-            if not self.__create_tool_dir(): return False
-            if not self.__run_install_update(fast_mode): return False
+            if not self.__create_tool_dir():
+                return False
+            if not self.__run_install_update(fast_mode):
+                return False
         return self.__check_post_install_update(settings, fast_mode)
-
 
     def update(self, settings, fast_mode=False):
         """
@@ -88,11 +89,12 @@ class Tool:
         :return: Update status
         :rtype: bool
         """
-        if not self.__check_pre_update(settings, fast_mode): return False
+        if not self.__check_pre_update(settings, fast_mode):
+            return False
         if self.update_command:
-            if not self.__run_install_update(fast_mode, update=True): return False
+            if not self.__run_install_update(fast_mode, update=True):
+                return False
         return self.__check_post_install_update(settings, fast_mode, update=True)
-
 
     def remove(self, settings):
         """
@@ -110,11 +112,11 @@ class Tool:
             if not FileUtils.is_dir(self.tool_dir):
                 logger.warning('Directory "{dir}" does not exist'.format(
                     dir=self.tool_dir))
-                #return False
+                # return False
             elif not FileUtils.remove_directory(self.tool_dir):
-                logger.error('Unable to delete directory "{dir}". ' \
-                    'Check permissions and/or re-run with sudo'.format(
-                        dir=self.tool_dir))  
+                logger.error('Unable to delete directory "{dir}". '
+                             'Check permissions and/or re-run with sudo'.format(
+                                 dir=self.tool_dir))
                 return False
             else:
                 logger.success('Tool directory "{dir}" deleted'.format(
@@ -144,20 +146,19 @@ class Tool:
                 logger.warning('Unable to delete RVM environment')
 
         # Make sure "installed" option in config file is set to False
-        if settings.change_installed_status(self.target_service, 
-                                            self.name, 
+        if settings.change_installed_status(self.target_service,
+                                            self.name,
                                             install_status=False):
             logger.success('Tool marked as uninstalled')
         else:
-            logger.error('An unexpected error occured when trying to mark the tool ' \
-                'as uninstalled !')
+            logger.error('An unexpected error occured when trying to mark the tool '
+                         'as uninstalled !')
             return False
 
         self.installed = False
         return True
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Preparation of an Installation
 
     def __create_tool_dir(self):
@@ -169,7 +170,8 @@ class Tool:
         """
         if self.tool_dir:
             if FileUtils.is_dir(self.tool_dir):
-                logger.info('Directory "{dir}" already exists'.format(dir=self.tool_dir))
+                logger.info('Directory "{dir}" already exists'.format(
+                    dir=self.tool_dir))
                 return True
 
             try:
@@ -178,11 +180,11 @@ class Tool:
                 logger.error('Unable to create new directory "{dir}": {exc}'.format(
                     dir=self.tool_dir, exc=e))
                 return False
-            logger.info('New directory "{dir}" created'.format(dir=self.tool_dir))
+            logger.info('New directory "{dir}" created'.format(
+                dir=self.tool_dir))
             return True
         else:
             return False
-
 
     def __check_pre_install(self, settings, fast_mode=False):
         """
@@ -195,30 +197,30 @@ class Tool:
         :rtype: bool
         """
         if self.installed:
-            logger.info('{tool} is already installed (according to settings), ' \
-                'skipped'.format(tool=self.name))
+            logger.info('{tool} is already installed (according to settings), '
+                        'skipped'.format(tool=self.name))
             return False
 
         elif not self.install_command:
-            logger.warning('The tool {tool} has no installation command specified in ' \
-                'config file'.format(tool=self.name))
+            logger.warning('The tool {tool} has no installation command specified in '
+                           'config file'.format(tool=self.name))
 
             if fast_mode \
                or Output.prompt_confirm('Is the tool already installed on your system ?',
                                         default=True):
 
                 try:
-                    if settings.change_installed_status(self.target_service, 
-                                                        self.name, 
+                    if settings.change_installed_status(self.target_service,
+                                                        self.name,
                                                         True):
 
-                        logger.success('Tool {tool} has been marked as installed in ' \
-                            'settings'.format(tool=self.name))
+                        logger.success('Tool {tool} has been marked as installed in '
+                                       'settings'.format(tool=self.name))
                         return True
                     else:
-                        logger.error('Error when saving the configuration file ' \
-                            '"{filename}{ext}"'.format(
-                                filename=INSTALL_STATUS_CONF_FILE, ext=CONF_EXT))
+                        logger.error('Error when saving the configuration file '
+                                     '"{filename}{ext}"'.format(
+                                         filename=INSTALL_STATUS_CONF_FILE, ext=CONF_EXT))
                         return False
 
                 except SettingsException as e:
@@ -226,14 +228,13 @@ class Tool:
                     self.remove(settings)
                     return False
             else:
-                logger.info('Tool {tool} is still not marked as installed in ' \
-                    'settings'.format(tool=self.name))
+                logger.info('Tool {tool} is still not marked as installed in '
+                            'settings'.format(tool=self.name))
             return False
 
         return True
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Preparation of an Update
 
     def __check_pre_update(self, settings, fast_mode=False):
@@ -247,25 +248,25 @@ class Tool:
         :rtype: bool
         """
         if not self.installed:
-            logger.info('{tool} is not installed yet (according to settings), ' \
-                'skipped'.format(tool=self.name))
+            logger.info('{tool} is not installed yet (according to settings), '
+                        'skipped'.format(tool=self.name))
             return False
 
         elif not self.update_command:
-            logger.warning('No tool update command specified in config file, skipped.')
+            logger.warning(
+                'No tool update command specified in config file, skipped.')
             return False
 
-        # Create directory for the tool if necessary 
+        # Create directory for the tool if necessary
         # (should not be necessary because only update)
         if self.install_command and not FileUtils.is_dir(self.tool_dir):
-            logger.warning('Tool directory does not exist but tool marked as ' \
-                'installed. Trying to re-install it...')
+            logger.warning('Tool directory does not exist but tool marked as '
+                           'installed. Trying to re-install it...')
             return self.install(settings, fast_mode)
 
         return True
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Run Install/Update
 
     def __run_install_update(self, fast_mode, update=False):
@@ -277,13 +278,15 @@ class Tool:
         :return: Install/Update status
         :rtype: bool
         """
-        if update : cmd = self.update_command.get_cmdline(self)
-        else      : cmd = self.install_command.get_cmdline(self)
+        if update:
+            cmd = self.update_command.get_cmdline(self)
+        else:
+            cmd = self.install_command.get_cmdline(self)
 
         mode = 'update' if update else 'install'
 
         logger.info('Description: {descr}'.format(descr=self.description))
-        #Output.print('{mode} command : {cmd}'.format(
+        # Output.print('{mode} command : {cmd}'.format(
         #   mode=mode.capitalize(), cmd=cmd_short))
 
         if fast_mode \
@@ -293,8 +296,8 @@ class Tool:
             returncode, _ = ProcessLauncher(cmd).start()
             Output.delimiter()
             if returncode != 0:
-                logger.warning('Tool {mode} has finished with an error ' \
-                    'exit code: {code}'.format(mode=mode, code=returncode))
+                logger.warning('Tool {mode} has finished with an error '
+                               'exit code: {code}'.format(mode=mode, code=returncode))
             else:
                 logger.success('Tool {mode} has finished with success exit code'.format(
                     mode=mode))
@@ -303,8 +306,7 @@ class Tool:
             logger.warning('Tool {mode} aborted'.format(mode=mode))
             return False
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Post-install/update Check
 
     def __check_post_install_update(self, settings, fast_mode=False, update=False):
@@ -319,19 +321,19 @@ class Tool:
         :return: Status of operations
         :rtype: bool
         """
-        mode = ('update','updated') if update else ('install','installed')
+        mode = ('update', 'updated') if update else ('install', 'installed')
         status = True
 
         # Check install/update
         if not self.check_command:
-            logger.info('No check_command defined in settings for {tool}, will ' \
-                'assume it is correctly {mode}'.format(tool=self.name, mode=mode[1]))
+            logger.info('No check_command defined in settings for {tool}, will '
+                        'assume it is correctly {mode}'.format(tool=self.name, mode=mode[1]))
         else:
-            logger.info('Now, checking if {tool} has been {mode} correctly.' \
-                '{key}'.format(
-                    tool=self.name, 
-                    mode=mode[1], 
-                    key='Hit any key to run test...' if not fast_mode else ''))
+            logger.info('Now, checking if {tool} has been {mode} correctly.'
+                        '{key}'.format(
+                            tool=self.name,
+                            mode=mode[1],
+                            key='Hit any key to run test...' if not fast_mode else ''))
             if not fast_mode:
                 CLIUtils.getch()
             status = self.run_check_command(fast_mode)
@@ -340,22 +342,22 @@ class Tool:
         if status:
             try:
 
-                if settings.change_installed_status(self.target_service, 
-                                                    self.name, 
+                if settings.change_installed_status(self.target_service,
+                                                    self.name,
                                                     install_status=True):
 
-                    logger.success('Tool {tool} has been marked as successfully ' \
-                        '{mode}'.format(tool=self.name, mode=mode[1]))
+                    logger.success('Tool {tool} has been marked as successfully '
+                                   '{mode}'.format(tool=self.name, mode=mode[1]))
                     return True
                 else:
-                    logger.error('Error when updating configuration file ' \
-                        '"{filename}{ext}"'.format(
-                            filename=INSTALL_STATUS_CONF_FILE, ext=CONF_EXT))
+                    logger.error('Error when updating configuration file '
+                                 '"{filename}{ext}"'.format(
+                                     filename=INSTALL_STATUS_CONF_FILE, ext=CONF_EXT))
                     return False
 
             except SettingsException as e:
-                logger.error('An unexpected error occured when trying to mark the '\
-                    'tool as {mode}: {exc}'.format(mode=mode[1], exc=e))
+                logger.error('An unexpected error occured when trying to mark the '
+                             'tool as {mode}: {exc}'.format(mode=mode[1], exc=e))
 
                 if not update:
                     self.remove(settings)
@@ -367,13 +369,12 @@ class Tool:
                 self.remove(settings)
             else:
                 if not fast_mode \
-                   and Output.prompt_confirm('Do you want to try to re-install ?', 
+                   and Output.prompt_confirm('Do you want to try to re-install ?',
                                              default=True):
 
                     return self.__reinstall(settings, fast_mode)
 
             return False
-
 
     def run_check_command(self, fast_mode=False):
         """
@@ -388,8 +389,8 @@ class Tool:
         :rtype: bool
         """
         if not self.check_command:
-            logger.info('No check_command defined in settings for the tool ' \
-                '{tool}'.format(tool=self.name))
+            logger.info('No check_command defined in settings for the tool '
+                        '{tool}'.format(tool=self.name))
             return True
 
         logger.info('Running the check command for the tool {tool}...'.format(
@@ -402,19 +403,18 @@ class Tool:
         Output.delimiter()
 
         if returncode != 0:
-            logger.warning('Check command has finished with an error ' \
-                'exit code: {code}'.format(code=returncode))
+            logger.warning('Check command has finished with an error '
+                           'exit code: {code}'.format(code=returncode))
         else:
             logger.success('Check command has finished with success exit code')
 
         if fast_mode:
             return (returncode == 0)
         else:
-            return Output.prompt_confirm('Does the tool {tool} seem to be running ' \
-                'correctly ?'.format(tool=self.name), default=True) 
+            return Output.prompt_confirm('Does the tool {tool} seem to be running '
+                                         'correctly ?'.format(tool=self.name), default=True)
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def __reinstall(self, settings, fast_mode):
         """
@@ -428,8 +428,6 @@ class Tool:
         logger.info('First, the tool directory will be removed...')
         if not self.remove(settings):
             return False
-        logger.info('Now, running a new install for {tool}...'.format(tool=self.name))
+        logger.info(
+            'Now, running a new install for {tool}...'.format(tool=self.name))
         return self.install(settings)
-
-
-

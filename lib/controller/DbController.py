@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
-### Core > Db Controller
+# Core > Db Controller
 ###
 import os
 import sys
@@ -42,22 +42,22 @@ class DbController(cmd2.Cmd):
 
     # Command categories
     CMD_CAT_MISSION_SCOPE = 'Missions data'
-    CMD_CAT_IMPORT        = 'Import'
-    CMD_CAT_RESULTS       = 'Attacks results'
-    CMD_CAT_REPORTING     = 'Reporting'
+    CMD_CAT_IMPORT = 'Import'
+    CMD_CAT_RESULTS = 'Attacks results'
+    CMD_CAT_REPORTING = 'Reporting'
 
     intro = DB_INTRO
-    formatter_class = lambda prog: LineWrapRawTextHelpFormatter(
-        prog, max_help_position=ARGPARSE_MAX_HELP_POS)
 
+    def formatter_class(prog): return LineWrapRawTextHelpFormatter(
+        prog, max_help_position=ARGPARSE_MAX_HELP_POS)
 
     def __init__(self, arguments, settings, sqlsession):
         self.arguments = arguments
-        self.settings  = settings
-        self.sqlsess   = sqlsession
+        self.settings = settings
+        self.sqlsess = sqlsession
 
-        super().__init__(use_ipython=False, 
-                         persistent_history_file=DB_HIST_FILE, 
+        super().__init__(use_ipython=False,
+                         persistent_history_file=DB_HIST_FILE,
                          persistent_history_length=500)
 
         #self.cmdqueue.append('alias help "help -v"')
@@ -68,80 +68,77 @@ class DbController(cmd2.Cmd):
         del cmd2.Cmd.do_load
         del cmd2.Cmd.do_py
         del cmd2.Cmd.do_pyscript
-        #del cmd2.Cmd.do_set 
+        #del cmd2.Cmd.do_set
         del cmd2.Cmd.do_shortcuts
 
         self.current_mission = 'default'
         self.change_current_mission('default')
 
-
     def run(self):
         self.cmdloop()
 
-
     def change_current_mission(self, name, verbose=False):
-        mission = self.sqlsess.query(Mission).filter(Mission.name == name).first()
+        mission = self.sqlsess.query(Mission).filter(
+            Mission.name == name).first()
         if not mission:
             logger.error('No mission with this name')
         else:
             self.current_mission = name
-            self.prompt = Output.colored('jok3rdb', color='light_green', attrs='bold')+ \
+            self.prompt = Output.colored('jok3rdb', color='light_green', attrs='bold') + \
                 Output.colored('[{}]'.format(name), color='light_blue', attrs='bold') + \
                 Output.colored('> ', color='light_green', attrs='bold')
 
-            if verbose: 
+            if verbose:
                 logger.info('Selected mission is now {name}'.format(name=name))
-
 
     @cmd2.with_argument_list
     def do_help(self, args):
         """Display this help message"""
         super().do_help('-v' if not args else args)
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Missions Management
 
     mission = argparse.ArgumentParser(
-        description='Manage missions', 
+        description='Manage missions',
         formatter_class=formatter_class)
 
     mission_mxg = mission.add_mutually_exclusive_group()
     mission_mxg.add_argument(
-        '-a', '--add', 
-        action  = 'store', 
-        metavar = '<name>', 
-        help    = 'Add mission')
+        '-a', '--add',
+        action='store',
+        metavar='<name>',
+        help='Add mission')
     mission_mxg.add_argument(
-        '-c', '--comment', 
-        nargs   = 2, 
-        metavar = ('<name>','<comment>'), 
-        help    = 'Change the comment of a mission')
+        '-c', '--comment',
+        nargs=2,
+        metavar=('<name>', '<comment>'),
+        help='Change the comment of a mission')
     mission_mxg.add_argument(
-        '-d', '--del', 
-        action  = 'store', 
-        dest    = 'delete', 
-        metavar = '<name>', 
-        help    = 'Delete mission')
+        '-d', '--del',
+        action='store',
+        dest='delete',
+        metavar='<name>',
+        help='Delete mission')
     mission_mxg.add_argument(
-        '-D', '--reset', 
-        action  = 'store_true', 
-        help    = 'Delete all missions')
+        '-D', '--reset',
+        action='store_true',
+        help='Delete all missions')
     mission_mxg.add_argument(
-        '-r', '--rename', 
-        nargs   = 2, 
-        metavar = ('<old>','<new>'), 
-        help    = 'Rename mission')
+        '-r', '--rename',
+        nargs=2,
+        metavar=('<old>', '<new>'),
+        help='Rename mission')
     mission_mxg.add_argument(
-        '-S', '--search', 
-        action  = 'store', 
-        metavar = '<string>', 
-        help    = 'Search string to filter by')
+        '-S', '--search',
+        action='store',
+        metavar='<string>',
+        help='Search string to filter by')
     mission_mxg.add_argument(
-        'name', 
-        nargs   = '?', 
-        metavar = '<name>', 
-        help    = 'Switch mission')
+        'name',
+        nargs='?',
+        metavar='<name>',
+        help='Switch mission')
 
     @cmd2.with_category(CMD_CAT_MISSION_SCOPE)
     @cmd2.with_argparser(mission)
@@ -158,7 +155,8 @@ class DbController(cmd2.Cmd):
 
         # --comment <name> <comment>
         elif args.comment:
-            req.add_filter(Condition(args.comment[0], FilterData.MISSION_EXACT))
+            req.add_filter(
+                Condition(args.comment[0], FilterData.MISSION_EXACT))
             req.edit_comment(args.comment[1])
 
         # --del <name>
@@ -166,12 +164,12 @@ class DbController(cmd2.Cmd):
             req.add_filter(Condition(args.delete, FilterData.MISSION_EXACT))
             req.delete()
             if args.delete == self.current_mission:
-                self.change_current_mission('default')   
+                self.change_current_mission('default')
 
-        # --reset     
+        # --reset
         elif args.reset:
             if Output.prompt_confirm(
-                'Are you sure you want to delete all missions ?', default=False):
+                    'Are you sure you want to delete all missions ?', default=False):
                 req.reset()
 
         # --rename <old> <new>
@@ -184,7 +182,8 @@ class DbController(cmd2.Cmd):
         elif args.search:
             filter_ = Filter()
             filter_.add_condition(Condition(args.search, FilterData.MISSION))
-            filter_.add_condition(Condition(args.search, FilterData.COMMENT_MISSION))
+            filter_.add_condition(
+                Condition(args.search, FilterData.COMMENT_MISSION))
             req.add_filter(filter_)
             req.show(self.current_mission)
 
@@ -202,53 +201,53 @@ class DbController(cmd2.Cmd):
         """Complete with mission name"""
         missions = MissionsRequester(self.sqlsess).get_list_mission_names()
         flag_dict = {
-            '-c'        : missions,
-            '--comment' : missions,
-            '-d'        : missions,
-            '--del'     : missions,
-            '-r'        : missions,
-            '--rename'  : missions,
-            'mission'   : missions,
+            '-c': missions,
+            '--comment': missions,
+            '-d': missions,
+            '--del': missions,
+            '-r': missions,
+            '--rename': missions,
+            'mission': missions,
         }
 
         return self.flag_based_complete(text, line, begidx, endidx, flag_dict=flag_dict)
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Hosts Management
 
     hosts = argparse.ArgumentParser(
-        description='Hosts in the current mission scope', 
+        description='Hosts in the current mission scope',
         formatter_class=formatter_class)
 
-    hosts_manage = hosts.add_argument_group('Manage hosts').add_mutually_exclusive_group()
+    hosts_manage = hosts.add_argument_group(
+        'Manage hosts').add_mutually_exclusive_group()
     hosts_manage.add_argument(
-        '-c', '--comment', 
-        action  = 'store', 
-        metavar = '<comment>', 
-        help    = 'Change the comment of selected host(s)')
+        '-c', '--comment',
+        action='store',
+        metavar='<comment>',
+        help='Change the comment of selected host(s)')
     hosts_manage.add_argument(
-        '-d', '--del', 
-        action  = 'store_true', 
-        dest    = 'delete', 
-        help    = 'Delete selected host(s) (instead of displaying)')
+        '-d', '--del',
+        action='store_true',
+        dest='delete',
+        help='Delete selected host(s) (instead of displaying)')
 
     hosts_filters = hosts.add_argument_group('Filter hosts')
     hosts_filters.add_argument(
-        '-o', '--order', 
-        action  = 'store', 
-        metavar = '<column>', 
-        help    = 'Order rows by specified column')
+        '-o', '--order',
+        action='store',
+        metavar='<column>',
+        help='Order rows by specified column')
     hosts_filters.add_argument(
-        '-S', '--search', 
-        action  = 'store', 
-        metavar = '<string>', 
-        help    = 'Search string to filter by')
+        '-S', '--search',
+        action='store',
+        metavar='<string>',
+        help='Search string to filter by')
     hosts_filters.add_argument(
-        'addrs', 
-        nargs   = '*', 
-        metavar = '<addr1> <addr2> ...', 
-        help    = 'IPs/CIDR ranges/hostnames to select')
+        'addrs',
+        nargs='*',
+        metavar='<addr1> <addr2> ...',
+        help='IPs/CIDR ranges/hostnames to select')
 
     @cmd2.with_category(CMD_CAT_MISSION_SCOPE)
     @cmd2.with_argparser(hosts)
@@ -269,15 +268,18 @@ class DbController(cmd2.Cmd):
                 if NetUtils.is_valid_ip(addr) or NetUtils.is_valid_ip_range(addr):
                     filter_addrs.add_condition(Condition(addr, FilterData.IP))
                 else:
-                    filter_addrs.add_condition(Condition(addr, FilterData.HOST))
+                    filter_addrs.add_condition(
+                        Condition(addr, FilterData.HOST))
             filter_.add_condition(filter_addrs)
 
         # --search <string>
         if args.search:
             filter_search = Filter(FilterOperator.OR)
-            filter_search.add_condition(Condition(args.search, FilterData.HOST))
+            filter_search.add_condition(
+                Condition(args.search, FilterData.HOST))
             filter_search.add_condition(Condition(args.search, FilterData.OS))
-            filter_search.add_condition(Condition(args.search, FilterData.COMMENT_HOST))
+            filter_search.add_condition(
+                Condition(args.search, FilterData.COMMENT_HOST))
             filter_.add_condition(filter_search)
 
         # --order <column>
@@ -300,7 +302,7 @@ class DbController(cmd2.Cmd):
                     return
             req.edit_comment(args.comment)
 
-        # Delete : --del 
+        # Delete : --del
         elif args.delete:
             if not req.filter_applied:
                 if not self.__confirm_for_all('delete ALL hosts and related services'):
@@ -313,113 +315,111 @@ class DbController(cmd2.Cmd):
 
         print()
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Services Management
 
     services = argparse.ArgumentParser(
-        description='Services in the current mission scope', 
+        description='Services in the current mission scope',
         formatter_class=formatter_class)
 
     services_manage = services.add_argument_group('Manage services')\
         .add_mutually_exclusive_group()
     services_manage.add_argument(
-        '-a', '--add', 
-        action  = 'store', 
-        nargs   = 3, 
-        metavar = ('<host>','<port>','<service>'), 
-        help    = 'Add a new service')
+        '-a', '--add',
+        action='store',
+        nargs=3,
+        metavar=('<host>', '<port>', '<service>'),
+        help='Add a new service')
     services_manage.add_argument(
-        '-u', '--url', 
-        action  = 'store', 
-        metavar = '<url>', 
-        help    = 'Add a new URL')
+        '-u', '--url',
+        action='store',
+        metavar='<url>',
+        help='Add a new URL')
     services_manage.add_argument(
-        '-d', '--del', 
-        action  = 'store_true', 
-        dest    = 'delete', 
-        help    = 'Delete selected service(s) (instead of displaying)')
+        '-d', '--del',
+        action='store_true',
+        dest='delete',
+        help='Delete selected service(s) (instead of displaying)')
     services_manage.add_argument(
-        '-c', '--comment', 
-        action  = 'store', 
-        metavar = '<comment>', 
-        help    = 'Change the comment of selected service(s)')
+        '-c', '--comment',
+        action='store',
+        metavar='<comment>',
+        help='Change the comment of selected service(s)')
     services_manage.add_argument(
-        '--https', 
-        action  = 'store_true', 
-        help    = 'Switch between HTTPS and HTTP protocol for URL of ' \
-            'selected service(s)')
+        '--https',
+        action='store_true',
+        help='Switch between HTTPS and HTTP protocol for URL of '
+        'selected service(s)')
 
     services_creds = services.add_argument_group('Manage services credentials')\
         .add_mutually_exclusive_group()
     services_creds.add_argument(
-        '--addcred', 
-        action  = 'store', 
-        nargs   = 2, 
-        metavar = ('<user>','<pass>'), 
-        help    = 'Add new credentials (username+password) for selected service(s)')
+        '--addcred',
+        action='store',
+        nargs=2,
+        metavar=('<user>', '<pass>'),
+        help='Add new credentials (username+password) for selected service(s)')
     services_creds.add_argument(
-        '--addcred-http', 
-        action  = 'store', 
-        nargs   = 3, 
-        metavar = ('<user>','<pass>','<auth-type>'), 
-        help    = 'Add new credentials (username+password) for the specified ' \
-            'authentication type on selected HTTP service(s)')
+        '--addcred-http',
+        action='store',
+        nargs=3,
+        metavar=('<user>', '<pass>', '<auth-type>'),
+        help='Add new credentials (username+password) for the specified '
+        'authentication type on selected HTTP service(s)')
     services_creds.add_argument(
-        '--adduser', 
-        action  = 'store', 
-        nargs   = 1, 
-        metavar = ('<user>'), 
-        help    = 'Add new username (password unknown) for selected service(s)')
+        '--adduser',
+        action='store',
+        nargs=1,
+        metavar=('<user>'),
+        help='Add new username (password unknown) for selected service(s)')
     services_creds.add_argument(
-        '--adduser-http', 
-        action  = 'store', 
-        nargs   = 2, 
-        metavar = ('<user>','<auth-type>'), 
-        help    = 'Add new username (password unknown) for the specified ' \
-            'authentication type on selected HTTP service(s)')
-    
+        '--adduser-http',
+        action='store',
+        nargs=2,
+        metavar=('<user>', '<auth-type>'),
+        help='Add new username (password unknown) for the specified '
+        'authentication type on selected HTTP service(s)')
+
     services_filters = services.add_argument_group('Filter services')
     services_filters.add_argument(
-        '-H', '--hostname', 
-        action  = 'store', 
-        metavar = '<hostname1,hostname2...>', 
-        help    = 'Search for a list of hostnames (comma-separated)')
+        '-H', '--hostname',
+        action='store',
+        metavar='<hostname1,hostname2...>',
+        help='Search for a list of hostnames (comma-separated)')
     services_filters.add_argument(
-        '-I', '--ip', 
-        action  = 'store', 
-        metavar = '<ip1,ip2...>', 
-        help    = 'Search for a list of IPs (single IP/CIDR range comma-separated)')
+        '-I', '--ip',
+        action='store',
+        metavar='<ip1,ip2...>',
+        help='Search for a list of IPs (single IP/CIDR range comma-separated)')
     services_filters.add_argument(
-        '-p', '--port', 
-        action  = 'store', 
-        metavar = '<port1,port2...>', 
-        help    = 'Search for a list of ports (single/range comma-separated)')   
+        '-p', '--port',
+        action='store',
+        metavar='<port1,port2...>',
+        help='Search for a list of ports (single/range comma-separated)')
     services_filters.add_argument(
-        '-r', '--proto', 
-        action  = 'store', 
-        metavar = '<protocol>', 
-        help    = 'Only show [tcp|udp] services')
+        '-r', '--proto',
+        action='store',
+        metavar='<protocol>',
+        help='Only show [tcp|udp] services')
     services_filters.add_argument(
-        '-U', '--up', 
-        action  = 'store_true', 
-        help    = 'Only show services which are up')
+        '-U', '--up',
+        action='store_true',
+        help='Only show services which are up')
     services_filters.add_argument(
-        '-o', '--order', 
-        action  = 'store', 
-        metavar = '<column>', 
-        help    = 'Order rows by specified column')
+        '-o', '--order',
+        action='store',
+        metavar='<column>',
+        help='Order rows by specified column')
     services_filters.add_argument(
-        '-S', '--search', 
-        action  = 'store', 
-        metavar = '<string>', 
-        help    = 'Search string to filter by')
+        '-S', '--search',
+        action='store',
+        metavar='<string>',
+        help='Search string to filter by')
     services_filters.add_argument(
-        'names', 
-        nargs   = '*', 
-        metavar = '<name1> <name2> ...', 
-        help    = 'Services to select')
-
+        'names',
+        nargs='*',
+        metavar='<name1> <name2> ...',
+        help='Services to select')
 
     @cmd2.with_category(CMD_CAT_MISSION_SCOPE)
     @cmd2.with_argparser(services)
@@ -443,7 +443,8 @@ class DbController(cmd2.Cmd):
                         name=n.lower()))
                     print()
                     return
-            filter_.add_condition(Condition(args.names, FilterData.SERVICE_EXACT))
+            filter_.add_condition(
+                Condition(args.names, FilterData.SERVICE_EXACT))
 
         # --order <column>
         if args.order:
@@ -452,7 +453,8 @@ class DbController(cmd2.Cmd):
         # --hostname <hostname1,hostname2...>
         if args.hostname:
             # OR between submitted hostnames
-            filter_.add_condition(Condition(args.hostname.split(','), FilterData.HOST))
+            filter_.add_condition(
+                Condition(args.hostname.split(','), FilterData.HOST))
 
         # --ip <ip1,ip2...>
         if args.ip:
@@ -462,7 +464,8 @@ class DbController(cmd2.Cmd):
         # --port <port1,port2...>
         if args.port:
             # OR between ports/port-ranges
-            filter_.add_condition(Condition(args.port.split(','), FilterData.PORT))
+            filter_.add_condition(
+                Condition(args.port.split(','), FilterData.PORT))
 
         # --proto <protocol>
         if args.proto:
@@ -475,12 +478,15 @@ class DbController(cmd2.Cmd):
         # --search <string>
         if args.search:
             filter_search = Filter(FilterOperator.OR)
-            filter_search.add_condition(Condition(args.search, FilterData.HOST))
-            filter_search.add_condition(Condition(args.search, FilterData.BANNER))
+            filter_search.add_condition(
+                Condition(args.search, FilterData.HOST))
+            filter_search.add_condition(
+                Condition(args.search, FilterData.BANNER))
             filter_search.add_condition(Condition(args.search, FilterData.URL))
-            filter_search.add_condition(Condition(args.search, FilterData.HTML_TITLE))
-            filter_search.add_condition(Condition(args.search, 
-                FilterData.COMMENT_SERVICE))
+            filter_search.add_condition(
+                Condition(args.search, FilterData.HTML_TITLE))
+            filter_search.add_condition(Condition(args.search,
+                                                  FilterData.COMMENT_SERVICE))
             filter_.add_condition(filter_search)
 
         try:
@@ -503,13 +509,13 @@ class DbController(cmd2.Cmd):
                     name=service.lower()))
             else:
                 req.add_service(
-                    host, 
-                    port, 
-                    self.settings.services.get_protocol(service), 
-                    service, 
+                    host,
+                    port,
+                    self.settings.services.get_protocol(service),
+                    service,
                     self.settings.services,
                     nmap_banner_grabbing=True,
-                    reverse_dns_lookup=True, 
+                    reverse_dns_lookup=True,
                     availability_check=True,
                     html_title_grabbing=True,
                     web_technos_detection=True)
@@ -521,7 +527,7 @@ class DbController(cmd2.Cmd):
                 logger.error('URL is invalid')
             else:
                 req.add_url(
-                    args.url, 
+                    args.url,
                     self.settings.services,
                     reverse_dns_lookup=True,
                     availability_check=True,
@@ -542,29 +548,28 @@ class DbController(cmd2.Cmd):
                     return
             req.edit_comment(args.comment)
 
-
         # --https
         elif args.https:
             if not req.filter_applied:
                 if not self.__confirm_for_all('apply switch for ALL URLs'):
                     return
-            req.switch_https()      
+            req.switch_https()
 
-        # --addcred <user> <pass>   
+        # --addcred <user> <pass>
         elif args.addcred:
             if not req.filter_applied:
                 if not self.__confirm_for_all('add same creds for ALL services'):
                     return
 
-            req.add_cred(username=args.addcred[0], 
-                         password=args.addcred[1], 
-                         auth_type=None) 
+            req.add_cred(username=args.addcred[0],
+                         password=args.addcred[1],
+                         auth_type=None)
 
         # --addcred-http <user> <pass> <auth-type>
         elif args.addcred_http:
             if not req.are_only_http_services_selected():
-                logger.warning('Some non-HTTP services are selected. Use --addcred ' \
-                    'instead for non-HTTP services')
+                logger.warning('Some non-HTTP services are selected. Use --addcred '
+                               'instead for non-HTTP services')
                 print()
                 return
             if not self.settings.services.is_valid_auth_type(args.addcred_http[2]):
@@ -576,9 +581,9 @@ class DbController(cmd2.Cmd):
             if not req.filter_applied:
                 if not self.__confirm_for_all('add same creds for ALL HTTP services'):
                     return
-            req.add_cred(username=args.addcred_http[0], 
-                         password=args.addcred_http[1], 
-                         auth_type=args.addcred_http[2]) 
+            req.add_cred(username=args.addcred_http[0],
+                         password=args.addcred_http[1],
+                         auth_type=args.addcred_http[2])
 
         # --adduser <user>
         elif args.adduser:
@@ -586,15 +591,15 @@ class DbController(cmd2.Cmd):
                 if not self.__confirm_for_all('add same username for ALL services'):
                     return
 
-            req.add_cred(username=args.adduser[0], 
-                         password=None, 
+            req.add_cred(username=args.adduser[0],
+                         password=None,
                          auth_type=None)
 
         # --adduser-http <user> <auth-type>
         elif args.adduser_http:
             if not req.are_only_http_services_selected():
-                logger.warning('Some non-HTTP services are selected. Use --adduser ' \
-                    'instead for non-HTTP services')
+                logger.warning('Some non-HTTP services are selected. Use --adduser '
+                               'instead for non-HTTP services')
                 print()
                 return
             if not self.settings.services.is_valid_auth_type(args.adduser_http[1]):
@@ -608,117 +613,115 @@ class DbController(cmd2.Cmd):
                 if not self.__confirm_for_all('add same username for ALL HTTP services'):
                     return
 
-            req.add_cred(username=args.adduser_http[0], 
-                         password=None, 
-                         auth_type=args.adduser_http[1]) 
+            req.add_cred(username=args.adduser_http[0],
+                         password=None,
+                         auth_type=args.adduser_http[1])
 
         # Display (default)
         else:
-            req.show()                      
+            req.show()
 
         print()
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Creds Management
 
     creds = argparse.ArgumentParser(
-        description='Credentials in the current mission scope', 
+        description='Credentials in the current mission scope',
         formatter_class=formatter_class,
-        epilog='Note: you can also use "services --addcred/--addonlyuser" to add ' \
-            'new creds')
+        epilog='Note: you can also use "services --addcred/--addonlyuser" to add '
+        'new creds')
 
     creds_manage = creds.add_argument_group('Manage credentials')\
         .add_mutually_exclusive_group()
     creds_manage.add_argument(
-        '--addcred', 
-        action  = 'store', 
-        nargs   = 3, 
-        metavar = ('<service-id>','<user>','<pass>'), 
-        help    = 'Add new credentials (username+password) for the given service')
+        '--addcred',
+        action='store',
+        nargs=3,
+        metavar=('<service-id>', '<user>', '<pass>'),
+        help='Add new credentials (username+password) for the given service')
     creds_manage.add_argument(
-        '--addcred-http', 
-        action  = 'store', 
-        nargs   = 4, 
-        metavar = ('<service-id>','<user>','<pass>','<auth-type>'), 
-        help    = 'Add new credentials (username+password) for the specified ' \
-            'authentication type on HTTP service')
+        '--addcred-http',
+        action='store',
+        nargs=4,
+        metavar=('<service-id>', '<user>', '<pass>', '<auth-type>'),
+        help='Add new credentials (username+password) for the specified '
+        'authentication type on HTTP service')
     creds_manage.add_argument(
-        '--adduser', 
-        action  = 'store', 
-        nargs   = 2, 
-        metavar = ('<service-id>','<user>'), 
-        help    = 'Add new username (password unknown) for the given service')
+        '--adduser',
+        action='store',
+        nargs=2,
+        metavar=('<service-id>', '<user>'),
+        help='Add new username (password unknown) for the given service')
     creds_manage.add_argument(
-        '--adduser-http', 
-        action  = 'store', 
-        nargs   = 3, 
-        metavar = ('<service-id>','<user>','<auth-type>'), 
-        help    = 'Add new username (password unknown) for the specified ' \
-            'authentication type on HTTP service')
+        '--adduser-http',
+        action='store',
+        nargs=3,
+        metavar=('<service-id>', '<user>', '<auth-type>'),
+        help='Add new username (password unknown) for the specified '
+        'authentication type on HTTP service')
     creds_manage.add_argument(
-        '-c', '--comment', 
-        action  = 'store', 
-        metavar = '<comment>', 
-        help    = 'Change the comment of selected cred(s)')
+        '-c', '--comment',
+        action='store',
+        metavar='<comment>',
+        help='Change the comment of selected cred(s)')
     creds_manage.add_argument(
-        '-d', '--del', 
-        action  = 'store_true', 
-        dest    = 'delete', 
-        help    = 'Delete selected credential(s) (instead of displaying)')
-    
+        '-d', '--del',
+        action='store_true',
+        dest='delete',
+        help='Delete selected credential(s) (instead of displaying)')
+
     creds_filters = creds.add_argument_group('Filter credentials')
     creds_filters.add_argument(
-        '-U', '--username', 
-        action  = 'store', 
-        metavar = '<string>', 
-        help    = 'Select creds with username matching this string')
+        '-U', '--username',
+        action='store',
+        metavar='<string>',
+        help='Select creds with username matching this string')
     creds_filters.add_argument(
-        '-P', '--password', 
-        action  = 'store', 
-        metavar = '<string>', 
-        help    = 'Select creds with password matching this string')
+        '-P', '--password',
+        action='store',
+        metavar='<string>',
+        help='Select creds with password matching this string')
     creds_filters_mxg = creds_filters.add_mutually_exclusive_group()
     creds_filters_mxg.add_argument(
-        '-b', '--both', 
-        action  = 'store_true', 
-        help    = 'Select creds where username and password are both set ' \
-            '(no single username)')
+        '-b', '--both',
+        action='store_true',
+        help='Select creds where username and password are both set '
+        '(no single username)')
     creds_filters_mxg.add_argument(
-        '-u', '--onlyuser', 
-        action  = 'store_true', 
-        help    = 'Select creds where only username is set')
+        '-u', '--onlyuser',
+        action='store_true',
+        help='Select creds where only username is set')
     creds_filters.add_argument(
-        '-H', '--hostname', 
-        action  = 'store',
-        metavar = '<hostname1,hostname2...>', 
-        help    = 'Select creds for a list of hostnames (comma-separated)')
+        '-H', '--hostname',
+        action='store',
+        metavar='<hostname1,hostname2...>',
+        help='Select creds for a list of hostnames (comma-separated)')
     creds_filters.add_argument(
-        '-I', '--ip', 
-        action  = 'store', 
-        metavar = '<ip1,ip2...>', 
+        '-I', '--ip',
+        action='store',
+        metavar='<ip1,ip2...>',
         help='Select creds for a list of IPs (single IP/CIDR range comma-separated)')
     creds_filters.add_argument(
-        '-p', '--port', 
-        action  = 'store', 
-        metavar = '<port1,port2...>', 
-        help    = 'Select creds a list of ports (single/range comma-separated)')   
+        '-p', '--port',
+        action='store',
+        metavar='<port1,port2...>',
+        help='Select creds a list of ports (single/range comma-separated)')
     creds_filters.add_argument(
-        '-s', '--service', 
-        action  = 'store', 
-        metavar = '<svc1,svc2...>', 
-        help    = 'Select creds for a list of services (comma-separated)')
+        '-s', '--service',
+        action='store',
+        metavar='<svc1,svc2...>',
+        help='Select creds for a list of services (comma-separated)')
     creds_filters.add_argument(
-        '-o', '--order', 
-        action  = 'store', 
-        metavar = '<column>', 
-        help    = 'Order rows by specified column')
+        '-o', '--order',
+        action='store',
+        metavar='<column>',
+        help='Order rows by specified column')
     creds_filters.add_argument(
-        '-S', '--search', 
-        action  = 'store', 
-        metavar = '<string>', 
-        help    = 'Search string to filter by')
-
+        '-S', '--search',
+        action='store',
+        metavar='<string>',
+        help='Search string to filter by')
 
     @cmd2.with_category(CMD_CAT_MISSION_SCOPE)
     @cmd2.with_argparser(creds)
@@ -736,34 +739,40 @@ class DbController(cmd2.Cmd):
 
         # --username <string>
         if args.username:
-            filter_.add_condition(Condition(args.username, FilterData.USERNAME))
-        
+            filter_.add_condition(
+                Condition(args.username, FilterData.USERNAME))
+
         # --password <string>
         if args.password:
-            filter_.add_condition(Condition(args.password, FilterData.PASSWORD))
-        
+            filter_.add_condition(
+                Condition(args.password, FilterData.PASSWORD))
+
         # --both
         if args.both:
-            filter_.add_condition(Condition(args.both, FilterData.USER_AND_PASS))
+            filter_.add_condition(
+                Condition(args.both, FilterData.USER_AND_PASS))
 
         # --onlyuser
         elif args.onlyuser:
-            filter_.add_condition(Condition(args.onlyuser, FilterData.ONLY_USER))
+            filter_.add_condition(
+                Condition(args.onlyuser, FilterData.ONLY_USER))
 
         # --hostname <hostname1,hostname2...>
         if args.hostname:
             # OR between submitted hostnames
-            filter_.add_condition(Condition(args.hostname.split(','), FilterData.HOST))
+            filter_.add_condition(
+                Condition(args.hostname.split(','), FilterData.HOST))
 
         # --ip <ip1,ip2...>
         if args.ip:
             # OR between submitted ips/ranges
             filter_.add_condition(Condition(args.ip.split(','), FilterData.IP))
-        
+
         # --port <port1,port2...>
         if args.port:
             # OR between ports/port-ranges
-            filter_.add_condition(Condition(args.port.split(','), FilterData.PORT))
+            filter_.add_condition(
+                Condition(args.port.split(','), FilterData.PORT))
 
         # --service <svc1,svc2...>
         if args.service:
@@ -773,9 +782,9 @@ class DbController(cmd2.Cmd):
                         name=s.lower()))
                     print()
                     return
-            filter_.add_condition(Condition(args.service.split(','), 
-                FilterData.SERVICE_EXACT))
-        
+            filter_.add_condition(Condition(args.service.split(','),
+                                            FilterData.SERVICE_EXACT))
+
         # --order <column>
         if args.order:
             req.order_by(args.order)
@@ -783,12 +792,17 @@ class DbController(cmd2.Cmd):
         # --search <string>
         if args.search:
             filter_search = Filter(FilterOperator.OR)
-            filter_search.add_condition(Condition(args.search, FilterData.HOST))
-            filter_search.add_condition(Condition(args.search, FilterData.AUTH_TYPE))
-            filter_search.add_condition(Condition(args.search, FilterData.USERNAME))
-            filter_search.add_condition(Condition(args.search, FilterData.PASSWORD))
+            filter_search.add_condition(
+                Condition(args.search, FilterData.HOST))
+            filter_search.add_condition(
+                Condition(args.search, FilterData.AUTH_TYPE))
+            filter_search.add_condition(
+                Condition(args.search, FilterData.USERNAME))
+            filter_search.add_condition(
+                Condition(args.search, FilterData.PASSWORD))
             filter_search.add_condition(Condition(args.search, FilterData.URL))
-            filter_search.add_condition(Condition(args.search, FilterData.COMMENT_CRED))
+            filter_search.add_condition(
+                Condition(args.search, FilterData.COMMENT_CRED))
             filter_.add_condition(filter_search)
         try:
             req.add_filter(filter_)
@@ -809,9 +823,9 @@ class DbController(cmd2.Cmd):
 
             # --addcred <service-id> <user> <pass>
             if args.addcred:
-                req.add_cred(service_id=service_id, 
-                             username=args.addcred[1], 
-                             password=args.addcred[2], 
+                req.add_cred(service_id=service_id,
+                             username=args.addcred[1],
+                             password=args.addcred[2],
                              auth_type=None)
 
             # --addcred-http <service-id> <user> <pass> <auth-type>
@@ -824,9 +838,9 @@ class DbController(cmd2.Cmd):
                         logger.info('- {type}'.format(type=auth_type))
                     print()
                     return
-                req.add_cred(service_id=service_id, 
-                             username=args.addcred_http[1], 
-                             password=args.addcred_http[2], 
+                req.add_cred(service_id=service_id,
+                             username=args.addcred_http[1],
+                             password=args.addcred_http[2],
                              auth_type=args.addcred_http[3])
 
             # --adduser <service-id> <user>
@@ -843,9 +857,9 @@ class DbController(cmd2.Cmd):
                         logger.info('- {type}'.format(type=auth_type))
                     print()
                     return
-                req.add_cred(service_id=service_id, 
-                             username=args.adduser_http[1], 
-                             password=None, 
+                req.add_cred(service_id=service_id,
+                             username=args.adduser_http[1],
+                             password=None,
                              auth_type=args.adduser_http[2])
 
         # --comment <comment>
@@ -872,63 +886,61 @@ class DbController(cmd2.Cmd):
 
         print()
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Specific Options Management
 
     options = argparse.ArgumentParser(
-        description='Specific Options in the current mission scope', 
+        description='Specific Options in the current mission scope',
         formatter_class=formatter_class)
 
     options_filters = options.add_argument_group('Filter options')
     options_filters.add_argument(
-        '-I', '--ip', 
-        action  = 'store', 
-        metavar = '<ip1,ip2...>', 
-        help    = 'Search for a list of IPs (single IP/CIDR range comma-separated)')
+        '-I', '--ip',
+        action='store',
+        metavar='<ip1,ip2...>',
+        help='Search for a list of IPs (single IP/CIDR range comma-separated)')
     options_filters.add_argument(
-        '-H', '--hostname', 
-        action  = 'store', 
-        metavar = '<hostname1,hostname2...>', 
-        help    = 'Search for a list of hostnames (comma-separated)')
+        '-H', '--hostname',
+        action='store',
+        metavar='<hostname1,hostname2...>',
+        help='Search for a list of hostnames (comma-separated)')
     options_filters.add_argument(
-        '-s', '--service', 
-        action  = 'store', 
-        metavar = '<service1,service2...>', 
-        help    = 'Services to select')
+        '-s', '--service',
+        action='store',
+        metavar='<service1,service2...>',
+        help='Services to select')
     options_filters.add_argument(
-        '-p', '--port', 
-        action  = 'store', 
-        metavar = '<port1,port2...>', 
-        help    = 'Search for a list of ports (single/range comma-separated)')   
+        '-p', '--port',
+        action='store',
+        metavar='<port1,port2...>',
+        help='Search for a list of ports (single/range comma-separated)')
     options_filters.add_argument(
-        '-r', '--proto', 
-        action  = 'store', 
-        metavar = '<protocol>', 
-        help    = 'Only show [tcp|udp] services')
+        '-r', '--proto',
+        action='store',
+        metavar='<protocol>',
+        help='Only show [tcp|udp] services')
     options_filters.add_argument(
-        '-S', '--search', 
-        action  = 'store', 
-        metavar = '<string>', 
-        help    = 'Search string to filter by')
+        '-S', '--search',
+        action='store',
+        metavar='<string>',
+        help='Search string to filter by')
     options_filters.add_argument(
-        '-o', '--order', 
-        action  = 'store', 
-        metavar = '<column>', 
-        help    = 'Order rows by specified column')
+        '-o', '--order',
+        action='store',
+        metavar='<column>',
+        help='Order rows by specified column')
     options_filters.add_argument(
-        'names', 
-        nargs   = '*', 
-        metavar = '<option_name1> <option_name2> ...', 
-        help    = 'Option names to select')
+        'names',
+        nargs='*',
+        metavar='<option_name1> <option_name2> ...',
+        help='Option names to select')
 
     options_manage = options.add_argument_group('Manage options')
     options_manage.add_argument(
-        '-d', '--del', 
-        action  = 'store_true', 
-        dest    = 'delete', 
-        help    = 'Delete selected option(s) (instead of displaying)')
-
+        '-d', '--del',
+        action='store_true',
+        dest='delete',
+        help='Delete selected option(s) (instead of displaying)')
 
     @cmd2.with_category(CMD_CAT_MISSION_SCOPE)
     @cmd2.with_argparser(options)
@@ -952,7 +964,8 @@ class DbController(cmd2.Cmd):
         # --hostname <hostname1,hostname2...>
         if args.hostname:
             # OR between submitted hostnames
-            filter_.add_condition(Condition(args.hostname.split(','), FilterData.HOST))
+            filter_.add_condition(
+                Condition(args.hostname.split(','), FilterData.HOST))
 
         # --service <service1,service2...>
         if args.service:
@@ -964,12 +977,14 @@ class DbController(cmd2.Cmd):
                         name=s.lower()))
                     print()
                     return
-            filter_.add_condition(Condition(services, FilterData.SERVICE_EXACT))
+            filter_.add_condition(
+                Condition(services, FilterData.SERVICE_EXACT))
 
         # --port <port1,port2...>
         if args.port:
             # OR between ports/port-ranges
-            filter_.add_condition(Condition(args.port.split(','), FilterData.PORT))
+            filter_.add_condition(
+                Condition(args.port.split(','), FilterData.PORT))
 
         # --proto <protocol>
         if args.proto:
@@ -978,8 +993,10 @@ class DbController(cmd2.Cmd):
         # --search <string>
         if args.search:
             filter_search = Filter(FilterOperator.OR)
-            filter_search.add_condition(Condition(args.search, FilterData.OPTION_NAME))
-            filter_search.add_condition(Condition(args.search, FilterData.OPTION_VALUE))
+            filter_search.add_condition(
+                Condition(args.search, FilterData.OPTION_NAME))
+            filter_search.add_condition(
+                Condition(args.search, FilterData.OPTION_VALUE))
             filter_.add_condition(filter_search)
 
         # <option_name1> <option_name2> ...
@@ -990,7 +1007,8 @@ class DbController(cmd2.Cmd):
                         name=n.lower()))
                     print()
                     return
-            filter_.add_condition(Condition(args.names, FilterData.OPTION_NAME))
+            filter_.add_condition(
+                Condition(args.names, FilterData.OPTION_NAME))
 
         # --order <column>
         if args.order:
@@ -1014,67 +1032,65 @@ class DbController(cmd2.Cmd):
 
         # Display (default)
         else:
-            req.show() 
+            req.show()
 
         print()
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Products Management
 
     products = argparse.ArgumentParser(
-        description='Products in the current mission scope', 
+        description='Products in the current mission scope',
         formatter_class=formatter_class)
 
     products_filters = products.add_argument_group('Filter products')
     products_filters.add_argument(
-        '-I', '--ip', 
-        action  = 'store', 
-        metavar = '<ip1,ip2...>', 
-        help    = 'Search for a list of IPs (single IP/CIDR range comma-separated)')
+        '-I', '--ip',
+        action='store',
+        metavar='<ip1,ip2...>',
+        help='Search for a list of IPs (single IP/CIDR range comma-separated)')
     products_filters.add_argument(
-        '-H', '--hostname', 
-        action  = 'store', 
-        metavar = '<hostname1,hostname2...>', 
-        help    = 'Search for a list of hostnames (comma-separated)')
+        '-H', '--hostname',
+        action='store',
+        metavar='<hostname1,hostname2...>',
+        help='Search for a list of hostnames (comma-separated)')
     products_filters.add_argument(
-        '-s', '--service', 
-        action  = 'store', 
-        metavar = '<service1,service2...>', 
-        help    = 'Services to select')
+        '-s', '--service',
+        action='store',
+        metavar='<service1,service2...>',
+        help='Services to select')
     products_filters.add_argument(
-        '-p', '--port', 
-        action  = 'store', 
-        metavar = '<port1,port2...>', 
-        help    = 'Search for a list of ports (single/range comma-separated)')   
+        '-p', '--port',
+        action='store',
+        metavar='<port1,port2...>',
+        help='Search for a list of ports (single/range comma-separated)')
     products_filters.add_argument(
-        '-r', '--proto', 
-        action  = 'store', 
-        metavar = '<protocol>', 
-        help    = 'Only show [tcp|udp] services')
+        '-r', '--proto',
+        action='store',
+        metavar='<protocol>',
+        help='Only show [tcp|udp] services')
     products_filters.add_argument(
-        '-S', '--search', 
-        action  = 'store', 
-        metavar = '<string>', 
-        help    = 'Search string to filter by')
+        '-S', '--search',
+        action='store',
+        metavar='<string>',
+        help='Search string to filter by')
     products_filters.add_argument(
-        '-o', '--order', 
-        action  = 'store', 
-        metavar = '<column>', 
-        help    = 'Order rows by specified column')
+        '-o', '--order',
+        action='store',
+        metavar='<column>',
+        help='Order rows by specified column')
     products_filters.add_argument(
-        'types', 
-        nargs   = '*', 
-        metavar = '<product_type1> <product_type2> ...', 
-        help    = 'Product types to select')
+        'types',
+        nargs='*',
+        metavar='<product_type1> <product_type2> ...',
+        help='Product types to select')
 
     products_manage = products.add_argument_group('Manage products')
     products_manage.add_argument(
-        '-d', '--del', 
-        action  = 'store_true', 
-        dest    = 'delete', 
-        help    = 'Delete selected product(s) (instead of displaying)')
-
+        '-d', '--del',
+        action='store_true',
+        dest='delete',
+        help='Delete selected product(s) (instead of displaying)')
 
     @cmd2.with_category(CMD_CAT_MISSION_SCOPE)
     @cmd2.with_argparser(products)
@@ -1098,7 +1114,8 @@ class DbController(cmd2.Cmd):
         # --hostname <hostname1,hostname2...>
         if args.hostname:
             # OR between submitted hostnames
-            filter_.add_condition(Condition(args.hostname.split(','), FilterData.HOST))
+            filter_.add_condition(
+                Condition(args.hostname.split(','), FilterData.HOST))
 
         # --service <service1,service2...>
         if args.service:
@@ -1110,12 +1127,14 @@ class DbController(cmd2.Cmd):
                         name=s.lower()))
                     print()
                     return
-            filter_.add_condition(Condition(services, FilterData.SERVICE_EXACT))
+            filter_.add_condition(
+                Condition(services, FilterData.SERVICE_EXACT))
 
         # --port <port1,port2...>
         if args.port:
             # OR between ports/port-ranges
-            filter_.add_condition(Condition(args.port.split(','), FilterData.PORT))
+            filter_.add_condition(
+                Condition(args.port.split(','), FilterData.PORT))
 
         # --proto <protocol>
         if args.proto:
@@ -1124,10 +1143,12 @@ class DbController(cmd2.Cmd):
         # --search <string>
         if args.search:
             filter_search = Filter(FilterOperator.OR)
-            filter_search.add_condition(Condition(args.search, FilterData.PRODUCT_TYPE))
-            filter_search.add_condition(Condition(args.search, FilterData.PRODUCT_NAME))
-            filter_search.add_condition(Condition(args.search, 
-                FilterData.PRODUCT_VERSION))
+            filter_search.add_condition(
+                Condition(args.search, FilterData.PRODUCT_TYPE))
+            filter_search.add_condition(
+                Condition(args.search, FilterData.PRODUCT_NAME))
+            filter_search.add_condition(Condition(args.search,
+                                                  FilterData.PRODUCT_VERSION))
             filter_.add_condition(filter_search)
 
         # <product_type1> <product_type2> ...
@@ -1138,7 +1159,8 @@ class DbController(cmd2.Cmd):
                         type=t.lower()))
                     print()
                     return
-            filter_.add_condition(Condition(args.types, FilterData.PRODUCT_TYPE))
+            filter_.add_condition(
+                Condition(args.types, FilterData.PRODUCT_TYPE))
 
         # --order <column>
         if args.order:
@@ -1162,43 +1184,42 @@ class DbController(cmd2.Cmd):
 
         # Display (default)
         else:
-            req.show() 
+            req.show()
 
         print()
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Import Nmap
 
     nmap = argparse.ArgumentParser(
-        description='Import Nmap results (XML)', 
-        formatter_class=formatter_class, 
-        epilog='Note: it is recommended to run Nmap scans with -A or -sV options ' \
-            'in order to get service\nbanners in imported results. If you import ' \
-            'results from a scan run without version detection,\nyou can add ' \
-            '--version-detection to tell Jok3r to run Nmap version detection for ' \
-            'each service\nit has not been already run.')
+        description='Import Nmap results (XML)',
+        formatter_class=formatter_class,
+        epilog='Note: it is recommended to run Nmap scans with -A or -sV options '
+        'in order to get service\nbanners in imported results. If you import '
+        'results from a scan run without version detection,\nyou can add '
+        '--version-detection to tell Jok3r to run Nmap version detection for '
+        'each service\nit has not been already run.')
     nmap.add_argument(
-        '-n', '--no-http-recheck', 
-        action  = 'store_true', 
-        help    = 'Do not recheck for HTTP services')
+        '-n', '--no-http-recheck',
+        action='store_true',
+        help='Do not recheck for HTTP services')
     nmap.add_argument(
-        '--no-html-title', 
-        action  = 'store_true', 
-        help    = 'Do not grab HTML title for HTTP services')
+        '--no-html-title',
+        action='store_true',
+        help='Do not grab HTML title for HTTP services')
     nmap.add_argument(
         '--no-web-technos-detection',
-        action  = 'store_true',
-        help    = 'Disable web technologies detection for HTTP services')
+        action='store_true',
+        help='Disable web technologies detection for HTTP services')
     nmap.add_argument(
         '--version-detection',
-        action  = 'store_true',
-        help    = 'Run Nmap version detection for each service with no banner')
+        action='store_true',
+        help='Run Nmap version detection for each service with no banner')
     nmap.add_argument(
-        'file', 
-        nargs   = 1, 
-        metavar = '<xml-results>', 
-        help    = 'Nmap XML results file')
+        'file',
+        nargs=1,
+        metavar='<xml-results>',
+        help='Nmap XML results file')
 
     @cmd2.with_category(CMD_CAT_IMPORT)
     @cmd2.with_argparser(nmap)
@@ -1213,11 +1234,11 @@ class DbController(cmd2.Cmd):
                 logger.error('Cannot read specified file')
                 print()
                 return
-            
+
             logger.info('Importing Nmap results from {file}'.format(file=file))
             if not args.no_http_recheck:
-                logger.info('Each service will be re-checked to detect HTTP services. ' \
-                    'Use --no-http-recheck if you want to disable it (faster import)')
+                logger.info('Each service will be re-checked to detect HTTP services. '
+                            'Use --no-http-recheck if you want to disable it (faster import)')
 
             # Parse Nmap file
             parser = NmapResultsParser(file, self.settings.services)
@@ -1230,42 +1251,43 @@ class DbController(cmd2.Cmd):
 
             if results is not None:
                 if len(results) == 0:
-                    logger.warning('No new service has been added into current mission')
+                    logger.warning(
+                        'No new service has been added into current mission')
                 else:
                     logger.info('Update the database...')
                     req = HostsRequester(self.sqlsess)
                     req.select_mission(self.current_mission)
                     for host in results:
                         req.add_or_merge_host(host)
-                    logger.success('Nmap results imported with success into current mission')
+                    logger.success(
+                        'Nmap results imported with success into current mission')
 
             print()
-
 
     def complete_nmap(self, text, line, begidx, endidx):
         """Complete with filename"""
         flag_dict = {
             'nmap': self.path_complete,
-            '-n'  : self.path_complete, 
+            '-n': self.path_complete,
         }
 
         return self.flag_based_complete(text, line, begidx, endidx, flag_dict=flag_dict)
 
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Import Shodan host
 
     shodan = argparse.ArgumentParser(
-        description='Import Shodan host (ips)', 
+        description='Import Shodan host (ips)',
         formatter_class=formatter_class)
     shodan.add_argument(
-        '-n', '--no-http-recheck', 
-        action  = 'store_true', 
-        help    = 'Do not recheck for HTTP services')
+        '-n', '--no-http-recheck',
+        action='store_true',
+        help='Do not recheck for HTTP services')
     shodan.add_argument(
-        'ips', 
-        nargs   = 1, 
-        metavar = '<ip1,ip2...>', 
-        help    = 'Import a list of IPs (single IP comma-separated)')
+        'ips',
+        nargs=1,
+        metavar='<ip1,ip2...>',
+        help='Import a list of IPs (single IP comma-separated)')
 
     @cmd2.with_category(CMD_CAT_IMPORT)
     @cmd2.with_argparser(shodan)
@@ -1275,15 +1297,16 @@ class DbController(cmd2.Cmd):
 
         # Before all, check if we have a defined Shodan API key
         if 'shodan' not in API_KEYS.keys() or not API_KEYS['shodan']:
-            logger.error('You must add a valid Shodan API key in "apikeys.py" to use '\
-                'this feature')
+            logger.error('You must add a valid Shodan API key in "apikeys.py" to use '
+                         'this feature')
             print()
             return
 
         # Check IPs
         ips = args.ips[0]
         if not ips:
-            logger.error('Please type an ip address or several seperated with comma')
+            logger.error(
+                'Please type an ip address or several seperated with comma')
             print()
             return
         ips = ips.split(',')
@@ -1311,43 +1334,44 @@ class DbController(cmd2.Cmd):
 
         if results is not None:
             if len(results) == 0:
-                logger.warning('No new service has been added into current mission')
+                logger.warning(
+                    'No new service has been added into current mission')
             else:
                 req = HostsRequester(self.sqlsess)
                 req.select_mission(self.current_mission)
                 for host in results:
                     req.add_or_merge_host(host)
-                logger.success('Shodan results imported with success into current mission')
+                logger.success(
+                    'Shodan results imported with success into current mission')
 
         print()
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Import File
 
     file = argparse.ArgumentParser(
-        description='Import a list of targets from a file\n' \
-            'One target per line, with the following syntax:\n' \
-            '- For any service: <IP/HOST>:<PORT>,<SERVICE>\n' \
-            '- For HTTP service: <URL> (must begin with http(s)://)', 
+        description='Import a list of targets from a file\n'
+        'One target per line, with the following syntax:\n'
+        '- For any service: <IP/HOST>:<PORT>,<SERVICE>\n'
+        '- For HTTP service: <URL> (must begin with http(s)://)',
         formatter_class=formatter_class)
     # file.add_argument(
-    #     '--no-html-title', 
-    #     action = 'store_true', 
+    #     '--no-html-title',
+    #     action = 'store_true',
     #     help   = 'Do not grab HTML title for HTTP services')
     file.add_argument(
         '--no-dns-reverse',
-        action = 'store_true',
-        help   = 'Do not perform reverse DNS lookup on IP addresses')
+        action='store_true',
+        help='Do not perform reverse DNS lookup on IP addresses')
     file.add_argument(
         '--no-nmap-banner',
-        action = 'store_true',
-        help   = 'Disable Nmap banner grabbing')
+        action='store_true',
+        help='Disable Nmap banner grabbing')
     file.add_argument(
-        'file', 
-        nargs   = 1, 
-        metavar = '<filename>', 
-        help    = 'List of targets from a file')
+        'file',
+        nargs=1,
+        metavar='<filename>',
+        help='List of targets from a file')
 
     @cmd2.with_category(CMD_CAT_IMPORT)
     @cmd2.with_argparser(file)
@@ -1363,7 +1387,8 @@ class DbController(cmd2.Cmd):
             logger.error('Cannot read specified file')
             return
 
-        logger.info('Importing targets from the file "{file}"'.format(file=file))
+        logger.info(
+            'Importing targets from the file "{file}"'.format(file=file))
 
         # Parse file
         f = open(file, 'r').read().splitlines()
@@ -1385,25 +1410,25 @@ class DbController(cmd2.Cmd):
             if ',' in l:
                 ip_port, service = l.split(',', maxsplit=1)
                 if not self.settings.services.is_service_supported(service, multi=False):
-                    logger.error('Service {name} is not valid/supported. ' \
-                        'Line skipped'.format(name=service.lower()))
+                    logger.error('Service {name} is not valid/supported. '
+                                 'Line skipped'.format(name=service.lower()))
                     continue
 
                 ip, port = ip_port.split(':', maxsplit=1)
                 if not NetUtils.is_valid_port(port):
-                    logger.error('Port is invalid, not in range [0-65535]. ' \
-                        'Line skipped')
+                    logger.error('Port is invalid, not in range [0-65535]. '
+                                 'Line skipped')
                     continue
 
                 # Add the service in current mission scope
                 up = req.add_service(
-                    ip, 
-                    port, 
+                    ip,
+                    port,
                     self.settings.services.get_protocol(service),
-                    service, 
+                    service,
                     self.settings.services,
                     nmap_banner_grabbing=not args.no_nmap_banner,
-                    reverse_dns_lookup=not args.no_dns_reverse, 
+                    reverse_dns_lookup=not args.no_dns_reverse,
                     availability_check=True,
                     html_title_grabbing=True,
                     web_technos_detection=True)
@@ -1428,78 +1453,75 @@ class DbController(cmd2.Cmd):
 
         print()
 
-
     def complete_file(self, text, line, begidx, endidx):
         """Complete with filename"""
         flag_dict = {
             'file': self.path_complete,
-            #'--no-html-title'  : self.path_complete,
-            '--no-dns-reverse' : self.path_complete,
-            '--no-nmap-banner' : self.path_complete,
+            # '--no-html-title'  : self.path_complete,
+            '--no-dns-reverse': self.path_complete,
+            '--no-nmap-banner': self.path_complete,
 
         }
 
         return self.flag_based_complete(text, line, begidx, endidx, flag_dict=flag_dict)
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Vulns Display
 
     vulns = argparse.ArgumentParser(
-        description='Vulnerabilities in the current mission scope', 
+        description='Vulnerabilities in the current mission scope',
         formatter_class=formatter_class)
 
     vulns_filters = vulns.add_argument_group('Filter vulnerabilities')
     # vulns_filters.add_argument(
-    #     '-H', '--hostname', 
-    #     action  = 'store', 
-    #     metavar = '<hostname1,hostname2...>', 
+    #     '-H', '--hostname',
+    #     action  = 'store',
+    #     metavar = '<hostname1,hostname2...>',
     #     help    = 'Search for a list of hostnames (comma-separated)')
     vulns_filters.add_argument(
-        '-I', '--ip', 
-        action  = 'store', 
-        metavar = '<ip1,ip2...>', 
-        help    = 'Search for a list of IPs (single IP/CIDR range comma-separated)')
+        '-I', '--ip',
+        action='store',
+        metavar='<ip1,ip2...>',
+        help='Search for a list of IPs (single IP/CIDR range comma-separated)')
     vulns_filters.add_argument(
-        '-s', '--service', 
-        action  = 'store', 
-        metavar = '<service1,service2...>', 
-        help    = 'Services to select')
+        '-s', '--service',
+        action='store',
+        metavar='<service1,service2...>',
+        help='Services to select')
     vulns_filters.add_argument(
-        '-p', '--port', 
-        action  = 'store', 
-        metavar = '<port1,port2...>', 
-        help    = 'Search for a list of ports (single/range comma-separated)')   
+        '-p', '--port',
+        action='store',
+        metavar='<port1,port2...>',
+        help='Search for a list of ports (single/range comma-separated)')
     vulns_filters.add_argument(
-        '-r', '--proto', 
-        action  = 'store', 
-        metavar = '<protocol>', 
-        help    = 'Only show [tcp|udp] services')
+        '-r', '--proto',
+        action='store',
+        metavar='<protocol>',
+        help='Only show [tcp|udp] services')
     vulns_filters.add_argument(
-        '-S', '--search', 
-        action  = 'store', 
-        metavar = '<string>', 
-        help    = 'Search string to filter by')
+        '-S', '--search',
+        action='store',
+        metavar='<string>',
+        help='Search string to filter by')
     vulns_filters.add_argument(
-        '-o', '--order', 
-        action  = 'store', 
-        metavar = '<column>', 
-        help    = 'Order rows by specified column')
+        '-o', '--order',
+        action='store',
+        metavar='<column>',
+        help='Order rows by specified column')
 
     vulns_manage = vulns.add_argument_group('Manage vulnerabilities')
     vulns_manage.add_argument(
-        '-d', '--del', 
-        action  = 'store_true', 
-        dest    = 'delete', 
-        help    = 'Delete selected vulnerability(ies) (instead of displaying)')
-
+        '-d', '--del',
+        action='store_true',
+        dest='delete',
+        help='Delete selected vulnerability(ies) (instead of displaying)')
 
     vulns_manage = vulns.add_argument_group('Display option')
     vulns_manage.add_argument(
-        '--no-truncation', 
-        action  = 'store_true', 
-        dest    = 'no_truncation', 
-        help    = 'Do not truncate vulnerability names (require sufficient terminal width)')
+        '--no-truncation',
+        action='store_true',
+        dest='no_truncation',
+        help='Do not truncate vulnerability names (require sufficient terminal width)')
 
     @cmd2.with_category(CMD_CAT_RESULTS)
     @cmd2.with_argparser(vulns)
@@ -1530,12 +1552,14 @@ class DbController(cmd2.Cmd):
                         name=s.lower()))
                     print()
                     return
-            filter_.add_condition(Condition(services, FilterData.SERVICE_EXACT))
+            filter_.add_condition(
+                Condition(services, FilterData.SERVICE_EXACT))
 
         # --port <port1,port2...>
         if args.port:
             # OR between ports/port-ranges
-            filter_.add_condition(Condition(args.port.split(','), FilterData.PORT))
+            filter_.add_condition(
+                Condition(args.port.split(','), FilterData.PORT))
 
         # --proto <protocol>
         if args.proto:
@@ -1544,7 +1568,8 @@ class DbController(cmd2.Cmd):
         # --search <string>
         if args.search:
             filter_search = Filter(FilterOperator.OR)
-            filter_search.add_condition(Condition(args.search, FilterData.VULN))
+            filter_search.add_condition(
+                Condition(args.search, FilterData.VULN))
             filter_.add_condition(filter_search)
 
         # --order <column>
@@ -1574,47 +1599,45 @@ class DbController(cmd2.Cmd):
 
         print()
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Results
 
     results = argparse.ArgumentParser(
-        description='Attacks results', 
+        description='Attacks results',
         formatter_class=formatter_class)
 
     checks_filter = results.add_argument_group('Filters on checks')
     checks_filter.add_argument(
-        '-s', '--service-id', 
-        action  = 'store',
-        metavar = '<service-id>', 
-        help    = 'Service id to show results of')
+        '-s', '--service-id',
+        action='store',
+        metavar='<service-id>',
+        help='Service id to show results of')
     checks_filter.add_argument(
         '-n', '--check-name',
-        action  = 'store',
-        metavar = '<name>',
-        help    = 'Search for check name')
+        action='store',
+        metavar='<name>',
+        help='Search for check name')
 
     outputs_filter = results.add_argument_group('Filters on command outputs')
     outputs_filter_mxg = outputs_filter.add_mutually_exclusive_group()
     outputs_filter_mxg.add_argument(
-        '-c', '--check-id', 
-        action  = 'store', 
-        metavar = '<check-id>', 
-        help    = 'Show results (command outputs) for specified check')
+        '-c', '--check-id',
+        action='store',
+        metavar='<check-id>',
+        help='Show results (command outputs) for specified check')
     outputs_filter_mxg.add_argument(
         '-S', '--search',
-        action  = 'store',
-        metavar = '<string>',
-        help    = 'Search for a string in results (command outputs). ' \
-            'Accept wildcard: %%')
+        action='store',
+        metavar='<string>',
+        help='Search for a string in results (command outputs). '
+        'Accept wildcard: %%')
     outputs_filter.add_argument(
         '--nb-words',
-        action  = 'store',
-        metavar = '<nb>',
-        default  = 12,
-        help     = 'Number of words to show before and after match when using ' \
-            '-S--search/--search (default: 12)')
-
+        action='store',
+        metavar='<nb>',
+        default=12,
+        help='Number of words to show before and after match when using '
+        '-S--search/--search (default: 12)')
 
     @cmd2.with_category(CMD_CAT_RESULTS)
     @cmd2.with_argparser(results)
@@ -1624,8 +1647,8 @@ class DbController(cmd2.Cmd):
 
         # Required checks on arguments
         if (args.service_id or args.check_name) and (args.check_id or args.search):
-            logger.error('--service-id|--check-name and --check-id|--search are '\
-                'mutually exclusive')
+            logger.error('--service-id|--check-name and --check-id|--search are '
+                         'mutually exclusive')
             print()
             return
 
@@ -1640,9 +1663,8 @@ class DbController(cmd2.Cmd):
 
         # Logical AND is applied between all specified filtering options
         filter_ = Filter(FilterOperator.AND)
-        
 
-        if args.service_id or args.check_name:            
+        if args.service_id or args.check_name:
 
             # --service-id <service-id>
             if args.service_id:
@@ -1663,14 +1685,16 @@ class DbController(cmd2.Cmd):
                 #     logger.error('Invalid service id (not existing)')
                 #     return
 
-                filter_.add_condition(Condition(service_id, FilterData.SERVICE_ID))
+                filter_.add_condition(
+                    Condition(service_id, FilterData.SERVICE_ID))
 
             # --check-name <name>
             if args.check_name:
-                filter_.add_condition(Condition(args.check_name, FilterData.CHECK_NAME))
+                filter_.add_condition(
+                    Condition(args.check_name, FilterData.CHECK_NAME))
 
             results_req.add_filter(filter_)
-            results_req.show()            
+            results_req.show()
 
         else:
 
@@ -1683,7 +1707,8 @@ class DbController(cmd2.Cmd):
                     print()
                     return
 
-                filter_.add_condition(Condition(args.check_id, FilterData.CHECK_ID))
+                filter_.add_condition(
+                    Condition(args.check_id, FilterData.CHECK_ID))
                 results_req.add_filter(filter_)
                 results_req.show_command_outputs_for_check()
 
@@ -1692,30 +1717,30 @@ class DbController(cmd2.Cmd):
                 outputs_req = CommandOutputsRequester(self.sqlsess)
                 outputs_req.select_mission(self.current_mission)
 
-                filter_.add_condition(Condition(args.search, FilterData.COMMAND_OUTPUT))
+                filter_.add_condition(
+                    Condition(args.search, FilterData.COMMAND_OUTPUT))
                 outputs_req.add_filter(filter_)
                 outputs_req.show_search_results(args.search, args.nb_words)
 
-        print()             
+        print()
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Report
 
     report = argparse.ArgumentParser(
-        description='Generate an HTML Report with all data and checks outputs from \n' \
-            'the current mission',
+        description='Generate an HTML Report with all data and checks outputs from \n'
+        'the current mission',
         formatter_class=formatter_class)
     report.add_argument(
         '--no-screen',
-        action = 'store_true',
-        help   = 'Disable not take web page screenshots')
+        action='store_true',
+        help='Disable not take web page screenshots')
     report.add_argument(
-        'path', 
-        nargs   = '?', 
-        metavar = '<path>', 
-        default = REPORT_PATH,
-        help    = 'Output path (default: reports/)')
+        'path',
+        nargs='?',
+        metavar='<path>',
+        default=REPORT_PATH,
+        help='Output path (default: reports/)')
 
     @cmd2.with_category(CMD_CAT_REPORTING)
     @cmd2.with_argparser(report)
@@ -1729,17 +1754,16 @@ class DbController(cmd2.Cmd):
             print()
             return
 
-        reporter = Reporter(self.current_mission, 
+        reporter = Reporter(self.current_mission,
                             self.sqlsess,
                             self.settings,
-                            args.path, 
+                            args.path,
                             do_screens=not args.no_screen)
         reporter.run()
 
         print()
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def __confirm_for_all(self, action):
         """
@@ -1749,9 +1773,10 @@ class DbController(cmd2.Cmd):
         :return: Answer from the user
         :rtype: bool
         """
-        if not Output.prompt_confirm('No filter applied. Are you sure you ' \
-                'want to {action} in current mission ?'.format(action=action), 
-                default=False):
+        if not Output.prompt_confirm('No filter applied. Are you sure you '
+                                     'want to {action} in current mission ?'.format(
+                                         action=action),
+                                     default=False):
             logger.info('Canceled')
             print()
             return False

@@ -3,7 +3,7 @@
 from lib.smartmodules.matchstrings.MatchStrings import products_match
 
 
-WIG_REGEXP = '{}\s*[VERSION]\s*CMS' 
+WIG_REGEXP = '{}\s*[VERSION]\s*CMS'
 WIG_REGEXP2 = '- Found CMS match: {}\s*(Determining CMS version \.\.\.(\s*- Found version: (\S+)\s+[VERSION])?)?'
 
 

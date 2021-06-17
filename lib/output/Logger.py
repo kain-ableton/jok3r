@@ -6,49 +6,49 @@
 import logging
 import colorlog
 
-DEBUG   = '[D]'
-INFO    = '[*]'
+DEBUG = '[D]'
+INFO = '[*]'
 SUCCESS = '[+]'
-PROMPT  = '[?]'
+PROMPT = '[?]'
 WARNING = '[X]'
-ERROR   = '[!]'
-SMARTINFO    = '[*] [SMART]'
+ERROR = '[!]'
+SMARTINFO = '[*] [SMART]'
 SMARTSUCCESS = '[+] [SMART]'
-SMARTERROR   = '[!] [SMART]'
+SMARTERROR = '[!] [SMART]'
 
 # https://github.com/borntyping/python-colorlog
 # LOG_FORMAT   = '[%(asctime)s] %(levelname)s %(message)s'
-LOG_FORMAT   = '%(log_color)s%(levelname)s%(reset)s %(message_log_color)s%(message)s'
-DATE_FORMAT  = '%H:%M:%S'
+LOG_FORMAT = '%(log_color)s%(levelname)s%(reset)s %(message_log_color)s%(message)s'
+DATE_FORMAT = '%H:%M:%S'
 
 LOG_COLORS = {
-    DEBUG    : 'bold,white',
-    INFO     : 'bold,blue',
-    SUCCESS  : 'bold,green',
-    PROMPT   : 'bold,cyan',
-    WARNING  : 'bold,yellow',
-    ERROR    : 'bold,red',
-    SMARTINFO    : 'bold,blue', 
-    SMARTSUCCESS : 'bold,green',
-    SMARTERROR   : 'bold,red',
-    #CRITICAL : 'bold,red',
+    DEBUG: 'bold,white',
+    INFO: 'bold,blue',
+    SUCCESS: 'bold,green',
+    PROMPT: 'bold,cyan',
+    WARNING: 'bold,yellow',
+    ERROR: 'bold,red',
+    SMARTINFO: 'bold,blue',
+    SMARTSUCCESS: 'bold,green',
+    SMARTERROR: 'bold,red',
+    # CRITICAL : 'bold,red',
 }
 
 SECONDARY_LOG_COLORS = {
-        'message': {
-            DEBUG    : 'white',
-            SUCCESS  : 'green',
-            WARNING  : 'yellow',
-            ERROR    : 'red',
-            SMARTSUCCESS : 'green',
-            SMARTERROR   : 'red',
-            #CRITICAL : 'bold,red',
-        }
+    'message': {
+        DEBUG: 'white',
+        SUCCESS: 'green',
+        WARNING: 'yellow',
+        ERROR: 'red',
+        SMARTSUCCESS: 'green',
+        SMARTERROR: 'red',
+        # CRITICAL : 'bold,red',
+    }
 }
 
 #logging.addLevelName(logging.CRITICAL, '[-]')
 
-handler   = colorlog.StreamHandler()
+handler = colorlog.StreamHandler()
 
 formatter = colorlog.ColoredFormatter(LOG_FORMAT,
                                       datefmt=DATE_FORMAT,
@@ -75,16 +75,16 @@ logging.addLevelName(logging.ERROR, ERROR)
 logging.addLevelName(logging.SMARTINFO, SMARTINFO)
 logging.addLevelName(logging.SMARTSUCCESS, SMARTSUCCESS)
 logging.addLevelName(logging.SMARTERROR, SMARTERROR)
-setattr(logger, 'success', 
-    lambda message, *args: logger._log(logging.SUCCESS, message, args))
-setattr(logger, 'prompt', 
-    lambda message, *args: logger._log(logging.PROMPT, message, args))
-setattr(logger, 'smartinfo', 
-    lambda message, *args: logger._log(logging.SMARTINFO, message, args))
-setattr(logger, 'smartsuccess', 
-    lambda message, *args: logger._log(logging.SMARTSUCCESS, message, args))
-setattr(logger, 'smarterror', 
-    lambda message, *args: logger._log(logging.SMARTERROR, message, args))
+setattr(logger, 'success',
+        lambda message, *args: logger._log(logging.SUCCESS, message, args))
+setattr(logger, 'prompt',
+        lambda message, *args: logger._log(logging.PROMPT, message, args))
+setattr(logger, 'smartinfo',
+        lambda message, *args: logger._log(logging.SMARTINFO, message, args))
+setattr(logger, 'smartsuccess',
+        lambda message, *args: logger._log(logging.SMARTSUCCESS, message, args))
+setattr(logger, 'smarterror',
+        lambda message, *args: logger._log(logging.SMARTERROR, message, args))
 
 logger.setLevel('INFO')
 logger.addHandler(handler)

@@ -26,8 +26,7 @@ class ServicesRequester(Requester):
                           .options(contains_eager(Service.host))
         super().__init__(sqlsession, query)
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def show(self):
         """Display selected services"""
@@ -40,7 +39,7 @@ class ServicesRequester(Requester):
             columns = [
                 'id',
                 'IP',
-                #'Hostname',
+                # 'Hostname',
                 'Port',
                 'Proto',
                 'Svc',
@@ -53,16 +52,16 @@ class ServicesRequester(Requester):
             ]
             for r in results:
                 # Creds numbers
-                nb_userpass  = r.get_nb_credentials(single_username=False)
+                nb_userpass = r.get_nb_credentials(single_username=False)
                 nb_usernames = r.get_nb_credentials(single_username=True)
                 nb_creds = '{}{}{}'.format(
-                    '{}'.format(Output.colored(str(nb_userpass),  color='green' \
-                            if nb_userpass > 0 else None)) if nb_userpass > 0 else '',
+                    '{}'.format(Output.colored(str(nb_userpass),  color='green'
+                                               if nb_userpass > 0 else None)) if nb_userpass > 0 else '',
                     '/' if nb_userpass > 0 and nb_usernames > 0 else '',
-                    '{} usr'.format(Output.colored(str(nb_usernames), color='yellow' \
-                            if nb_usernames > 0 else None)) if nb_usernames > 0 else '')
-                nb_vulns = Output.colored(str(len(r.vulns)), color='green' \
-                    if len(r.vulns) > 0 else None) if len(r.vulns) > 0 else ''
+                    '{} usr'.format(Output.colored(str(nb_usernames), color='yellow'
+                                                   if nb_usernames > 0 else None)) if nb_usernames > 0 else '')
+                nb_vulns = Output.colored(str(len(r.vulns)), color='green'
+                                          if len(r.vulns) > 0 else None) if len(r.vulns) > 0 else ''
 
                 # Col "Comment/Title" (title is for HTML title for HTTP)
                 if r.html_title:
@@ -73,7 +72,7 @@ class ServicesRequester(Requester):
                 data.append([
                     r.id,
                     r.host.ip,
-                    #r.host.hostname,
+                    # r.host.hostname,
                     r.port,
                     {Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(r.protocol),
                     r.name,
@@ -86,17 +85,16 @@ class ServicesRequester(Requester):
                 ])
             Output.table(columns, data, hrules=False)
 
+    # ------------------------------------------------------------------------------------
 
-    #------------------------------------------------------------------------------------
-    
-    def add_service(self, 
-                    ip, 
-                    port, 
-                    protocol, 
-                    service, 
+    def add_service(self,
+                    ip,
+                    port,
+                    protocol,
+                    service,
                     services_config,
                     nmap_banner_grabbing=True,
-                    reverse_dns_lookup=True, 
+                    reverse_dns_lookup=True,
                     availability_check=True,
                     html_title_grabbing=True,
                     web_technos_detection=True):
@@ -117,12 +115,13 @@ class ServicesRequester(Requester):
         :return: Status
         :rtype: bool
         """
-        proto = {'tcp': Protocol.TCP, 'udp': Protocol.UDP}.get(protocol, Protocol.TCP)
+        proto = {'tcp': Protocol.TCP, 'udp': Protocol.UDP}.get(
+            protocol, Protocol.TCP)
 
         service = Service(
-            port     = int(port),
-            protocol = proto,
-            name     = service)
+            port=int(port),
+            protocol=proto,
+            name=service)
         service.host = Host(ip=ip)
         try:
             target = Target(service, services_config)
@@ -131,10 +130,10 @@ class ServicesRequester(Requester):
             return False
 
         matching_service = self.sqlsess.query(Service).join(Host).join(Mission)\
-                                .filter(Mission.name == self.current_mission)\
-                                .filter(Host.ip == service.host.ip)\
-                                .filter(Service.port == int(port))\
-                                .filter(Service.protocol == proto).first()
+            .filter(Mission.name == self.current_mission)\
+            .filter(Host.ip == service.host.ip)\
+            .filter(Service.port == int(port))\
+            .filter(Service.protocol == proto).first()
 
         if matching_service:
             logger.warning('Service already present into database')
@@ -143,8 +142,8 @@ class ServicesRequester(Requester):
         else:
 
             up = target.smart_check(
-                reverse_dns_lookup, 
-                availability_check, 
+                reverse_dns_lookup,
+                availability_check,
                 nmap_banner_grabbing,
                 html_title_grabbing,
                 web_technos_detection,
@@ -156,7 +155,7 @@ class ServicesRequester(Requester):
                                     .filter(Mission.name == self.current_mission)\
                                     .filter(Host.ip == service.host.ip).first()
                 new_host = Host(
-                    ip=service.host.ip, 
+                    ip=service.host.ip,
                     hostname=service.host.hostname,
                     os=service.host.os,
                     os_vendor=service.host.os_vendor,
@@ -179,26 +178,26 @@ class ServicesRequester(Requester):
                 self.sqlsess.add(service)
                 self.sqlsess.commit()
 
-                logger.success('Service added: host {ip} | port {port}/{proto} | ' \
-                    'service {service}'.format(
-                        ip=service.host.ip, 
-                        port=port, 
-                        proto=protocol, 
-                        service=service.name))
+                logger.success('Service added: host {ip} | port {port}/{proto} | '
+                               'service {service}'.format(
+                                   ip=service.host.ip,
+                                   port=port,
+                                   proto=protocol,
+                                   service=service.name))
                 return True
 
             else:
-                logger.error('Service is not reachable, therefore it is not added')
+                logger.error(
+                    'Service is not reachable, therefore it is not added')
                 return False
 
+    # ------------------------------------------------------------------------------------
 
-    #------------------------------------------------------------------------------------
-
-    def add_url(self, 
+    def add_url(self,
                 url,
                 services_config,
-                reverse_dns_lookup=True, 
-                availability_check=True, 
+                reverse_dns_lookup=True,
+                availability_check=True,
                 nmap_banner_grabbing=True,
                 html_title_grabbing=True,
                 web_technos_detection=True):
@@ -218,8 +217,8 @@ class ServicesRequester(Requester):
         """
         matching_service = self.sqlsess.query(Service).join(Host).join(Mission)\
             .filter(Mission.name == self.current_mission)\
-            .filter((Service.url == url) | \
-                (Service.url == WebUtils.remove_ending_slash(url))).first()
+            .filter((Service.url == url) |
+                    (Service.url == WebUtils.remove_ending_slash(url))).first()
 
         if matching_service:
             logger.warning('URL already present into database')
@@ -227,10 +226,10 @@ class ServicesRequester(Requester):
 
         else:
             service = Service(
-                name     = 'http',
-                protocol = Protocol.TCP,
-                url      = url)
-            service.host = Host() # Update in target.smart_check()
+                name='http',
+                protocol=Protocol.TCP,
+                url=url)
+            service.host = Host()  # Update in target.smart_check()
             try:
                 target = Target(service, services_config)
             except Exception as e:
@@ -238,8 +237,8 @@ class ServicesRequester(Requester):
                 return False
 
             up = target.smart_check(
-                reverse_dns_lookup, 
-                availability_check, 
+                reverse_dns_lookup,
+                availability_check,
                 nmap_banner_grabbing,
                 html_title_grabbing,
                 web_technos_detection,
@@ -250,7 +249,7 @@ class ServicesRequester(Requester):
                                             .filter(Mission.name == self.current_mission)\
                                             .filter(Host.ip == service.host.ip).first()
                 new_host = Host(
-                    ip=service.host.ip, 
+                    ip=service.host.ip,
                     hostname=service.host.hostname,
                     os=service.host.os,
                     os_vendor=service.host.os_vendor,
@@ -279,8 +278,7 @@ class ServicesRequester(Requester):
                 logger.error('URL is not reachable, therefore it is not added')
                 return False
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def add_target(self, target):
         """
@@ -293,14 +291,14 @@ class ServicesRequester(Requester):
                       .filter(Mission.name == self.current_mission).first()
 
         matching_service = self.sqlsess.query(Service)\
-                              .join(Host)\
-                              .join(Mission)\
-                              .filter(Host.ip == target.get_ip())\
-                              .filter(Mission.name == self.current_mission)\
-                              .filter(Service.name == target.get_service_name())\
-                              .filter(Service.port == target.get_port())\
-                              .filter(Service.protocol == target.get_protocol2())\
-                              .filter(Service.url == target.get_url()).first()
+            .join(Host)\
+            .join(Mission)\
+            .filter(Host.ip == target.get_ip())\
+            .filter(Mission.name == self.current_mission)\
+            .filter(Service.name == target.get_service_name())\
+            .filter(Service.port == target.get_port())\
+            .filter(Service.protocol == target.get_protocol2())\
+            .filter(Service.url == target.get_url()).first()
 
         # If service already exists in db, update it if necessary
         if matching_service:
@@ -308,36 +306,35 @@ class ServicesRequester(Requester):
             matching_service.merge(target.service)
             self.sqlsess.commit()
             # Make sure to replace target info by newly created service
-            target.service = matching_service 
+            target.service = matching_service
 
         # Add host in db if it does not exist or update its info (merging)
         else:
             matching_host = self.sqlsess.query(Host).join(Mission)\
-                               .filter(Mission.name == self.current_mission)\
-                               .filter(Host.ip == target.get_ip()).first()
+                .filter(Mission.name == self.current_mission)\
+                .filter(Host.ip == target.get_ip()).first()
             if matching_host:
                 matching_host.merge(target.service.host)
                 self.sqlsess.commit()
                 target.service.host = matching_host
             else:
                 self.sqlsess.add(target.service.host)
-                mission.hosts.append(target.service.host)                              
+                mission.hosts.append(target.service.host)
                 self.sqlsess.commit()
 
             # Add service in db
             self.sqlsess.add(target.service)
             self.sqlsess.commit()
 
-        logger.success('{action}: host {ip} | port {port}/{proto} | ' \
-            'service {service}'.format(
-            action  = 'Updated' if matching_service else 'Added',
-            ip      = target.get_ip(),
-            port    = target.get_port(),
-            proto   = target.get_protocol(),
-            service = target.get_service_name()))
+        logger.success('{action}: host {ip} | port {port}/{proto} | '
+                       'service {service}'.format(
+                           action='Updated' if matching_service else 'Added',
+                           ip=target.get_ip(),
+                           port=target.get_port(),
+                           proto=target.get_protocol(),
+                           service=target.get_service_name()))
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def add_cred(self, username, password, auth_type=None):
         """
@@ -359,9 +356,9 @@ class ServicesRequester(Requester):
                                    .filter(Credential.type == auth_type).first()
                 if not cred:
                     cred = Credential(
-                        username = username,
-                        password = password,
-                        type     = auth_type if r.name == 'http' else None)
+                        username=username,
+                        password=password,
+                        type=auth_type if r.name == 'http' else None)
 
                     self.sqlsess.add(cred)
                     r.credentials.append(cred)
@@ -371,25 +368,26 @@ class ServicesRequester(Requester):
                         cred.password, cred.password)
                     auth_type = '('+str(auth_type)+')' if \
                         (auth_type and r.name == 'http') else ''
-                    hostname = '('+r.host.hostname+')' if r.host.hostname else ''
-                    protocol = {Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(r.protocol)
+                    hostname = '('+r.host.hostname + \
+                        ')' if r.host.hostname else ''
+                    protocol = {Protocol.TCP: 'tcp',
+                                Protocol.UDP: 'udp'}.get(r.protocol)
 
-                    logger.success('Credential {username}/{password}{auth_type} ' \
-                        'added to service {service} host={ip}{hostname} ' \
-                        'port={port}/{proto}'.format(
-                            username  = username,
-                            password  = password,
-                            auth_type = auth_type,
-                            service   = r.name,
-                            ip        = r.host.ip,
-                            hostname  = hostname,
-                            port      = r.port,
-                            proto     = protocol))
-                    
-            self.sqlsess.commit() 
+                    logger.success('Credential {username}/{password}{auth_type} '
+                                   'added to service {service} host={ip}{hostname} '
+                                   'port={port}/{proto}'.format(
+                                       username=username,
+                                       password=password,
+                                       auth_type=auth_type,
+                                       service=r.name,
+                                       ip=r.host.ip,
+                                       hostname=hostname,
+                                       port=r.port,
+                                       proto=protocol))
 
+            self.sqlsess.commit()
 
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def edit_comment(self, comment):
         """
@@ -405,7 +403,6 @@ class ServicesRequester(Requester):
             self.sqlsess.commit()
             logger.success('Comment edited')
 
-
     def switch_https(self):
         """Switch between HTTP and HTTPS on selected services"""
         results = self.get_results()
@@ -418,8 +415,6 @@ class ServicesRequester(Requester):
             self.sqlsess.commit()
             logger.success('Switch done')
 
-
-
     def delete(self):
         """Delete selected services"""
         results = self.get_results()
@@ -427,30 +422,30 @@ class ServicesRequester(Requester):
             logger.error('No matching service')
         else:
             for r in results:
-                logger.info('Service {service} host={ip}{hostname} ' \
-                    'port={port}/{proto} deleted'.format(
-                    service  = r.name,
-                    ip       = r.host.ip,
-                    hostname = '('+r.host.hostname+')' if r.host.hostname else '',
-                    port     = r.port,
-                    proto    = {Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(
-                        r.protocol)))
+                logger.info('Service {service} host={ip}{hostname} '
+                            'port={port}/{proto} deleted'.format(
+                                service=r.name,
+                                ip=r.host.ip,
+                                hostname='('+r.host.hostname +
+                                ')' if r.host.hostname else '',
+                                port=r.port,
+                                proto={Protocol.TCP: 'tcp', Protocol.UDP: 'udp'}.get(
+                                    r.protocol)))
 
                 self.sqlsess.delete(r)
                 self.sqlsess.commit()
 
                 # Delete host if no more service in it
                 if len(r.host.services) == 0:
-                    logger.info('Host {ip} {hostname} deleted because it does not ' \
-                        'have service anymore'.format(
-                        ip=r.host.ip, 
-                        hostname='('+r.host.hostname+')' if r.host.hostname else ''))
+                    logger.info('Host {ip} {hostname} deleted because it does not '
+                                'have service anymore'.format(
+                                    ip=r.host.ip,
+                                    hostname='('+r.host.hostname+')' if r.host.hostname else ''))
 
                     self.sqlsess.delete(r.host)
-                    self.sqlsess.commit()          
+                    self.sqlsess.commit()
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def order_by(self, column):
         """
@@ -458,14 +453,14 @@ class ServicesRequester(Requester):
         :param str column: Column name to order by
         """
         mapping = {
-            'ip'       : Host.ip,
-            'hostname' : Host.hostname,
-            'port'     : Service.port,
-            'proto'    : Service.protocol,
-            'service'  : Service.name,
-            'banner'   : Service.banner,
-            'url'      : Service.url,
-            'comment'  : Service.comment,
+            'ip': Host.ip,
+            'hostname': Host.hostname,
+            'port': Service.port,
+            'proto': Service.protocol,
+            'service': Service.name,
+            'banner': Service.banner,
+            'url': Service.url,
+            'comment': Service.comment,
         }
 
         if column.lower() not in mapping.keys():
@@ -475,8 +470,7 @@ class ServicesRequester(Requester):
 
         super().order_by(mapping[column.lower()])
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def are_only_http_services_selected(self):
         """Check if selected services are only HTTP services"""

@@ -26,4 +26,3 @@ options_match['smb'] = {
     },
 
 }
-

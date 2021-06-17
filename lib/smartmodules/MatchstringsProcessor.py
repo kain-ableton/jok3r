@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
-### SmartModules > Matchstrings Processor
+# SmartModules > Matchstrings Processor
 ###
 import re
 import regex
@@ -13,18 +13,18 @@ from lib.smartmodules.matchstrings.MatchStrings import *
 
 class MatchstringsProcessor:
 
-    def __init__(self, 
-    			 service, 
-    			 tool_name, 
-    			 cmd_output,
-    			 context_updater):
+    def __init__(self,
+                 service,
+                 tool_name,
+                 cmd_output,
+                 context_updater):
         """
         :param Service service: Target service model
         :param str tool_name: Source of the data to process (tool name or other 
-        	sources such as banner, original service name, wappalyzer)
+                sources such as banner, original service name, wappalyzer)
         :param str cmd_output: Data to process, most of the time is is command output 
-        	(sanitized / special chars removed). In this case, it should be prepended
-        	by command line
+                (sanitized / special chars removed). In this case, it should be prepended
+                by command line
         :param ContextUpdater context_updater: Context updater object
         """
         self.service = service
@@ -32,8 +32,7 @@ class MatchstringsProcessor:
         self.cmd_output = cmd_output or ''
         self.cu = context_updater
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def detect_credentials(self):
         """
@@ -77,10 +76,10 @@ class MatchstringsProcessor:
                         pattern=pattern))
 
                     if 'user' not in p[pattern]:
-                        logger.smarterror('Invalid matchstring for service={service}, ' \
-                            ' tool={tool}: Missing "user" key'.format(
-                                service=self.service.name,
-                                tool=self.tool_name))
+                        logger.smarterror('Invalid matchstring for service={service}, '
+                                          ' tool={tool}: Missing "user" key'.format(
+                                              service=self.service.name,
+                                              tool=self.tool_name))
                         continue
 
                     # Matching method
@@ -90,21 +89,20 @@ class MatchstringsProcessor:
                     else:
                         method = 'finditer'
 
-
                     # Perform regexp matching
                     try:
                         if method == 'finditer':
-                            m = re.finditer(pattern, 
-                                            self.cmd_output, 
-                                            re.IGNORECASE|re.MULTILINE)
+                            m = re.finditer(pattern,
+                                            self.cmd_output,
+                                            re.IGNORECASE | re.MULTILINE)
                         else:
-                            m = regex.search(pattern, 
-                                             self.cmd_output, 
+                            m = regex.search(pattern,
+                                             self.cmd_output,
                                              regex.IGNORECASE)
                     except Exception as e:
-                        logger.warning('Error with matchstring [{pattern}], you should ' \
-                            'review it. Exception: {exception}'.format(
-                                pattern=pattern, exception=e))
+                        logger.warning('Error with matchstring [{pattern}], you should '
+                                       'review it. Exception: {exception}'.format(
+                                           pattern=pattern, exception=e))
                         break
 
                     if not m:
@@ -152,11 +150,11 @@ class MatchstringsProcessor:
                         pattern_match = True
                         matchs = m.capturesdict()
                         if 'm1' not in matchs:
-                            logger.smarterror('Invalid matchstring for ' \
-                                'service={service}, tool={tool}: Missing match ' \
-                                'group'.format(
-                                    service=self.service.name,
-                                    tool=self.tool_name))
+                            logger.smarterror('Invalid matchstring for '
+                                              'service={service}, tool={tool}: Missing match '
+                                              'group'.format(
+                                                  service=self.service.name,
+                                                  tool=self.tool_name))
                             return
 
                         nb_groups = len(matchs['m1'])
@@ -198,8 +196,7 @@ class MatchstringsProcessor:
                         logger.debug('Creds pattern matches (user only)')
                         return
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def detect_specific_options(self):
         """Detect specific option update from command output"""
@@ -213,15 +210,14 @@ class MatchstringsProcessor:
                         pattern=pattern))
 
                     try:
-                        m = re.search(pattern, 
-                                      self.cmd_output, 
-                                      re.IGNORECASE|re.MULTILINE)
+                        m = re.search(pattern,
+                                      self.cmd_output,
+                                      re.IGNORECASE | re.MULTILINE)
                     except Exception as e:
-                        logger.warning('Error with matchstring [{pattern}], you should '\
-                            'review it. Exception: {exception}'.format(
-                                pattern=pattern, exception=e))
+                        logger.warning('Error with matchstring [{pattern}], you should '
+                                       'review it. Exception: {exception}'.format(
+                                           pattern=pattern, exception=e))
                         break
-
 
                     # If pattern matches cmd output, update specific option
                     if m:
@@ -232,11 +228,11 @@ class MatchstringsProcessor:
                             if name is None:
                                 continue
                         else:
-                            logger.smarterror('Invalid matchstring for ' \
-                                'service={service}, tool={tool}: Missing ' \
-                                '"name" key'.format(
-                                    service=self.service.name,
-                                    tool=self.tool_name))
+                            logger.smarterror('Invalid matchstring for '
+                                              'service={service}, tool={tool}: Missing '
+                                              '"name" key'.format(
+                                                  service=self.service.name,
+                                                  tool=self.tool_name))
                             continue
 
                         if 'value' in p[pattern]:
@@ -245,23 +241,22 @@ class MatchstringsProcessor:
                             if value is None:
                                 continue
                         else:
-                            logger.smarterror('Invalid matchstring for ' \
-                                'service={service}, tool={tool}: Missing ' \
-                                '"value" key'.format(
-                                    service=self.service.name,
-                                    tool=self.tool_name))
-                            continue 
+                            logger.smarterror('Invalid matchstring for '
+                                              'service={service}, tool={tool}: Missing '
+                                              '"value" key'.format(
+                                                  service=self.service.name,
+                                                  tool=self.tool_name))
+                            continue
 
                         # Add specific option to context
-                        self.cu.add_option(name, value)                           
+                        self.cu.add_option(name, value)
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def detect_products(self):
         """
         Detect product from command output
-        
+
         For a given tool, and for a given product, if there are several matchstrings
         defined, their order is important because it stops after the first match.
         """
@@ -272,31 +267,32 @@ class MatchstringsProcessor:
                 break_prodnames = False
 
                 for prodname in p.keys():
-                
+
                     if self.tool_name in p[prodname].keys():
                         patterns = p[prodname][self.tool_name]
 
                         # List of patterns is supported (i.e. several different
                         # patterns for a given tool)
                         if type(patterns) == str:
-                            patterns = [ patterns ]
+                            patterns = [patterns]
 
                         for pattern in patterns:
                             version_detection = '[VERSION]' in pattern
-                            pattern = pattern.replace('[VERSION]', VERSION_REGEXP)
+                            pattern = pattern.replace(
+                                '[VERSION]', VERSION_REGEXP)
 
                             logger.debug('Search for products pattern: {pattern}'.format(
                                 pattern=pattern))
 
                             try:
-                                m = re.search(pattern, 
-                                              self.cmd_output, 
-                                              re.IGNORECASE|re.MULTILINE)
+                                m = re.search(pattern,
+                                              self.cmd_output,
+                                              re.IGNORECASE | re.MULTILINE)
                             except Exception as e:
-                                logger.warning('Error with matchstring [{pattern}], ' \
-                                    'you should review it. Exception: ' \
-                                    '{exception}'.format(
-                                        pattern=pattern, exception=e))
+                                logger.warning('Error with matchstring [{pattern}], '
+                                               'you should review it. Exception: '
+                                               '{exception}'.format(
+                                                   pattern=pattern, exception=e))
                                 break
 
                             # If pattern matches cmd output, add detected product
@@ -319,9 +315,10 @@ class MatchstringsProcessor:
                                     version = ''
 
                                 # Add detected product to context
-                                self.cu.add_product(prodtype, prodname, version)
+                                self.cu.add_product(
+                                    prodtype, prodname, version)
 
-                                # Move to next product type because only one name 
+                                # Move to next product type because only one name
                                 # (potentially with version) is supported per type.
                                 # If name not found yet, give a try to next pattern
                                 break_prodnames = True
@@ -331,8 +328,7 @@ class MatchstringsProcessor:
                         if break_prodnames:
                             break
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def detect_vulns(self):
         """
@@ -353,29 +349,29 @@ class MatchstringsProcessor:
                     # Important: Multiple search/match
                     #m = re.search(pattern, self.cmd_output, re.IGNORECASE)
                     try:
-                        mall = re.finditer(pattern, 
-                                           self.cmd_output, 
-                                           re.IGNORECASE|re.MULTILINE)
+                        mall = re.finditer(pattern,
+                                           self.cmd_output,
+                                           re.IGNORECASE | re.MULTILINE)
                     except Exception as e:
-                        logger.warning('Error with matchstring [{pattern}], you ' \
-                            'should review it. Exception: {exception}'.format(
-                                pattern=pattern, exception=e))
+                        logger.warning('Error with matchstring [{pattern}], you '
+                                       'should review it. Exception: {exception}'.format(
+                                           pattern=pattern, exception=e))
                         break
 
                     # Process each match
                     if mall:
                         for m in mall:
-                            name = self.__replace_tokens_from_matchobj(p[pattern], m)
+                            name = self.__replace_tokens_from_matchobj(
+                                p[pattern], m)
                             if name is None:
                                 continue
 
                             # Add vulnerability to context
                             logger.debug('Vuln pattern matches')
-                            self.cu.add_vuln(StringUtils.remove_non_printable_chars(name))    
+                            self.cu.add_vuln(
+                                StringUtils.remove_non_printable_chars(name))
 
-
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def detect_os(self):
         """
@@ -386,18 +382,18 @@ class MatchstringsProcessor:
                 patterns = os_match[os][self.tool_name]
 
                 if type(patterns) == str:
-                    patterns = [ patterns ]
+                    patterns = [patterns]
 
                 for pattern in patterns:
                     logger.debug('Search for os pattern: {pattern}'.format(
                         pattern=pattern))
-                    
+
                     try:
                         m = re.search(pattern, self.cmd_output, re.IGNORECASE)
                     except Exception as e:
-                        logger.warning('Error with matchstring [{pattern}], ' \
-                            'you should review it. Exception: {exc}'.format(
-                                pattern=pattern, exc=e))
+                        logger.warning('Error with matchstring [{pattern}], '
+                                       'you should review it. Exception: {exc}'.format(
+                                           pattern=pattern, exc=e))
                         break
 
                     # If pattern matches, add detected OS
@@ -408,8 +404,7 @@ class MatchstringsProcessor:
                         self.cu.add_os(os)
                         return
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def __replace_tokens_from_matchobj(self, string, match):
         """
@@ -424,7 +419,7 @@ class MatchstringsProcessor:
         :rtype: str|None
         """
         output = string
-        for i in range(1,10):
+        for i in range(1, 10):
             token = '${}'.format(i)
             if token in string:
                 group = 'm{}'.format(i)
@@ -435,10 +430,10 @@ class MatchstringsProcessor:
                     output = output.replace(token, match.group(group) or '')
 
                 else:
-                    logger.smarterror('Invalid matchstring for service={service}, ' \
-                        'tool={tool}'.format(
-                            service=self.service.name,
-                            tool=self.tool_name))
+                    logger.smarterror('Invalid matchstring for service={service}, '
+                                      'tool={tool}'.format(
+                                          service=self.service.name,
+                                          tool=self.tool_name))
                     return None
 
             # else:
@@ -446,7 +441,6 @@ class MatchstringsProcessor:
             #     break
 
         return output
-
 
     def __replace_tokens_from_captdict(self, string, captdict, index):
         """
@@ -461,7 +455,7 @@ class MatchstringsProcessor:
         :rtype: str|None
         """
         output = string
-        for i in range(1,10):
+        for i in range(1, 10):
             token = '${}'.format(i)
             if token in string:
                 group = 'm{}'.format(i)
@@ -469,10 +463,10 @@ class MatchstringsProcessor:
                 if group in captdict and index < len(captdict[group]):
                     output = output.replace(token, captdict[group][index])
                 else:
-                    logger.smarterror('Invalid matchstring for service={service}, ' \
-                        'tool={tool}'.format(
-                            service=self.service.name,
-                            tool=self.tool_name))
+                    logger.smarterror('Invalid matchstring for service={service}, '
+                                      'tool={tool}'.format(
+                                          service=self.service.name,
+                                          tool=self.tool_name))
                     return None
 
             # else:

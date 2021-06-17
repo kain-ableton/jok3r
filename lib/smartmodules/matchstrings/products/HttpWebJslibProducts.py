@@ -3,7 +3,7 @@
 from lib.smartmodules.matchstrings.MatchStrings import products_match
 
 
-WIG_REGEXP = '{}\s*[VERSION]\s*JavaScript' 
+WIG_REGEXP = '{}\s*[VERSION]\s*JavaScript'
 WIG_REGEXP2 = '- Found JavaScript: {}(\s*[VERSION])?'
 
 

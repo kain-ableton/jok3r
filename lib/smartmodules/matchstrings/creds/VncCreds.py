@@ -12,10 +12,10 @@ creds_match['vnc'] = {
         },
     },
     'nmap': {
-    	'Server does not require authentication': {
-    		'user': '',
-    		'pass': '',
-    	},
+        'Server does not require authentication': {
+            'user': '',
+            'pass': '',
+        },
     },
 
 }

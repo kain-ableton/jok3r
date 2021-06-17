@@ -15,8 +15,5 @@ class Controller:
         :param Session sqlsession: SQLAlchemy session
         """
         self.arguments = arguments
-        self.settings  = settings
-        self.sqlsess   = sqlsession
-
-
-
+        self.settings = settings
+        self.sqlsess = sqlsession

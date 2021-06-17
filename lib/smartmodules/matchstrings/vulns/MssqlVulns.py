@@ -48,4 +48,4 @@ vulns_match['mssql'] = {
         'RCE-Exploitable': 'MSSQL: Command execution via xp_cmdshell',
     },
 
-} 
+}

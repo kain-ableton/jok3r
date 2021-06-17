@@ -7,7 +7,7 @@ vulns_match['smtp'] = {
 
     # 'tool-name': {
     #     'match string (?P<m1>\S+) lorem ispum': 'MS17-010: $1',
-    # } 
+    # }
 
     'nmap': {
         'smtp-open-relay: Server is an open relay': 'SMTP Open-relay',

@@ -3,7 +3,7 @@
 from lib.smartmodules.matchstrings.MatchStrings import os_match
 
 
-# Wappalyzer handles a some OS 
+# Wappalyzer handles a some OS
 # Ref: https://www.wappalyzer.com/categories/operating-systems
 
 os_match = {
@@ -41,7 +41,7 @@ os_match = {
     'Red Hat Linux': {
         'banner': ['Red Hat', 'RedHat'],
         'wappalyzer': ['Red Hat'],
-    },  
+    },
     'SunOS': {
         'banner': ['SunOS'],
         'wappalyzer': ['SunOS'],

@@ -6,6 +6,6 @@
 # Vulners: https://vulners.com/
 # Shodan: https://www.shodan.io/
 API_KEYS = {
-	'vulners': '',
-	'shodan': '',
+    'vulners': '',
+    'shodan': '',
 }

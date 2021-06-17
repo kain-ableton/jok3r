@@ -17,11 +17,10 @@ import collections
 # From https://stackoverflow.com/questions/18809482/python-nesting-dictionary-ordereddict-from-collections
 # and https://stackoverflow.com/questions/36727877/inheriting-from-defaultddict-and-ordereddict
 class OrderedDefaultDict(collections.OrderedDict):
-	
+
     def __init__(self, default_factory=None, *args, **kwargs):
         super(OrderedDefaultDict, self).__init__(*args, **kwargs)
         self.default_factory = default_factory
-
 
     def __missing__(self, key):
         if self.default_factory is None:

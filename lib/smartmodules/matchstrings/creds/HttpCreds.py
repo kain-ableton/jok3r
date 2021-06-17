@@ -175,7 +175,7 @@ creds_match['http'] = {
             'user': '$1',
             'type': 'wordpress',
         },
-        '\|\s+[0-9]+\s+\|\s+(?!None\s+)(?P<m1>\S+)\s+\|.*\|': { # deprecated
+        '\|\s+[0-9]+\s+\|\s+(?!None\s+)(?P<m1>\S+)\s+\|.*\|': {  # deprecated
             'meth': 'finditer',
             'user': '$1',
             'type': 'wordpress',

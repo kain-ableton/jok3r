@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
-### Jok3r main function
+# Jok3r main function
 ###
 import sys
 import traceback
@@ -33,7 +33,8 @@ class Program:
             session = Session()
 
             # Create "default" mission if necessary
-            mission = session.query(Mission).filter(Mission.name == 'default').first()
+            mission = session.query(Mission).filter(
+                Mission.name == 'default').first()
             if not mission:
                 mission = Mission(name='default', comment='Default scope')
                 session.add(mission)

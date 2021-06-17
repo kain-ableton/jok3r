@@ -23,4 +23,4 @@ vulns_match['smb'] = {
         'VULNERABLE to MS17-010': 'MS17-010 RCE',
     }
 
-} 
+}

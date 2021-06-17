@@ -8,6 +8,7 @@ import tty
 import termios
 import readline
 
+
 class CLIUtils:
 
     @staticmethod
@@ -24,7 +25,6 @@ class CLIUtils:
             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
         return ch
 
-
     @staticmethod
     def edit_string_inline(default):
         """
@@ -32,5 +32,4 @@ class CLIUtils:
         """
         readline.set_startup_hook(lambda: readline.insert_text(default))
         res = raw_input('Edit > ')
-        #print res
-
+        # print res
