@@ -7,7 +7,7 @@ vulns_match['ssh'] = {
 
     # 'tool-name': {
     #     'match string (?P<m1>\S+) lorem ispum': 'MS17-010: $1',
-    # } 
+    # }
 
     'cvedetails-lookup': {
         '^\|\s+CVE-(?P<m1>\S+)\s+\|\s+(?P<m2>\S+)\s+\|\s+\S+\s+\|\s+(?P<m3>.*?)\s+\|\s+(?P<m4>\S+)\s+\|\s+1': 'CVE-$1 ($2): $3... ($4) - Exploit available',
@@ -27,4 +27,4 @@ vulns_match['ssh'] = {
         '\[\+\] \S+ found!': 'OpenSSH user enumeration (CVE-2018-10933)',
     },
 
-} 
+}

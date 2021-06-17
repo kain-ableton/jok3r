@@ -16,6 +16,7 @@ urllib3.disable_warnings()
 HTTP_KEYWORDS = 'html|http|head|body|404|403|401|500'
 USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64; rv:62.0) Gecko/20100101 Firefox/62.0'
 
+
 class WebUtils:
 
     @staticmethod
@@ -25,14 +26,12 @@ class WebUtils:
             return 'http://{0}'.format(url)
         return url
 
-
     @staticmethod
     def remove_ending_slash(url):
         """Remove optional ending slash at end of URL"""
         while url.endswith('/'):
             url = url[:-1]
         return url
-
 
     @staticmethod
     def switch_http_https(url):
@@ -47,7 +46,6 @@ class WebUtils:
         elif url.startswith('https://'):
             newurl = 'http://' + url[8:]
         return newurl
-
 
     @staticmethod
     def replace_hostname_by_ip(url, ip, port):
@@ -65,7 +63,6 @@ class WebUtils:
             query='?{}'.format(p.query) if p.query else '')
         return new_url
 
-
     @staticmethod
     def is_valid_url(url):
         """Check if given URL is valid"""
@@ -80,7 +77,6 @@ class WebUtils:
             r'(?:/?|[/?]\S+)$', re.IGNORECASE)
         return True if regex.match(url) else False
 
-
     @staticmethod
     def is_url_reachable(url):
         """Check if an URL is reachable"""
@@ -94,7 +90,6 @@ class WebUtils:
             print(e)
             return (False, None, None)
 
-
     @staticmethod
     def is_returning_http_data(ip, port):
         """
@@ -102,16 +97,16 @@ class WebUtils:
         :return: URL if ok, else ''
         """
         timeout = urllib3.util.timeout.Timeout(1.0)
-        http_url  = 'http://{0}:{1}'.format(ip, port)
+        http_url = 'http://{0}:{1}'.format(ip, port)
         https_url = 'https://{0}:{1}'.format(ip, port)
         regex = re.compile(HTTP_KEYWORDS, re.IGNORECASE)
         http = urllib3.PoolManager(cert_reqs='CERT_NONE')
         try:
             r1 = http.request(
-                'GET', https_url, 
+                'GET', https_url,
                 headers={'User-Agent': USER_AGENT}, timeout=timeout)
             r2 = http.request(
-                'GET', '{0}/aaa'.format(https_url), 
+                'GET', '{0}/aaa'.format(https_url),
                 headers={'User-Agent': USER_AGENT}, timeout=timeout)
             if r1.data or r2.data:
                 if regex.search(str(r1.data)) or regex.search(str(r2.data)):
@@ -121,17 +116,16 @@ class WebUtils:
         try:
             r1 = http.request('GET', http_url, timeout=timeout)
             r2 = http.request(
-                'GET', '{0}/aaa'.format(http_url), 
+                'GET', '{0}/aaa'.format(http_url),
                 headers={'User-Agent': USER_AGENT}, timeout=timeout)
-            
+
             if r1.data or r2.data:
                 if regex.search(str(r1.data)) or regex.search(str(r2.data)):
                     return http_url
             return ''
         except Exception as e:
-            #print e
+            # print e
             return ''
-
 
     @staticmethod
     def get_port_from_url(url):
@@ -142,7 +136,6 @@ class WebUtils:
         else:
             return 443 if parsed.scheme == 'https' else 80
 
-
     @staticmethod
     def grab_html_title(url):
         """Return HTML title from an URL"""
@@ -151,15 +144,13 @@ class WebUtils:
             html = bs4.BeautifulSoup(r.text, 'html.parser')
 
             # Remove non-ASCII characters and duplicate spaces
-            title = StringUtils.remove_non_printable_chars(html.title.text.strip())
+            title = StringUtils.remove_non_printable_chars(
+                html.title.text.strip())
             title = " ".join(title.split())
 
             # Shorten if necessary
             title = StringUtils.shorten(title, 250)
-            
+
             return title
         except:
             return ''
-
-
-

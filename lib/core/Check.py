@@ -21,10 +21,10 @@ from apikeys import API_KEYS
 class Check:
     """Security check"""
 
-    def __init__(self, 
-                 name, 
-                 category, 
-                 description, 
+    def __init__(self,
+                 name,
+                 category,
+                 description,
                  tool,
                  commands,
                  required_apikey=None):
@@ -38,14 +38,14 @@ class Check:
         :param list(Command) commands: Commands for the check
         :param str required_apikey: Name of required API key to run the check (optional)
         """
-        self.name            = name
-        self.category        = category
-        self.description     = description
-        self.tool            = tool
-        self.commands        = commands
+        self.name = name
+        self.category = category
+        self.description = description
+        self.tool = tool
+        self.commands = commands
         self.required_apikey = required_apikey
 
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def check_target_compliance(self, target):
         """
@@ -65,12 +65,11 @@ class Check:
                 return True
         return False
 
+    # ------------------------------------------------------------------------------------
 
-    #------------------------------------------------------------------------------------
-
-    def run(self, 
-            target, 
-            arguments, 
+    def run(self,
+            target,
+            arguments,
             sqlsession):
         """
         Run the security check.
@@ -94,16 +93,16 @@ class Check:
             # Check API key requirement (e.g. Vulners)
             if self.required_apikey:
                 if not API_KEYS[self.required_apikey]:
-                    logger.warning('This check requires {apikey} API key, but it is ' \
-                        'not provided in "apikeys.py"'.format(
-                            apikey=self.required_apikey))
+                    logger.warning('This check requires {apikey} API key, but it is '
+                                   'not provided in "apikeys.py"'.format(
+                                       apikey=self.required_apikey))
                     return False
 
             # Check context requirements compliance
             if command.context_requirements.check_target_compliance(target):
                 if not command.context_requirements.is_empty:
-                    logger.info('Command #{num:02} matches requirements: ' \
-                        '{context}'.format(num=i, context=command.context_requirements))
+                    logger.info('Command #{num:02} matches requirements: '
+                                '{context}'.format(num=i, context=command.context_requirements))
 
                 cmdline = command.get_cmdline(self.tool, target, arguments)
 
@@ -114,13 +113,13 @@ class Check:
                 else:
                     mode = Output.prompt_choice(
                         'Run command {num}? [Y/n/f/q] '.format(
-                            num='' if len(self.commands) == 1 else \
-                                '#{num:02} '.format(num=i)), 
+                            num='' if len(self.commands) == 1 else
+                                '#{num:02} '.format(num=i)),
                         choices={
                             'y': 'Yes',
                             'n': 'No',
-                            #'t': 'New tab',
-                            #'w': 'New window',
+                            # 't': 'New tab',
+                            # 'w': 'New window',
                             'f': 'Switch to fast mode (do not prompt anymore)',
                             'q': 'Quit the program',
                         },
@@ -149,16 +148,17 @@ class Check:
                     #     logger.info('Command started in new window')
                     Output.delimiter()
                     if returncode != 0:
-                        logger.warning('Command has finished with an error ' \
-                            'exit code: {code}. A problem might have occured'.format(
-                                code=returncode))
+                        logger.warning('Command has finished with an error '
+                                       'exit code: {code}. A problem might have occured'.format(
+                                           code=returncode))
                     print()
 
-                    output = StringUtils.interpret_ansi_escape_clear_lines(output)
+                    output = StringUtils.interpret_ansi_escape_clear_lines(
+                        output)
                     outputraw = StringUtils.remove_ansi_escape(output)
                     command_outputs.append(CommandOutput(
-                        cmdline=cmdline, 
-                        output=output, 
+                        cmdline=cmdline,
+                        output=output,
                         outputraw=outputraw))
 
                     # Run smartmodule method on output
@@ -170,23 +170,19 @@ class Check:
                     sqlsession.commit()
 
             else:
-                logger.info('Command #{num:02} does not match requirements: ' \
-                    '{context}'.format(num=i, context=command.context_requirements))
+                logger.info('Command #{num:02} does not match requirements: '
+                            '{context}'.format(num=i, context=command.context_requirements))
                 logger.debug('Context string: {rawstr}'.format(
                     rawstr=command.context_requirements))
-            
+
             i += 1
 
         # Add outputs in database
         if command_outputs:
             results_requester = ResultsRequester(sqlsession)
-            results_requester.add_result(target.service.id, 
-                                         self.name, 
-                                         self.category, 
+            results_requester.add_result(target.service.id,
+                                         self.name,
+                                         self.category,
                                          command_outputs)
 
         return True
-
-
-
-        

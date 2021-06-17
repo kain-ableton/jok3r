@@ -27,12 +27,12 @@ class ImageUtils:
             image.thumbnail(size, Image.ANTIALIAS)
             thumbio = io.BytesIO()
             image.save(thumbio, format='PNG')
-            thumbio.seek(0) # Important: pointer back to beginning of "memory file"
+            # Important: pointer back to beginning of "memory file"
+            thumbio.seek(0)
             thumb = thumbio.read()
         except:
             thumb = None
         return thumb
-
 
     @staticmethod
     def save_image(source, filepath):

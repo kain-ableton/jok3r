@@ -39,4 +39,3 @@ class IPAddressType(types.TypeDecorator):
             return str(ip)
         else:
             return None
-

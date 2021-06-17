@@ -23,7 +23,6 @@ class NetUtils:
         except:
             return False
 
-
     @staticmethod
     def is_valid_ip_range(string):
         """Check if given string represents a valid CIDR range (e.g. 1.1.1.1/24)"""
@@ -32,7 +31,6 @@ class NetUtils:
             return True
         except:
             return False
-
 
     @staticmethod
     def is_valid_port(string):
@@ -43,18 +41,16 @@ class NetUtils:
         except:
             return False
 
-
     @staticmethod
     def is_valid_port_range(string):
         """Check if given string represents a valid port range (e.g. 80-100)"""
         if string.count('-') == 1:
             minport, maxport = string.split('-')
             return NetUtils.is_valid_port(minport) and \
-                   NetUtils.is_valid_port(maxport) and \
-                   minport <= maxport
+                NetUtils.is_valid_port(maxport) and \
+                minport <= maxport
         else:
             return False
-
 
     @staticmethod
     def is_tcp_port_open(ip, port):
@@ -79,10 +75,9 @@ class NetUtils:
             except:
                 time.sleep(1)
             finally:
-                #s.shutdown(socket.SHUT_RDWR)
+                # s.shutdown(socket.SHUT_RDWR)
                 s.close()
         return False
-
 
     @staticmethod
     def is_udp_port_open(ip, port):
@@ -104,9 +99,8 @@ class NetUtils:
             host = report.hosts[0]
             if host.services:
                 return 'open' in host.services[0].state
-        
-        return False
 
+        return False
 
     @staticmethod
     def grab_nmap_info(ip, port):
@@ -143,7 +137,7 @@ class NetUtils:
         if rc != 0:
             print("Nmap scan failed: {0}".format(nmproc.stderr))
             return None
-        #print(type(nmproc.stdout))
+        # print(type(nmproc.stdout))
 
         try:
             report = NmapParser.parse(nmproc.stdout)
@@ -175,7 +169,6 @@ class NetUtils:
 
         return results
 
-
     @staticmethod
     def clean_nmap_banner(banner):
         """
@@ -184,7 +177,6 @@ class NetUtils:
             - Delete "version: "
         """
         return banner.replace('product: ', '').replace('version: ', '')
-
 
     @staticmethod
     def grab_banner_simple(ip, port):
@@ -201,7 +193,6 @@ class NetUtils:
         except:
             return None
 
-
     @staticmethod
     def dns_lookup(host):
         """
@@ -210,7 +201,8 @@ class NetUtils:
         """
         ip_list = list()
         try:
-            ip_list = list(set(str(i[4][0]) for i in socket.getaddrinfo(host, 80)))
+            ip_list = list(set(str(i[4][0])
+                           for i in socket.getaddrinfo(host, 80)))
         except:
             return None
         if len(ip_list) == 0:
@@ -221,7 +213,6 @@ class NetUtils:
                 return ip
         return ip_list[0]
 
-
     @staticmethod
     def reverse_dns_lookup(ip):
         """Get hostname from IP if reverse DNS entry exists"""
@@ -229,7 +220,6 @@ class NetUtils:
             return socket.gethostbyaddr(ip)[0]
         except:
             return ip
-
 
     @staticmethod
     def get_local_ip_address():
@@ -240,7 +230,6 @@ class NetUtils:
             return s.getsockname()[0]
         except:
             return '127.0.0.1'
-
 
     @staticmethod
     def is_internet_connected():

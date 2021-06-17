@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
-### Smartmodules > Web Technologies > Wappalyzer
+# Smartmodules > Web Technologies > Wappalyzer
 ###
 # Code fully adapted from https://github.com/kanishk619/wappalyzer-python
 import json
@@ -20,7 +20,6 @@ class Props(object):
         for k, v in kwargs.items():
             setattr(self, k, v)
 
-
     def __getattr__(self, item):
         if item not in self.__dict__:
             return None
@@ -38,10 +37,8 @@ class Application(object):
         self.props = Props(**props)
         self.version = ''
 
-
     def __str__(self):
         return self.name
-
 
     def getConfidence(self):
         total = 0
@@ -59,7 +56,8 @@ class Wappalyzer(requests.Session):
 
         file = os.path.join(os.getcwd(), os.path.dirname(__file__), filename)
         if not os.path.exists(file):
-            self.log('Downloading latest wappalyzer database file', 'init', 'error')
+            self.log('Downloading latest wappalyzer database file',
+                     'init', 'error')
             self.downloadWappalyzerDB(file)
 
         self.headers['User-Agent'] = 'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko) ' \
@@ -76,10 +74,10 @@ class Wappalyzer(requests.Session):
         self.data.js = js
         self.data.scripts = [script['src'] for script in
                              BeautifulSoup(self.data.text, 'html.parser').find_all(
-                                'script', {'src': True})]
+            'script', {'src': True})]
 
-        self.data.headers = {i.lower(): j for i, j in self.data.headers.items()}
-
+        self.data.headers = {
+            i.lower(): j for i, j in self.data.headers.items()}
 
     def downloadWappalyzerDB(self, file):
         db_url = 'https://raw.githubusercontent.com/AliasIO/Wappalyzer/master/src/apps.json'
@@ -89,15 +87,13 @@ class Wappalyzer(requests.Session):
                 if chunk:
                     f.write(chunk)
 
-
     def asArray(self, value):
         return value if isinstance(value, list) else [value]
 
-
     def analyze(self):
         apps = {}
-        matches = re.search('<html[^>]*[: ]lang="([a-z]{2}((-|_)[A-Z]{2})?)"', 
-            self.data.text, re.IGNORECASE)
+        matches = re.search('<html[^>]*[: ]lang="([a-z]{2}((-|_)[A-Z]{2})?)"',
+                            self.data.text, re.IGNORECASE)
         language = None
         if matches:
             language = matches.groups()[0]
@@ -131,14 +127,13 @@ class Wappalyzer(requests.Session):
         self.resolveImplies(apps)
         return apps
 
-
     def parseJsPatterns(self):
         patterns = {}
         for appName in self.apps:
             if 'js' in self.apps[appName]:
-                patterns.update({appName: self.parsePatterns(self.apps[appName]['js'])})
+                patterns.update(
+                    {appName: self.parsePatterns(self.apps[appName]['js'])})
         return patterns
-
 
     def resolveExcludes(self, apps):
         excludes = []
@@ -149,7 +144,6 @@ class Wappalyzer(requests.Session):
         for appName in apps.copy():
             if appName in excludes:
                 apps.pop(appName)
-
 
     def parsePatterns(self, patterns):
         if not patterns:
@@ -184,7 +178,6 @@ class Wappalyzer(requests.Session):
             parsed = parsed['main']
         return parsed
 
-
     def resolveImplies(self, apps):
         checkImplies = True
         while checkImplies:
@@ -196,8 +189,8 @@ class Wappalyzer(requests.Session):
                         implied = self.parsePatterns(implied)[0]
 
                         if not self.apps[implied['string']]:
-                            self.log('Implied application ' + implied.string + \
-                                ' does not exist', 'core', 'warn')
+                            self.log('Implied application ' + implied.string +
+                                     ' does not exist', 'core', 'warn')
                             return
 
                         if not implied['string'] in apps:
@@ -208,10 +201,9 @@ class Wappalyzer(requests.Session):
                         for id in app.confidence:
                             ind = id+' implied by '+appName
                             apps[implied['string']].confidence[ind] = \
-                                    app.confidence[id] * int(
-                                        int(implied['confidence']) / 100 \
-                                            if 'confidence' in implied else 1)
-
+                                app.confidence[id] * int(
+                                int(implied['confidence']) / 100
+                                if 'confidence' in implied else 1)
 
     def analyzeUrl(self, app: Application, url):
         patterns = self.parsePatterns(app.props['url'])
@@ -220,14 +212,12 @@ class Wappalyzer(requests.Session):
                 if re.search(pattern['regex'], url):
                     self.addDetected(app, pattern, 'url', url)
 
-
     def analyzeHtml(self, app, html):
         patterns = self.parsePatterns(app.props.html)
         if patterns:
             for pattern in patterns:
                 if 'regex' in pattern and re.search(pattern['regex'], html):
                     self.addDetected(app, pattern, 'html', html)
-
 
     def analyzeScripts(self, app: Application, scripts):
         patterns = self.parsePatterns(app.props.script)
@@ -236,23 +226,22 @@ class Wappalyzer(requests.Session):
                 if re.search(pattern['regex'], uri):
                     self.addDetected(app, pattern, 'script', uri)
 
-
     def analyzeMeta(self, app, html):
         regex = re.compile('<meta[^>]+>', re.IGNORECASE)
         patterns = self.parsePatterns(app.props.meta)
         matches = re.findall(regex, html)
         for match in matches:
             for meta in patterns:
-                r = re.search('(?:name|property)=["\']' + meta + '["\']', 
+                r = re.search('(?:name|property)=["\']' + meta + '["\']',
                               match, re.IGNORECASE)
                 if r:
-                    content = re.findall('content=["|\']([^"\']+)["|\']', 
+                    content = re.findall('content=["|\']([^"\']+)["|\']',
                                          match, re.IGNORECASE)
                     for pattern in patterns[meta]:
-                        if content and re.search(pattern['regex'], 
+                        if content and re.search(pattern['regex'],
                                                  content[0], re.IGNORECASE):
-                            self.addDetected(app, pattern, 'meta', content[0], meta)
-
+                            self.addDetected(
+                                app, pattern, 'meta', content[0], meta)
 
     def analyzeHeaders(self, app: Application, headers: dict):
         patterns = self.parsePatterns(app.props.headers)
@@ -266,7 +255,6 @@ class Wappalyzer(requests.Session):
                             self.addDetected(
                                 app, pattern, 'headers', headerValue, headerName)
 
-
     def analyzeJs(self, app: Application, results):
         for string in results:
             for index in results[string]:
@@ -275,7 +263,6 @@ class Wappalyzer(requests.Session):
 
                 if pattern and re.search(pattern['regex'], value):
                     self.addDetected(app, pattern, 'js', value)
-
 
     def addDetected(self, app: Application, pattern, type, value, key=''):
         app.detected = True
@@ -289,15 +276,16 @@ class Wappalyzer(requests.Session):
             if matches:
                 for i in range(len(matches)):
                     match = matches[i]
-                    ternary = re.findall('\\\\' + str(i) + '\\?([^:]+):(.*)$', version)
+                    ternary = re.findall(
+                        '\\\\' + str(i) + '\\?([^:]+):(.*)$', version)
 
-                    if isinstance(match, tuple):  
+                    if isinstance(match, tuple):
                         # findall returns tuple groups sometimes if groups used in regex
                         match = match[1]
 
                     if ternary and len(ternary) >= 3:
-                        version = version.replace(ternary[0], ternary[1] \
-                            if match else ternary[2])
+                        version = version.replace(ternary[0], ternary[1]
+                                                  if match else ternary[2])
 
                     version = version.replace(version, match or '')
 
@@ -307,7 +295,6 @@ class Wappalyzer(requests.Session):
                     if versions:
                         app.version = max(versions)
 
-
     def analyzeEnv(self, app, envs):
         patterns = self.parsePatterns(app.props.env)
         for pattern in patterns:
@@ -315,10 +302,8 @@ class Wappalyzer(requests.Session):
                 if re.search(pattern['regex'], env):
                     self.addDetected(app, pattern, 'env', env)
 
-
     def log(self, message, source, _type):
         print('[wappalyzer {}] [{}] {}'.format(_type, source, message))
-
 
     def __del__(self):
         del self.db
@@ -327,7 +312,7 @@ class Wappalyzer(requests.Session):
         del self.data
 
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 
 def getSimple(url):
     """
@@ -346,7 +331,8 @@ def getSimple(url):
     for appName, app in apps.items():
         categories = app.props.cats
         for category_id in categories:
-            category_name = wappalyzer.db['categories'][str(category_id)]['name'].lower().replace(' ', '-')
+            category_name = wappalyzer.db['categories'][str(
+                category_id)]['name'].lower().replace(' ', '-')
             if category_name not in simple_result:
                 simple_result.update({category_name: []})
             simple_result[category_name].append(appName)
@@ -376,9 +362,9 @@ def getDetail(url):  # wappalyzer styled output
             'name': app.name,
             'confidence': str(app.confidenceTotal),
             'version': app.version,
-            #'icon': app.props.icon,
-            #'website': app.props.website,
-            #'categories': [{str(c): wappalyzer.db['categories'][str(c)]['name']} \
+            # 'icon': app.props.icon,
+            # 'website': app.props.website,
+            # 'categories': [{str(c): wappalyzer.db['categories'][str(c)]['name']} \
             #   for c in app.props.cats]
         }
         detail_result['applications'].append(f)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
-### Screenshoter > Screenshots Processor
+# Screenshoter > Screenshots Processor
 ###
 from lib.core.Constants import *
 from lib.db.Screenshot import Screenshot, ScreenStatus
@@ -23,7 +23,6 @@ class ScreenshotsProcessor:
         self.mission_name = mission_name
         self.sqlsession = sqlsession
 
-
     def run(self):
 
         # Extract HTTP services from the mission in database
@@ -37,8 +36,8 @@ class ScreenshotsProcessor:
         if len(services) == 0:
             return
 
-        logger.info('Taking web page screenshots for HTTP services (total: ' \
-            '{nb})...'.format(nb=len(services)))
+        logger.info('Taking web page screenshots for HTTP services (total: '
+                    '{nb})...'.format(nb=len(services)))
 
         screenshoter = WebScreenshoter()
         if not screenshoter.create_driver():
@@ -79,5 +78,3 @@ class ScreenshotsProcessor:
             self.sqlsession.commit()
 
             i += 1
-
-

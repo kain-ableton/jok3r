@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
-### Core > Toolbox Controller
+# Core > Toolbox Controller
 ###
 from lib.controller.Controller import Controller
 
@@ -69,7 +69,3 @@ class ToolboxController(Controller):
         # --check
         elif self.arguments.args.check_toolbox:
             self.settings.toolbox.check()
-
-
-
-

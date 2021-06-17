@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
-### SmartModules > Smart Start
+# SmartModules > Smart Start
 ###
 import ast
 import pprint
@@ -12,7 +12,6 @@ from lib.output.Output import Output
 from lib.smartmodules.ContextUpdater import ContextUpdater
 from lib.smartmodules.MatchstringsProcessor import MatchstringsProcessor
 from lib.smartmodules.matchstrings.MatchStrings import *
-
 
 
 class SmartStart:
@@ -30,7 +29,6 @@ class SmartStart:
         self.service = service
         self.cu = ContextUpdater(self.service)
 
-
     def run(self):
         """Initialize the context for the targeted service"""
         logger.smartinfo('SmartStart processing to initialize context...')
@@ -45,7 +43,7 @@ class SmartStart:
         self.cu.update()
 
         # Update context from banner
-        processor = MatchstringsProcessor(self.service, 
+        processor = MatchstringsProcessor(self.service,
                                           'banner',
                                           self.service.banner,
                                           self.cu)
@@ -56,16 +54,15 @@ class SmartStart:
         self.cu.update()
 
         # Run start method corresponding to target service if available
-        list_methods = [method_name for method_name in dir(self) \
-                                    if callable(getattr(self, method_name))]
+        list_methods = [method_name for method_name in dir(self)
+                        if callable(getattr(self, method_name))]
         start_method_name = 'start_{}'.format(self.service.name)
         if start_method_name in list_methods:
             start_method = getattr(self, start_method_name)
             start_method()
             self.cu.update()
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     def start_http(self):
         """Method run specifically for HTTP services"""
@@ -77,17 +74,17 @@ class SmartStart:
 
         # Check if HTTP service is protected by .htaccess authentication
         if self.service.http_headers \
-            and '401 Unauthorized'.lower() in self.service.http_headers.lower():
-            
-            logger.smartinfo('HTTP authentication (htaccess) detected ' \
-                '(401 Unauthorized)')
+                and '401 Unauthorized'.lower() in self.service.http_headers.lower():
+
+            logger.smartinfo('HTTP authentication (htaccess) detected '
+                             '(401 Unauthorized)')
             self.cu.add_option('htaccess', 'true')
 
         # Update context with web technologies
         if self.service.web_technos:
             # Detect OS
             if not self.service.host.os:
-                processor = MatchstringsProcessor(self.service, 
+                processor = MatchstringsProcessor(self.service,
                                                   'wappalyzer',
                                                   self.service.host.os,
                                                   self.cu)
@@ -97,8 +94,8 @@ class SmartStart:
             try:
                 technos = ast.literal_eval(self.service.web_technos)
             except Exception as e:
-                logger.debug('Error when retrieving "web_technos" field ' \
-                    'from db: {}'.format(e))
+                logger.debug('Error when retrieving "web_technos" field '
+                             'from db: {}'.format(e))
                 technos = list()
 
             for t in technos:
@@ -107,13 +104,12 @@ class SmartStart:
                     for prodname in p:
                         if 'wappalyzer' in p[prodname]:
                             pattern = p[prodname]['wappalyzer']
-                        
+
                             #m = re.search(pattern, t['name'], re.IGNORECASE|re.DOTALL)
                             if pattern.lower() == t['name'].lower():
                                 version = t['version']
-                                self.cu.add_product(prodtype, prodname, version)
+                                self.cu.add_product(
+                                    prodtype, prodname, version)
 
                                 # Move to next product type if something found
                                 break
-
-

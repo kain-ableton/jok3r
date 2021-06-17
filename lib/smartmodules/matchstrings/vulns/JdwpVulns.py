@@ -14,4 +14,4 @@ vulns_match['jdwp'] = {
         'Command successfully executed': 'JDWP RCE',
     },
 
-} 
+}

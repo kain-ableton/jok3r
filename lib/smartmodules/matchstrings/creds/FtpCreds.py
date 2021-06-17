@@ -12,10 +12,10 @@ creds_match['ftp'] = {
         },
     },
     'nmap': {
-    	'ftp-anon: Anonymous FTP login allowed': {
-    		'user': 'anonymous',
-    		'pass': '',
-    	},
+        'ftp-anon: Anonymous FTP login allowed': {
+            'user': 'anonymous',
+            'pass': '',
+        },
     },
 
 }

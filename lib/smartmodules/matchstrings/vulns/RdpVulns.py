@@ -13,6 +13,4 @@ vulns_match['rdp'] = {
         '-\s*VULNERABLE\s*': 'RDP CVE-2019-0708 BlueKeep RCE',
     },
 
-} 
-
-
+}

@@ -73,7 +73,8 @@ products_match['http']['web-application-firewall'] = {
     },
     'Barracuda Networks/Barracuda Application Firewall': {
         'wafw00f': [
-            WAFW00F_REGEXP.format('Barracuda Application Firewall \(Barracuda Networks\)'),
+            WAFW00F_REGEXP.format(
+                'Barracuda Application Firewall \(Barracuda Networks\)'),
         ],
     },
     'Faydata Technologies Inc./Bekchy': {
@@ -108,7 +109,8 @@ products_match['http']['web-application-firewall'] = {
     },
     'CdnNs/WdidcNet/CdnNS Application Gateway': {
         'wafw00f': [
-            WAFW00F_REGEXP.format('CdnNS Application Gateway \(CdnNs/WdidcNet\)'),
+            WAFW00F_REGEXP.format(
+                'CdnNS Application Gateway \(CdnNs/WdidcNet\)'),
         ],
     },
     'Cerber Tech/WP Cerber Security': {
@@ -118,7 +120,8 @@ products_match['http']['web-application-firewall'] = {
     },
     'ChinaCache/ChinaCache CDN Load Balancer': {
         'wafw00f': [
-            WAFW00F_REGEXP.format('ChinaCache CDN Load Balancer \(ChinaCache\)'),
+            WAFW00F_REGEXP.format(
+                'ChinaCache CDN Load Balancer \(ChinaCache\)'),
         ],
     },
     'Yunaq/Chuang Yu Shield': {
@@ -194,17 +197,20 @@ products_match['http']['web-application-firewall'] = {
     },
     'F5 Networks/BIG-IP Access Policy Manager': {
         'wafw00f': [
-            WAFW00F_REGEXP.format('BIG-IP Access Policy Manager \(F5 Networks\)'),
+            WAFW00F_REGEXP.format(
+                'BIG-IP Access Policy Manager \(F5 Networks\)'),
         ],
     },
     'F5 Networks/BIG-IP Application Security Manager': {
         'wafw00f': [
-            WAFW00F_REGEXP.format('BIG-IP Application Security Manager \(F5 Networks\)'),
+            WAFW00F_REGEXP.format(
+                'BIG-IP Application Security Manager \(F5 Networks\)'),
         ],
     },
     'F5 Networks/BIG-IP Local Traffic Manager': {
         'wafw00f': [
-            WAFW00F_REGEXP.format('BIG-IP Local Traffic Manager \(F5 Networks\)'),
+            WAFW00F_REGEXP.format(
+                'BIG-IP Local Traffic Manager \(F5 Networks\)'),
         ],
     },
     'F5 Networks/FirePass': {
@@ -285,7 +291,8 @@ products_match['http']['web-application-firewall'] = {
     },
     'LiteSpeed Technologies/LiteSpeed Firewall': {
         'wafw00f': [
-            WAFW00F_REGEXP.format('LiteSpeed Firewall \(LiteSpeed Technologies\)'),
+            WAFW00F_REGEXP.format(
+                'LiteSpeed Firewall \(LiteSpeed Technologies\)'),
         ],
     },
     'Inactiv/Malcare': {
@@ -295,7 +302,8 @@ products_match['http']['web-application-firewall'] = {
     },
     'Mission Control/Mission Control Application Shield': {
         'wafw00f': [
-            WAFW00F_REGEXP.format('Mission Control Application Shield \(Mission Control\)'),
+            WAFW00F_REGEXP.format(
+                'Mission Control Application Shield \(Mission Control\)'),
         ],
     },
     'SpiderLabs/ModSecurity': {
@@ -355,7 +363,8 @@ products_match['http']['web-application-firewall'] = {
     },
     'Palo Alto Networks/Palo Alto Next Gen Firewall': {
         'wafw00f': [
-            WAFW00F_REGEXP.format('Palo Alto Next Gen Firewall \(Palo Alto Networks\)'),
+            WAFW00F_REGEXP.format(
+                'Palo Alto Next Gen Firewall \(Palo Alto Networks\)'),
         ],
     },
     'PerimeterX/PerimeterX': {
@@ -390,7 +399,8 @@ products_match['http']['web-application-firewall'] = {
     },
     'Microsoft/ASP.NET RequestValidationMode': {
         'wafw00f': [
-            WAFW00F_REGEXP.format('ASP.NET RequestValidationMode \(Microsoft\)'),
+            WAFW00F_REGEXP.format(
+                'ASP.NET RequestValidationMode \(Microsoft\)'),
         ],
     },
     'Sabre/Sabre Firewall': {
@@ -415,12 +425,14 @@ products_match['http']['web-application-firewall'] = {
     },
     'SecuPress/SecuPress WordPress Security': {
         'wafw00f': [
-            WAFW00F_REGEXP.format('SecuPress WordPress Security \(SecuPress\)'),
+            WAFW00F_REGEXP.format(
+                'SecuPress WordPress Security \(SecuPress\)'),
         ],
     },
     'United Security Providers/Secure Entry': {
         'wafw00f': [
-            WAFW00F_REGEXP.format('Secure Entry \(United Security Providers\)'),
+            WAFW00F_REGEXP.format(
+                'Secure Entry \(United Security Providers\)'),
         ],
     },
     'BeyondTrust/eEye SecureIIS': {
@@ -485,7 +497,8 @@ products_match['http']['web-application-firewall'] = {
     },
     'Tencent Technologies/Tencent Cloud Firewall': {
         'wafw00f': [
-            WAFW00F_REGEXP.format('Tencent Cloud Firewall \(Tencent Technologies\)'),
+            WAFW00F_REGEXP.format(
+                'Tencent Cloud Firewall \(Tencent Technologies\)'),
         ],
     },
     'Citrix Systems/Teros': {
@@ -500,7 +513,8 @@ products_match['http']['web-application-firewall'] = {
     },
     'iFinity/DotNetNuke/URLMaster SecurityCheck': {
         'wafw00f': [
-            WAFW00F_REGEXP.format('URLMaster SecurityCheck \(iFinity/DotNetNuke\)'),
+            WAFW00F_REGEXP.format(
+                'URLMaster SecurityCheck \(iFinity/DotNetNuke\)'),
         ],
     },
     'Microsoft/URLScan': {
@@ -602,12 +616,12 @@ products_match['http']['web-application-firewall'] = {
         'wafw00f': [
             WAFW00F_REGEXP.format('pkSecurity Intrusion Detection System'),
         ],
-    },   
+    },
     'Xuanwudun': {
         'wafw00f': [
             WAFW00F_REGEXP.format('Xuanwudun'),
         ],
-    },   
+    },
     'Open-Resty Lua Nginx WAF': {
         'wafw00f': [
             WAFW00F_REGEXP.format('Open-Resty Lua Nginx WAF'),

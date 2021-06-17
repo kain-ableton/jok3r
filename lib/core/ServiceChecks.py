@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
-### Core > Service Checks
+# Core > Service Checks
 ###
 import time
 
@@ -13,6 +13,7 @@ from lib.output.StatusBar import *
 from lib.requester.Filter import Filter
 from lib.requester.Condition import Condition
 from lib.requester.ResultsRequester import ResultsRequester
+
 
 class ServiceChecks:
     """All Security Checks for a Service"""
@@ -27,10 +28,9 @@ class ServiceChecks:
         self.service = service
         self.categories = categories
         # Organize checks in dict {category: [checks]}
-        self.checks = OrderedDefaultDict(list, {k:[] for k in categories})
+        self.checks = OrderedDefaultDict(list, {k: [] for k in categories})
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Basic Operations
 
     def add_check(self, check):
@@ -43,7 +43,6 @@ class ServiceChecks:
         """
         self.checks[check.category].append(check)
         return True
-
 
     def get_check(self, checkname):
         """
@@ -59,7 +58,6 @@ class ServiceChecks:
                     return c
         return None
 
-
     def get_all_check_names(self):
         """
         Get list of names of all checks.
@@ -68,7 +66,6 @@ class ServiceChecks:
         :rtype: list
         """
         return [item.name for sublist in self.checks.values() for item in sublist]
-
 
     def is_existing_check(self, checkname):
         """
@@ -80,7 +77,6 @@ class ServiceChecks:
         :rtype: bool
         """
         return checkname.lower() in map(lambda x: x.lower(), self.get_all_check_names())
-
 
     def nb_checks(self):
         """
@@ -94,16 +90,15 @@ class ServiceChecks:
             nb += len(self.checks[category])
         return nb
 
+    # ------------------------------------------------------------------------------------
+    # Run
 
-    #------------------------------------------------------------------------------------
-    # Run 
-
-    def run(self, 
-            target, 
+    def run(self,
+            target,
             arguments,
             sqlsession,
-            filter_categories=None, 
-            filter_checks=None, 
+            filter_categories=None,
+            filter_checks=None,
             attack_profile=None,
             attack_progress=None):
         """
@@ -128,7 +123,7 @@ class ServiceChecks:
         if filter_categories is None:
             filter_categories = self.categories
 
-        # Standard mode 
+        # Standard mode
         # Selected/all categories of checks are run
         if filter_checks is None and attack_profile is None:
             self.__run_standard_mode(target,
@@ -138,25 +133,24 @@ class ServiceChecks:
                                      attack_progress)
 
         # Special mode
-        # User has provided either an attack profile or a list of checks to run 
+        # User has provided either an attack profile or a list of checks to run
         # (may be one single check)
         else:
 
-             self.__run_special_mode(target, 
-                                     arguments,
-                                     sqlsession,
-                                     filter_checks,
-                                     attack_profile,
-                                     attack_progress)
+            self.__run_special_mode(target,
+                                    arguments,
+                                    sqlsession,
+                                    filter_checks,
+                                    attack_profile,
+                                    attack_progress)
 
         return
 
-
     def __run_standard_mode(self,
-                            target, 
+                            target,
                             arguments,
                             sqlsession,
-                            filter_categories, 
+                            filter_categories,
                             attack_progress=None):
         """
         Run checks for the service in standard mode, i.e. when all or a subset of
@@ -175,12 +169,12 @@ class ServiceChecks:
         nb_checks = self.nb_checks()
 
         # Initialize sub status/progress bar
-        checks_progress = manager.counter(total=nb_checks+1, 
-                                          desc='', 
+        checks_progress = manager.counter(total=nb_checks+1,
+                                          desc='',
                                           unit='check',
                                           leave=False,
                                           bar_format=STATUSBAR_FORMAT)
-        time.sleep(.5) # hack for progress bar display
+        time.sleep(.5)  # hack for progress bar display
 
         j = 1
         for category in self.categories:
@@ -196,55 +190,56 @@ class ServiceChecks:
                 # Update status/progress bar
                 status = ' +--> Current check [{cur}/{total}]: {category} > ' \
                     '{checkname}'.format(
-                        cur       = j,
-                        total     = nb_checks,
-                        category  = check.category,
-                        checkname = check.name)
+                        cur=j,
+                        total=nb_checks,
+                        category=check.category,
+                        checkname=check.name)
 
                 checks_progress.desc = '{status}{fill}'.format(
-                    status = status,
-                    fill   = ' '*(DESC_LENGTH-len(status)))
+                    status=status,
+                    fill=' '*(DESC_LENGTH-len(status)))
                 checks_progress.update()
                 if attack_progress:
                     # Hack to refresh the attack progress bar without incrementing
                     # useful if the tool run during the check has cleared the screen
                     attack_progress.refresh()
 
-
                 # Run the check if and only if:
-                #   - The check has not been already run for this target (except 
+                #   - The check has not been already run for this target (except
                 #       if --recheck is specified in command-line)
                 #   - Target is compliant with the check,
                 #   - The tool used for the check is well installed.
-                if i > 1: print()
-                
+                if i > 1:
+                    print()
+
                 results_req = ResultsRequester(sqlsession)
                 results_req.select_mission(target.service.host.mission.name)
                 filter_ = Filter(FilterOperator.AND)
-                filter_.add_condition(Condition(target.service.id, 
-                    FilterData.SERVICE_ID))
-                filter_.add_condition(Condition(check.name, FilterData.CHECK_NAME))
+                filter_.add_condition(Condition(target.service.id,
+                                                FilterData.SERVICE_ID))
+                filter_.add_condition(
+                    Condition(check.name, FilterData.CHECK_NAME))
                 results_req.add_filter(filter_)
                 result = results_req.get_first_result()
 
                 if result is None or arguments.args.recheck == True:
 
                     if check.check_target_compliance(target):
-                        Output.title2('[{category}][Check {num:02}/{total:02}] ' \
-                            '{name} > {description}'.format(
-                                category    = category.capitalize(),
-                                num         = j,
-                                total       = nb_checks,
-                                name        = check.name,
-                                description = check.description))
+                        Output.title2('[{category}][Check {num:02}/{total:02}] '
+                                      '{name} > {description}'.format(
+                                          category=category.capitalize(),
+                                          num=j,
+                                          total=nb_checks,
+                                          name=check.name,
+                                          description=check.description))
 
                         if not check.tool.installed:
-                            logger.warning('Skipped: the tool "{tool}" used by ' \
-                                'this check is not installed yet'.format(
-                                    tool=check.tool.name))
+                            logger.warning('Skipped: the tool "{tool}" used by '
+                                           'this check is not installed yet'.format(
+                                               tool=check.tool.name))
                         else:
                             try:
-                                check.run(target, 
+                                check.run(target,
                                           arguments,
                                           sqlsession)
 
@@ -254,23 +249,23 @@ class ServiceChecks:
                                     check=check.name))
 
                     else:
-                        logger.info('[{category}][Check {num:02}/{total:02}] ' \
-                            '{name} > Skipped because context requirements are ' \
-                            'not matching the target'.format(
-                                name     = check.name,
-                                category = category.capitalize(),
-                                num      = j,
-                                total    = nb_checks))
+                        logger.info('[{category}][Check {num:02}/{total:02}] '
+                                    '{name} > Skipped because context requirements are '
+                                    'not matching the target'.format(
+                                        name=check.name,
+                                        category=category.capitalize(),
+                                        num=j,
+                                        total=nb_checks))
                         time.sleep(.2)
                 else:
 
-                    logger.info('[{category}][Check {num:02}/{total:02}] ' \
-                            '{name} > Skipped because the check has already ' \
-                            'been run'.format(
-                                name     = check.name,
-                                category = category.capitalize(),
-                                num      = j,
-                                total    = nb_checks))
+                    logger.info('[{category}][Check {num:02}/{total:02}] '
+                                '{name} > Skipped because the check has already '
+                                'been run'.format(
+                                    name=check.name,
+                                    category=category.capitalize(),
+                                    num=j,
+                                    total=nb_checks))
                     time.sleep(.2)
 
                 i += 1
@@ -282,12 +277,11 @@ class ServiceChecks:
         checks_progress.close()
         return
 
-
     def __run_special_mode(self,
-                           target, 
+                           target,
                            arguments,
                            sqlsession,
-                           filter_checks=None, 
+                           filter_checks=None,
                            attack_profile=None,
                            attack_progress=None):
         """
@@ -309,8 +303,8 @@ class ServiceChecks:
                 lambda x: self.is_existing_check(x), filter_checks))
 
             if not filter_checks:
-                logger.warning('None of the selected checks is existing for the ' \
-                    'service {service}'.format(service=target.get_service_name()))
+                logger.warning('None of the selected checks is existing for the '
+                               'service {service}'.format(service=target.get_service_name()))
                 return
 
             logger.info('Selected check(s) that will be run:')
@@ -323,24 +317,24 @@ class ServiceChecks:
         # User has submitted an attack profile
         else:
             if not attack_profile.is_service_supported(target.get_service_name()):
-                logger.warning('The attack profile {profile} is not supported for ' \
-                    'target service {service}'.format(
-                        profile=attack_profile, service=target.get_service_name()))
+                logger.warning('The attack profile {profile} is not supported for '
+                               'target service {service}'.format(
+                                   profile=attack_profile, service=target.get_service_name()))
                 return
             else:
                 filter_checks = attack_profile.get_checks_for_service(
                     target.get_service_name())
 
-                logger.info('Selected attack profile: {}'.format(attack_profile))
-
+                logger.info(
+                    'Selected attack profile: {}'.format(attack_profile))
 
         # Initialize sub status/progress bar
-        checks_progress = manager.counter(total=len(filter_checks)+1, 
-                                          desc='', 
+        checks_progress = manager.counter(total=len(filter_checks)+1,
+                                          desc='',
                                           unit='check',
                                           leave=False,
                                           bar_format=STATUSBAR_FORMAT)
-        time.sleep(.5) # hack for progress bar display
+        time.sleep(.5)  # hack for progress bar display
 
         i = 1
         for checkname in filter_checks:
@@ -350,22 +344,22 @@ class ServiceChecks:
             # Update status/progress bar
             status = ' +--> Current check [{cur}/{total}]: {category} > ' \
                 '{checkname}'.format(
-                    cur       = i,
-                    total     = len(filter_checks),
-                    category  = check.category,
-                    checkname = checkname)
+                    cur=i,
+                    total=len(filter_checks),
+                    category=check.category,
+                    checkname=checkname)
 
             checks_progress.desc = '{status}{fill}'.format(
-                status = status,
-                fill   = ' '*(DESC_LENGTH-len(status)))
+                status=status,
+                fill=' '*(DESC_LENGTH-len(status)))
             checks_progress.update()
             if attack_progress:
                 # Hack to refresh the attack progress bar without incrementing
                 # useful if the tool run during the check has cleared the screen
-                attack_progress.update(incr=0, force=True) 
+                attack_progress.update(incr=0, force=True)
 
             # Run the check if:
-            #   - The check has not been already run for this target (except 
+            #   - The check has not been already run for this target (except
             #       if --recheck is specified in command-line)
             #   - Target is compliant with the check,
             #   - The tool used for the check is well installed.
@@ -373,8 +367,8 @@ class ServiceChecks:
             results_req = ResultsRequester(sqlsession)
             results_req.select_mission(target.service.host.mission.name)
             filter_ = Filter(FilterOperator.AND)
-            filter_.add_condition(Condition(target.service.id, 
-                FilterData.SERVICE_ID))
+            filter_.add_condition(Condition(target.service.id,
+                                            FilterData.SERVICE_ID))
             filter_.add_condition(Condition(check.name, FilterData.CHECK_NAME))
             results_req.add_filter(filter_)
             result = results_req.get_first_result()
@@ -383,20 +377,20 @@ class ServiceChecks:
 
                 if check.check_target_compliance(target):
 
-                    Output.title2('[Check {num:02}/{total:02}] {name} > ' \
-                        '{description}'.format(
-                            num         = i,
-                            total       = len(filter_checks),
-                            name        = check.name,
-                            description = check.description))
+                    Output.title2('[Check {num:02}/{total:02}] {name} > '
+                                  '{description}'.format(
+                                      num=i,
+                                      total=len(filter_checks),
+                                      name=check.name,
+                                      description=check.description))
 
                     if not check.tool.installed:
-                        logger.warning('Skipped: the tool "{tool}" used by ' \
-                            'this check is not installed yet'.format(
-                                tool=check.tool.name))
+                        logger.warning('Skipped: the tool "{tool}" used by '
+                                       'this check is not installed yet'.format(
+                                           tool=check.tool.name))
                     else:
                         try:
-                            check.run(target, 
+                            check.run(target,
                                       arguments,
                                       sqlsession)
                         except KeyboardInterrupt:
@@ -405,33 +399,32 @@ class ServiceChecks:
                                 check=check.name))
 
                 else:
-                    logger.info('[Check {num:02}/{total:02}] ' \
-                        '{name} > Skipped because context requirements are ' \
-                        'not matching the target'.format(
-                            name     = check.name,
-                            num      = i,
-                            total    = len(filter_checks)))
+                    logger.info('[Check {num:02}/{total:02}] '
+                                '{name} > Skipped because context requirements are '
+                                'not matching the target'.format(
+                                    name=check.name,
+                                    num=i,
+                                    total=len(filter_checks)))
                     time.sleep(.2)
 
             else:
 
-                logger.info('[Check {num:02}/{total:02}] ' \
-                        '{name} > Skipped because the check has already ' \
-                        'been run'.format(
-                            name     = check.name,
-                            num      = i,
-                            total    = len(filter_checks)))
+                logger.info('[Check {num:02}/{total:02}] '
+                            '{name} > Skipped because the check has already '
+                            'been run'.format(
+                                name=check.name,
+                                num=i,
+                                total=len(filter_checks)))
                 time.sleep(.2)
 
-            i += 1     
+            i += 1
 
         checks_progress.update()
         time.sleep(.5)
 
-        checks_progress.close()  
+        checks_progress.close()
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Output methods
 
     def show(self):
@@ -442,7 +435,7 @@ class ServiceChecks:
             'Category',
             'Description',
             'Tool used',
-            #'# Commands',
+            # '# Commands',
         ]
         for category in self.categories:
             for check in self.checks[category]:
@@ -452,11 +445,9 @@ class ServiceChecks:
                     category,
                     check.description,
                     Output.colored(check.tool.name, color=color_tool),
-                    #len(check.commands),
+                    # len(check.commands),
                 ])
-                
-        Output.title1('Checks for service {service}'.format(service=self.service))
+
+        Output.title1('Checks for service {service}'.format(
+            service=self.service))
         Output.table(columns, data, hrules=False)
-
-
-

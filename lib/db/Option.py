@@ -20,16 +20,15 @@ from lib.db.Session import Base
 class Option(Base):
     __tablename__ = 'options'
 
-    id         = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True)
     #type       = Column(Enum(OptionType), nullable=False)
-    name       = Column(String(255), nullable=False, default='')
-    value      = Column(String(255), nullable=True)
+    name = Column(String(255), nullable=False, default='')
+    value = Column(String(255), nullable=True)
     service_id = Column(Integer, ForeignKey('services.id'))
 
-    service    = relationship('Service', back_populates='options')
+    service = relationship('Service', back_populates='options')
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
 
     @hybrid_method
     def clone(self):
@@ -41,10 +40,9 @@ class Option(Base):
             value=self.value,
             service_id=None)
 
+    # ------------------------------------------------------------------------------------
 
-    #------------------------------------------------------------------------------------
-    
     def __repr__(self):
         return '<Option(name="{name}", value="{value}">'.format(
-            name  = self.name, 
-            value = self.value)
+            name=self.name,
+            value=self.value)

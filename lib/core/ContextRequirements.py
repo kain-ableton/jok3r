@@ -51,7 +51,7 @@ class ContextRequirements:
                 vendor/product_name|>7.1
                 vendor/product_name|<=7.0
                 vendor/product_name|7.1.1   
-        
+
             - Inversion by prefixing with "!":
                 !vendor/product_name
                 ...
@@ -70,12 +70,12 @@ class ContextRequirements:
       Indeed, several different authentications can be managed for HTTP.
     """
 
-    def __init__(self, 
-                 specific_options, 
-                 products, 
-                 osfamily, 
-                 auth_status, 
-                 auth_type=None, 
+    def __init__(self,
+                 specific_options,
+                 products,
+                 osfamily,
+                 auth_status,
+                 auth_type=None,
                  raw='<empty>'):
         """
         Construct ContextRequirements object from information parsed from config file.
@@ -101,12 +101,11 @@ class ContextRequirements:
         self.auth_type = auth_type
         self.raw_string = raw
         self.is_empty = not self.specific_options \
-                        and not self.products \
-                        and not self.auth_status \
-                        and not self.auth_type
+            and not self.products \
+            and not self.auth_status \
+            and not self.auth_type
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Target matching checkers
 
     def check_target_compliance(self, target):
@@ -118,12 +117,11 @@ class ContextRequirements:
         :rtype: bool
         """
         status = self.__is_target_matching_auth_status(target) and \
-                 self.__is_target_matching_specific_options(target) and \
-                 self.__is_target_matching_products(target) and \
-                 self.__is_target_matching_osfamily(target)
+            self.__is_target_matching_specific_options(target) and \
+            self.__is_target_matching_products(target) and \
+            self.__is_target_matching_osfamily(target)
 
         return status
-
 
     def __is_target_matching_auth_status(self, target):
         """
@@ -133,19 +131,21 @@ class ContextRequirements:
         :return: Result
         :rtype: bool  
         """
-        if self.auth_status is None: 
+        if self.auth_status is None:
             return True
-        
+
         auth_type = self.auth_type if target.service.name == 'http' else None
         users_only = target.get_usernames_only(auth_type)
         userpass = target.get_userpass(auth_type)
 
-        if len(userpass) > 0     : auth_level = POST_AUTH
-        elif len(users_only) > 0 : auth_level = USER_ONLY
-        else                     : auth_level = NO_AUTH 
+        if len(userpass) > 0:
+            auth_level = POST_AUTH
+        elif len(users_only) > 0:
+            auth_level = USER_ONLY
+        else:
+            auth_level = NO_AUTH
 
         return auth_level == self.auth_status
-
 
     def __is_target_matching_specific_options(self, target):
         """
@@ -170,7 +170,6 @@ class ContextRequirements:
 
         return status
 
-
     def __is_target_matching_products(self, target):
         """
         Check if target complies with requirements on products names+version.
@@ -189,7 +188,6 @@ class ContextRequirements:
 
         return status
 
-
     def __is_target_matching_osfamily(self, target):
         """
         Check if target complies with requirements on OS family.
@@ -206,8 +204,7 @@ class ContextRequirements:
 
         return (self.osfamily.lower() in target.get_os().lower())
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Unit checkers
 
     def __check_specific_option_boolean(self, name, val):
@@ -229,11 +226,10 @@ class ContextRequirements:
         """
         requirement = self.specific_options[name]
 
-        status  = requirement is None
+        status = requirement is None
         status |= (val == requirement)
 
         return status
-
 
     def __check_specific_option_list(self, name, val):
         """
@@ -255,12 +251,11 @@ class ContextRequirements:
         """
         requirement = self.specific_options[name]
 
-        status  = requirement is None
+        status = requirement is None
         status |= val in requirement
         status |= (requirement == ['undefined'] and val is None)
 
         return status
-
 
     def __check_specific_option_var(self, name, val):
         """
@@ -282,12 +277,11 @@ class ContextRequirements:
         """
         requirement = self.specific_options[name]
 
-        status  = requirement is None
+        status = requirement is None
         status |= (val is None and requirement == False)
         status |= (val is not None and requirement == True)
 
         return status
-
 
     def __check_product(self, prodtype, prodname, prodversion):
         """
@@ -323,15 +317,16 @@ class ContextRequirements:
         """
         requirement = self.products[prodtype]
 
-        status  = requirement is None
+        status = requirement is None
         status |= (requirement == ['undefined'] and prodname is None)
-        if status: 
+        if status:
             return True
 
         try:
             if prodname:
                 for req_prod in requirement:
-                    req_prodname, req_prodvers = VersionUtils.extract_name_version(req_prod)
+                    req_prodname, req_prodvers = VersionUtils.extract_name_version(
+                        req_prod)
                     logger.debug('Required product: type={}, name={}, version={}'.format(
                         prodtype, req_prodname, req_prodvers))
                     logger.debug('Target product: type={}, name={}, version={}'.format(
@@ -347,21 +342,21 @@ class ContextRequirements:
                     # When no special requirement on vendor/product_name but must be known
                     if req_prodname.lower() == 'any':
                         # When version can be unknown
-                        status  = not req_prodvers
+                        status = not req_prodvers
 
                         # When the version must be known (any value)
-                        status |= (req_prodvers.lower() == 'version_known' and \
-                            prodversion != '')
+                        status |= (req_prodvers.lower() == 'version_known' and
+                                   prodversion != '')
 
                         # When the version is unknown
-                        status |= (req_prodvers.lower() == 'version_unknown' and \
-                            prodversion == '')
+                        status |= (req_prodvers.lower() == 'version_unknown' and
+                                   prodversion == '')
 
                     # When requirement on a defined vendor/product_name and it is matching
                     elif req_prodname.lower() == prodname.lower():
 
                         # When no requirement on the version number
-                        status  = not req_prodvers
+                        status = not req_prodvers
 
                         # When the version must be known but no requirement on its value
                         # status |= (req_prodvers.lower() == 'version_known' \
@@ -371,13 +366,13 @@ class ContextRequirements:
                         # status |= (req_prodvers.lower() == 'version_unknown' and \
                         #     prodversion == '')
 
-                        # When explicit requirement on the version number 
+                        # When explicit requirement on the version number
                         # Perform version requirement check only if version of product
-                        # has been detected. Otherwise, we condider it is better to 
+                        # has been detected. Otherwise, we condider it is better to
                         # perform the check anyway in order to avoid to miss stuff
-                        status |= (prodversion != '' and \
-                            VersionUtils.check_version_requirement(
-                                prodversion, req_prodvers))
+                        status |= (prodversion != '' and
+                                   VersionUtils.check_version_requirement(
+                                       prodversion, req_prodvers))
 
                         if inversion and not status:
                             return True
@@ -385,21 +380,21 @@ class ContextRequirements:
                     if status:
                         return True
         except Exception as e:
-            logger.error('An error occured when checking product requirements: {}'.format(e))
+            logger.error(
+                'An error occured when checking product requirements: {}'.format(e))
             logger.error('Following requirements syntax should be reviewed: {}'.format(
                 requirement))
             logger.warning('Product requirements are ignored for this check')
             return True
         return False
 
-
-    #------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
     # Output methods
 
     def __repr__(self):
         """Print context requirements in dict style"""
         return self.raw_string
-        
+
         # requirements = dict()
         # for o in self.specific_options:
         #     requirements[o] = self.specific_options[o]

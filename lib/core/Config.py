@@ -10,7 +10,7 @@ from lib.core.Constants import *
 from lib._version import __version__
 
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 # Banner/Help
 
 BANNER = colored.stylize("""
@@ -76,51 +76,51 @@ scopes can be defined by importing new targets.
 """
 
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 # Arguments Parsing Settings
 
-ARGPARSE_MAX_HELP_POS    = 45
-TARGET_FILTERS           = {
-    'ip'       : FilterData.IP, 
-    'host'     : FilterData.HOST,
-    'port'     : FilterData.PORT, 
-    'service'  : FilterData.SERVICE, 
-    'url'      : FilterData.URL,
-    'osfamily' : FilterData.OS_FAMILY,
-    'banner'   : FilterData.BANNER,
+ARGPARSE_MAX_HELP_POS = 45
+TARGET_FILTERS = {
+    'ip': FilterData.IP,
+    'host': FilterData.HOST,
+    'port': FilterData.PORT,
+    'service': FilterData.SERVICE,
+    'url': FilterData.URL,
+    'osfamily': FilterData.OS_FAMILY,
+    'banner': FilterData.BANNER,
 }
 
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 # Basic Settings
 
-TOOL_BASEPATH      = os.path.dirname(os.path.realpath(__file__+'/../..'))
-TOOLBOX_DIR        = TOOL_BASEPATH + '/toolbox'
+TOOL_BASEPATH = os.path.dirname(os.path.realpath(__file__+'/../..'))
+TOOLBOX_DIR = TOOL_BASEPATH + '/toolbox'
 DEFAULT_OUTPUT_DIR = 'output'
-WEBSHELLS_DIR      = TOOL_BASEPATH + '/webshells'
-WORDLISTS_DIR      = TOOL_BASEPATH + '/wordlists'
-DB_FILE            = TOOL_BASEPATH + '/local.db'
-DB_HIST_FILE       = TOOL_BASEPATH + '/.dbhistory'
-REPORT_TPL_DIR     = TOOL_BASEPATH + '/lib/reporter/templates'
-REPORT_PATH        = TOOL_BASEPATH + '/reports'
-VIRTUALENVS_DIR    = TOOL_BASEPATH + '/toolbox/virtualenvs'
+WEBSHELLS_DIR = TOOL_BASEPATH + '/webshells'
+WORDLISTS_DIR = TOOL_BASEPATH + '/wordlists'
+DB_FILE = TOOL_BASEPATH + '/local.db'
+DB_HIST_FILE = TOOL_BASEPATH + '/.dbhistory'
+REPORT_TPL_DIR = TOOL_BASEPATH + '/lib/reporter/templates'
+REPORT_PATH = TOOL_BASEPATH + '/reports'
+VIRTUALENVS_DIR = TOOL_BASEPATH + '/toolbox/virtualenvs'
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 # Display Settings
 
 ATTACK_SUMMARY_TABLE_MAX_SIZE = 18
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 # Settings Files
 
-SETTINGS_DIR              = TOOL_BASEPATH + '/settings'
-CONF_EXT                  = '.conf'
-TOOLBOX_CONF_FILE         = 'toolbox'
-INSTALL_STATUS_CONF_FILE  = '_install_status'
+SETTINGS_DIR = TOOL_BASEPATH + '/settings'
+CONF_EXT = '.conf'
+TOOLBOX_CONF_FILE = 'toolbox'
+INSTALL_STATUS_CONF_FILE = '_install_status'
 ATTACK_PROFILES_CONF_FILE = 'attack_profiles'
-PREFIX_SECTION_CHECK      = 'check_'
-MULTI_CONF                = 'multi'
-MULTI_TOOLBOX_SUBDIR      = 'multi'
+PREFIX_SECTION_CHECK = 'check_'
+MULTI_CONF = 'multi'
+MULTI_TOOLBOX_SUBDIR = 'multi'
 
 TOOL_OPTIONS = {
     MANDATORY: [
@@ -167,4 +167,3 @@ OPTIONS_ENCRYTPED_PROTO = (
     'smtps',
     'telnets',
 )
-

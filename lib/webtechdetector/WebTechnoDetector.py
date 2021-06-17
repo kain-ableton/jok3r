@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###
-### Smartmodules > Web Technologies > Web Techno Detector
+# Smartmodules > Web Technologies > Web Techno Detector
 ###
 from lib.webtechdetector.Wappalyzer import Wappalyzer
 from lib.output.Output import Output
@@ -14,7 +14,6 @@ class WebTechnoDetector:
         self.url = url
         self.technos = list()
 
-
     def detect(self):
         """
         Detect web technologies.
@@ -25,9 +24,8 @@ class WebTechnoDetector:
         self.technos = self.__run_wappalyzer()
 
         # TODO: Add other detection methods
-        
-        return self.technos
 
+        return self.technos
 
     def print_technos(self):
         """
@@ -41,7 +39,6 @@ class WebTechnoDetector:
             Output.table(columns, data, hrules=False)
         else:
             logger.warning('No technology detected')
-
 
     def __run_wappalyzer(self):
         """Detect web technologies using Wappalyzer"""

@@ -17,9 +17,7 @@ vulns_match['ftp'] = {
         '\[\+\] Exploit: "(?P<m1>.*)"': '$1',
     },
     'nmap': {
-    	'OPIE off-by-one stack overflow\s*(\r\n|\r|\n)\|\s*State: (LIKELY )?VULNERABLE': 'OPIE off-by-one stack overflow (CVE-2010-1938)',
-    	'ProFTPD server TELNET IAC stack overflow\s*(\r\n|\r|\n)\|\s*State: (LIKELY )?VULNERABLE': 'ProFTPD server TELNET IAC stack overflow (CVE-2010-4221)',
+        'OPIE off-by-one stack overflow\s*(\r\n|\r|\n)\|\s*State: (LIKELY )?VULNERABLE': 'OPIE off-by-one stack overflow (CVE-2010-1938)',
+        'ProFTPD server TELNET IAC stack overflow\s*(\r\n|\r|\n)\|\s*State: (LIKELY )?VULNERABLE': 'ProFTPD server TELNET IAC stack overflow (CVE-2010-4221)',
     },
-} 
-
-
+}

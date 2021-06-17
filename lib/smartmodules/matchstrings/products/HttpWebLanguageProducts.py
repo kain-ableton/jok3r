@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from lib.smartmodules.matchstrings.MatchStrings import products_match
 
-WIG_REGEXP = '{}\s*[VERSION]\s*Platform' 
+WIG_REGEXP = '{}\s*[VERSION]\s*Platform'
 WIG_REGEXP2 = '- Found platform {}(\s*[VERSION])?'
 
 
