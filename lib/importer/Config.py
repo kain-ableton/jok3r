@@ -17,24 +17,24 @@ import re
 # - Shodan can also use:
 # http-simple-new, https-simple-new ...
 SERVICE_NAME_MATCHING = {
-    '^ajp\S*': 'ajp',
-    '^ftp\S*': 'ftp',
-    '^\S*http\S*': 'http',
+    r'^ajp\S*': r'ajp',
+    r'^ftp\S*': r'ftp',
+    r'^\S*http\S*': r'http',
     '^ssl/ssl': 'http',
     '^rmiregistry': 'java-rmi',
     '^jdwp': 'jdwp',
-    '^ms-?sql\S*': 'mssql',
-    '^mysql\S*': 'mysql',
-    '^oracle\S*': 'oracle',
+    r'^ms-?sql\S*': r'mssql',
+    r'^mysql\S*': r'mysql',
+    r'^oracle\S*': r'oracle',
     '^postgre(sql)?': 'postgresql',
     '^ms-wbt-server': 'rdp',
     '^rdp': 'rdp',
     '^microsoft-ds': 'smb',
     '^smb': 'smb',
-    '^smtp\S*': 'smtp',
-    '^snmp\S*': 'snmp',
+    r'^smtp\S*': r'smtp',
+    r'^snmp\S*': r'snmp',
     '^ssh': 'ssh',
-    '^telnet\S*': 'telnet',
+    r'^telnet\S*': r'telnet',
     '^vnc': 'vnc',
 }
 
