@@ -64,7 +64,8 @@ class ProcessLauncher:
 
     # ------------------------------------------------------------------------------------
 
-    def __create_subprocess(self, cmd):
+    @staticmethod
+    def __create_subprocess(cmd):
         """
         Run a command. Display output (stdout+stderr) in live and also store it into
         a variable which is returned by the function.

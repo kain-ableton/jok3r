@@ -101,7 +101,8 @@ class Condition:
 
     # ------------------------------------------------------------------------------------
 
-    def __translate_ip(self, value):
+    @staticmethod
+    def __translate_ip(value):
         """
         Translate IP address or IP range into Sqlalchemy filter.
         Range must be in CIDR format, e.g. 1.1.1.1/24
@@ -114,14 +115,16 @@ class Condition:
             raise FilterException(
                 '{value} invalid IP/range'.format(value=value))
 
-    def __translate_host(self, value):
+    @staticmethod
+    def __translate_host(value):
         """
         Translate Hostname into Sqlalchemy filter.
         LIKE %value%
         """
         return (Host.hostname.ilike('%'+str(value)+'%'))
 
-    def __translate_port(self, value):
+    @staticmethod
+    def __translate_port(value):
         """
         Translate port number or ports range into Sqlalchemy filter.
         Ports range in format: 8000-9000
@@ -135,7 +138,8 @@ class Condition:
             raise FilterException(
                 '{value} invalid port/range'.format(value=value))
 
-    def __translate_protocol(self, value):
+    @staticmethod
+    def __translate_protocol(value):
         """Translate protocol into filter"""
         if value.lower() == 'tcp':
             return (Service.protocol == Protocol.TCP)
@@ -145,7 +149,8 @@ class Condition:
             raise FilterException(
                 '{value} invalid protocol'.format(value=value))
 
-    def __translate_up(self, value):
+    @staticmethod
+    def __translate_up(value):
         """Translate up status into filter"""
         if type(value) is bool:
             val = value
@@ -156,133 +161,164 @@ class Condition:
                 '{value} invalid up status'.format(value=value))
         return (Service.up == val)
 
-    def __translate_service(self, value):
+    @staticmethod
+    def __translate_service(value):
         """Translate service name into LIKE filter"""
         return (Service.name.ilike('%'+str(value)+'%'))
 
-    def __translate_service_exact(self, value):
+    @staticmethod
+    def __translate_service_exact(value):
         """Translate service name into exact filter"""
         return (Service.name == value)
 
-    def __translate_service_id(self, value):
+    @staticmethod
+    def __translate_service_id(value):
         """Translate service id into filter"""
         return (Service.id == int(value))
 
-    def __translate_os(self, value):
+    @staticmethod
+    def __translate_os(value):
         """Translate host OS into LIKE filter"""
         return (Host.os.ilike('%'+str(value)+'%'))
 
-    def __translate_os_family(self, value):
+    @staticmethod
+    def __translate_os_family(value):
         """Translate OS family into LIKE filter"""
         return (Host.os_family.ilike('%'+str(value)+'%'))
 
-    def __translate_banner(self, value):
+    @staticmethod
+    def __translate_banner(value):
         """Translate service banner into LIKE filter"""
         return (Service.banner.ilike('%'+str(value)+'%'))
 
-    def __translate_url(self, value):
+    @staticmethod
+    def __translate_url(value):
         """Translate URL into LIKE filter"""
         return (Service.url.ilike('%'+str(value)+'%'))
 
-    def __translate_url_exact(self, value):
+    @staticmethod
+    def __translate_url_exact(value):
         """Translate URL into exact filter"""
         return (Service.url == str(value))
 
-    def __translate_html_title(self, value):
+    @staticmethod
+    def __translate_html_title(value):
         """Translate HTML title into LIKE filter"""
         return (Service.html_title.ilike('%'+str(value)+'%'))
 
-    def __translate_http_headers(self, value):
+    @staticmethod
+    def __translate_http_headers(value):
         """Translate HTTP headers into LIKE filter"""
         return (Service.http_headers.ilike('%'+str(value)+'%'))
 
-    def __translate_username(self, value):
+    @staticmethod
+    def __translate_username(value):
         """Translate username from credentials into LIKE filter"""
         return (Credential.username.ilike('%'+str(value)+'%'))
 
-    def __translate_password(self, value):
+    @staticmethod
+    def __translate_password(value):
         """Translate password from credentials into LIKE filter"""
         return (Credential.password.ilike('%'+str(value)+'%'))
 
-    def __translate_auth_type(self, value):
+    @staticmethod
+    def __translate_auth_type(value):
         """Translate credential type into LIKE filter"""
         return (Credential.type.ilike('%'+str(value)+'%'))
 
-    def __translate_user_and_pass(self, boolean):
+    @staticmethod
+    def __translate_user_and_pass(boolean):
         """Create filter for credentials entries with username and password"""
         if boolean:
             return (Credential.username.isnot(None) & Credential.password.isnot(None))
         else:
             return None
 
-    def __translate_only_user(self, boolean):
+    @staticmethod
+    def __translate_only_user(boolean):
         """Create filter for credentials entries with only username (no pass known)"""
         if boolean:
             return (Credential.username.isnot(None) & Credential.password.is_(None))
         else:
             return None
 
-    def __translate_comment_service(self, value):
+    @staticmethod
+    def __translate_comment_service(value):
         """Translate service comment into LIKE filter"""
         return (Service.comment.ilike('%'+str(value)+'%'))
 
-    def __translate_comment_host(self, value):
+    @staticmethod
+    def __translate_comment_host(value):
         """Translate host comment into LIKE filter"""
         return (Host.comment.ilike('%'+str(value)+'%'))
 
-    def __translate_comment_cred(self, value):
+    @staticmethod
+    def __translate_comment_cred(value):
         """Translate credential comment into LIKE filter"""
         return (Credential.comment.ilike('%'+str(value)+'%'))
 
-    def __translate_comment_mission(self, value):
+    @staticmethod
+    def __translate_comment_mission(value):
         """Translate mission comment into LIKE filter"""
         return (Mission.comment.ilike('%'+str(value)+'%'))
 
-    def __translate_mission_exact(self, value):
+    @staticmethod
+    def __translate_mission_exact(value):
         """Translate mission name into exact filter"""
         return (Mission.name == value)
 
-    def __translate_mission(self, value):
+    @staticmethod
+    def __translate_mission(value):
         """Translate mission name into LIKE filter"""
         return (Mission.name.ilike('%'+str(value)+'%'))
 
-    def __translate_check_id(self, value):
+    @staticmethod
+    def __translate_check_id(value):
         """Translate result id into filter"""
         return (Result.id == int(value))
 
-    def __translate_check_name(self, value):
+    @staticmethod
+    def __translate_check_name(value):
         """Translate check name from result into LIKE filter"""
         return (Result.check.ilike('%'+str(value)+'%'))
 
-    def __translate_command_output(self, value):
+    @staticmethod
+    def __translate_command_output(value):
         """Translate command output text into LIKE filter"""
         return (CommandOutput.output.ilike('%'+str(value)+'%'))
 
-    def __translate_vuln(self, value):
+    @staticmethod
+    def __translate_vuln(value):
         """Translate vulnerability name into LIKE filter"""
         return (Vuln.name.ilike('%'+str(value)+'%'))
 
-    def __translate_option_name(self, value):
+    @staticmethod
+    def __translate_option_name(value):
         """Translate specific option name into LIKE filter"""
         return (Option.name.ilike('%'+str(value)+'%'))
 
-    def __translate_option_value(self, value):
+    @staticmethod
+    def __translate_option_value(value):
         """Translate specific option value into LIKE filter"""
         return (Option.value.ilike('%'+str(value)+'%'))
 
-    def __translate_product_type(self, value):
+    @staticmethod
+    def __translate_product_type(value):
         """Translate product type into LIKE filter"""
         return (Product.type.ilike('%'+str(value)+'%'))
 
-    def __translate_product_name(self, value):
+    @staticmethod
+    def __translate_product_name(value):
         """Translate product name into LIKE filter"""
         return (Product.name.ilike('%'+str(value)+'%'))
 
-    def __translate_product_version(self, value):
+    @staticmethod
+    def __translate_product_version(value):
         """Translate product version into LIKE filter"""
         return (Product.version.ilike('%'+str(value)+'%'))
 
-    def __translate_unscanned(self, value=None):
+    @staticmethod
+    def __translate_unscanned(value=None):
         """
         Add subquerie as filter to keep only services that have not been 
         scanned yet (i.e. with no checks already run)

@@ -529,7 +529,8 @@ class ArgumentsParser:
     # ------------------------------------------------------------------------------------
     # Arguments checking for subcommand Db
 
-    def check_args_db(self):
+    @staticmethod
+    def check_args_db():
         """Check arguments for subcommand Db"""
         return True
 

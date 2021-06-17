@@ -87,7 +87,8 @@ class Wappalyzer(requests.Session):
                 if chunk:
                     f.write(chunk)
 
-    def asArray(self, value):
+    @staticmethod
+    def asArray(value):
         return value if isinstance(value, list) else [value]
 
     def analyze(self):
@@ -264,7 +265,8 @@ class Wappalyzer(requests.Session):
                 if pattern and re.search(pattern['regex'], value):
                     self.addDetected(app, pattern, 'js', value)
 
-    def addDetected(self, app: Application, pattern, type, value, key=''):
+    @staticmethod
+    def addDetected(app: Application, pattern, type, value, key=''):
         app.detected = True
         app.confidence[type + ' ' + (key + ' ' if key else '') + pattern['regex']] = \
             pattern['confidence'] if 'confidence' in pattern else 100
@@ -302,7 +304,8 @@ class Wappalyzer(requests.Session):
                 if re.search(pattern['regex'], env):
                     self.addDetected(app, pattern, 'env', env)
 
-    def log(self, message, source, _type):
+    @staticmethod
+    def log(message, source, _type):
         print('[wappalyzer {}] [{}] {}'.format(_type, source, message))
 
     def __del__(self):
