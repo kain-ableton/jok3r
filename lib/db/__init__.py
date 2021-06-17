@@ -12,4 +12,3 @@ from .Result import *
 from .Screenshot import *
 from .Service import *
 from .Session import *
-pass

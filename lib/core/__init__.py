@@ -17,4 +17,3 @@ from .Settings import *
 from .Target import *
 from .Tool import *
 from .Toolbox import *
-pass

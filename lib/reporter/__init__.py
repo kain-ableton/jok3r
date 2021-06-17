@@ -3,4 +3,3 @@
 
 from .IconsMapping import *
 from .Reporter import *
-pass
