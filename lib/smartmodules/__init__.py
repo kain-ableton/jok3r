@@ -5,4 +5,3 @@ from .ContextUpdater import *
 from .MatchstringsProcessor import *
 from .SmartPostcheck import *
 from .SmartStart import *
-pass

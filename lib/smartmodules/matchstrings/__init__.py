@@ -2,4 +2,3 @@
 # -*- coding: utf-8 -*-
 
 from .MatchStrings import *
-pass

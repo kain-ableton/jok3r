@@ -13,4 +13,3 @@ from .RdpVulns import *
 from .SmbVulns import *
 from .SmtpVulns import *
 from .SshVulns import *
-pass

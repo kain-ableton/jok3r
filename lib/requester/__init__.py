@@ -13,4 +13,3 @@ from .Requester import *
 from .ResultsRequester import *
 from .ServicesRequester import *
 from .VulnsRequester import *
-pass
