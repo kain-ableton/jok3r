@@ -13,7 +13,7 @@ from lib._version import __version__
 # ----------------------------------------------------------------------------------------
 # Banner/Help
 
-BANNER = colored.stylize("""
+BANNER = colored.stylize(r"""
 
                           `-:/++++/:-.    .-:/++++/:-`                                    
                         .:ohdddmmmmdd.\  /.dddmmmmdddho:.                                
