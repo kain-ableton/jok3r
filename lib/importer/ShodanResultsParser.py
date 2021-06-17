@@ -65,7 +65,7 @@ class ShodanResultsParser:
         :rtype: list(Host)|None
         """
 
-        results = list()
+        results = []
         host_id = 0
 
         for ip in self.ips_list:

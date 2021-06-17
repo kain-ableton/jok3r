@@ -52,7 +52,7 @@ class AttackProfile:
 
 class AttackProfiles:
 
-    def __init__(self, profiles=list()):
+    def __init__(self, profiles=[]):
         """
         """
         self.profiles = profiles
@@ -96,7 +96,7 @@ class AttackProfiles:
         :param str filter_service: Service name to filter with (default: no filter)
         """
 
-        data = list()
+        data = []
         columns = [
             'Profile',
             'Description',

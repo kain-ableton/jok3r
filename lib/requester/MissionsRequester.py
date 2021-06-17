@@ -43,7 +43,7 @@ class MissionsRequester(Requester):
         if not results:
             logger.warning('No matching mission')
         else:
-            data = list()
+            data = []
             columns = [
                 'Mission',
                 'Creation date',

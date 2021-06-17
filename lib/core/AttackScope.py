@@ -47,7 +47,7 @@ class AttackScope:
         self.sqlsess = sqlsession
         self.mission_name = mission
         self.services_requester = ServicesRequester(self.sqlsess)
-        self.targets = list()
+        self.targets = []
         self.current_targetid = 1
         self.filter_categories = filter_categories
         self.filter_checks = filter_checks
@@ -228,7 +228,7 @@ class AttackScope:
             id_min = 1
             id_max = len(self.targets)
 
-        data = list()
+        data = []
         columns = [
             'id',
             'IP',

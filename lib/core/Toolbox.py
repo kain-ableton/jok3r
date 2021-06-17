@@ -347,7 +347,7 @@ class Toolbox:
         if filter_service is not None and filter_service not in self.services:
             return
 
-        data = list()
+        data = []
         columns = [
             'Name',
             'Service',
@@ -391,12 +391,12 @@ class Toolbox:
         :rtype: { 'new': list(str), 'updated': list(str), 'deleted': list(str) }
         """
         results = {
-            'new': list(),
-            'updated': list(),
-            'deleted': list(),
+            'new': [],
+            'updated': [],
+            'deleted': [],
         }
 
-        toolbox_new_toolnames = list()
+        toolbox_new_toolnames = []
         for s in toolbox_new.tools.keys():
             for tool_new in toolbox_new.tools[s]:
                 tool_bak = self.get_tool(tool_new.name)

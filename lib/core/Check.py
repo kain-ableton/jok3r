@@ -87,7 +87,7 @@ class Check:
             return False
 
         i = 1
-        command_outputs = list()
+        command_outputs = []
         for command in self.commands:
 
             # Check API key requirement (e.g. Vulners)

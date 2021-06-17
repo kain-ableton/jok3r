@@ -107,7 +107,7 @@ class Settings:
         :raises SettingsException: Exception raised if any error is encountered while 
             parsing files (syntax error, missing mandatory file...)
         """
-        self.config_parsers = dict()  # Dict of DefaultConfigParser indexed by filename
+        self.config_parsers = {}  # Dict of DefaultConfigParser indexed by filename
         self.toolbox = None  # Receives Toolbox object
         self.services = None  # Receives ServicesConfig object
         self.attack_profiles = None  # Receives AttackProfiles object
@@ -166,7 +166,7 @@ class Settings:
 
         :param list files: List of files in settings directory
         """
-        services = list()
+        services = []
         for f in files:
             name = FileUtils.remove_ext(f).lower().strip()
             if name not in (INSTALL_STATUS_CONF_FILE,
@@ -476,10 +476,10 @@ class Settings:
             optparsed = self.config_parsers[service].options(
                 'specific_options')
         except configparser.NoSectionError:
-            service_config['specific_options'] = dict()
+            service_config['specific_options'] = {}
             return
 
-        specific_options = dict()
+        specific_options = {}
 
         # Loop over supported specific options
         for opt in optparsed:
@@ -541,7 +541,7 @@ class Settings:
         log_prefix = '[{filename}{ext} | Section "supported_list_options"]'.format(
             filename=service, ext=CONF_EXT)
 
-        supported_list_options = dict()
+        supported_list_options = {}
         optparsed = self.config_parsers[service].options(
             'supported_list_options')
 
@@ -581,13 +581,13 @@ class Settings:
 
         # First, check if config file has a [products] section
         if not self.config_parsers[service].has_section('products'):
-            service_config['products'] = dict()
+            service_config['products'] = {}
             return
 
         log_prefix = '[{filename}{ext} | Section "products"]'.format(
             filename=service, ext=CONF_EXT)
 
-        products = dict()
+        products = {}
         optparsed = self.config_parsers[service].options('products')
 
         # Loop over product types in [products]
@@ -742,7 +742,7 @@ class Settings:
         log_prefix = '[{filename}{ext} | Section "{section}"]'.format(
             filename=service, ext=CONF_EXT, section=section)
 
-        commands = list()
+        commands = []
 
         # Get command lines
         cmdlines = self.config_parsers[service].safe_get_multi(
@@ -820,8 +820,8 @@ class Settings:
             return None
 
         # Check validity of context requirements
-        req_specific_options = dict()
-        req_products = dict()
+        req_specific_options = {}
+        req_products = {}
         for cond, val in context.items():
 
             # Auth status

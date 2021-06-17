@@ -199,7 +199,7 @@ class NetUtils:
         Get IP corresponding to a given hostname 
         Return the first IPv4 in the list of IPs if available, otherwise the first IPv6
         """
-        ip_list = list()
+        ip_list = []
         try:
             ip_list = list(set(str(i[4][0])
                            for i in socket.getaddrinfo(host, 80)))

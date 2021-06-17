@@ -96,7 +96,7 @@ class SmartStart:
             except Exception as e:
                 logger.debug('Error when retrieving "web_technos" field '
                              'from db: {}'.format(e))
-                technos = list()
+                technos = []
 
             for t in technos:
                 for prodtype in products_match['http']:

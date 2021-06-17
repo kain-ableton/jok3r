@@ -12,7 +12,7 @@ class WebTechnoDetector:
 
     def __init__(self, url):
         self.url = url
-        self.technos = list()
+        self.technos = []
 
     def detect(self):
         """
@@ -32,7 +32,7 @@ class WebTechnoDetector:
         Display web technologies detected in a table.
         """
         if len(self.technos) > 0:
-            data = list()
+            data = []
             columns = ['Name', 'Version']
             for t in self.technos:
                 data.append([t['name'], t['version']])
@@ -42,7 +42,7 @@ class WebTechnoDetector:
 
     def __run_wappalyzer(self):
         """Detect web technologies using Wappalyzer"""
-        technos = list()
+        technos = []
         try:
             wappalyzer = Wappalyzer(self.url)
             apps = wappalyzer.analyze()

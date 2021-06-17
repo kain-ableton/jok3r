@@ -33,7 +33,7 @@ class VulnsRequester(Requester):
         if not results:
             logger.warning('No vulnerability to display')
         else:
-            data = list()
+            data = []
             columns = [
                 'IP',
                 'Service',

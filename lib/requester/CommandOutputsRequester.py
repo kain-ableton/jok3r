@@ -38,7 +38,7 @@ class CommandOutputsRequester(Requester):
         else:
             Output.title2('Search results:')
 
-            data = list()
+            data = []
             columns = [
                 'IP',
                 'Port',

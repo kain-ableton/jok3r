@@ -1311,7 +1311,7 @@ class DbController(cmd2.Cmd):
             return
         ips = ips.split(',')
 
-        valid_ips = list()
+        valid_ips = []
         for ip in ips:
             if not NetUtils.is_valid_ip(ip):
                 logger.warning(

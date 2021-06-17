@@ -35,7 +35,7 @@ class ServicesRequester(Requester):
         if not results:
             logger.warning('No service to display')
         else:
-            data = list()
+            data = []
             columns = [
                 'id',
                 'IP',
