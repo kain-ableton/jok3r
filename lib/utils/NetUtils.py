@@ -100,9 +100,9 @@ class NetUtils:
             print("Exception raised while parsing scan: {0}".format(e.msg))
             return False
 
-        if len(report.hosts):
+        if report.hosts:
             host = report.hosts[0]
-            if len(host.services):
+            if host.services:
                 return 'open' in host.services[0].state
         
         return False
@@ -151,9 +151,9 @@ class NetUtils:
             print("Exception raised while parsing scan: {0}".format(e.msg))
             return None
 
-        if len(report.hosts):
+        if report.hosts:
             host = report.hosts[0]
-            if len(host.services):
+            if host.services:
                 results['service_name'] = host.services[0].service
                 results['banner'] = host.services[0].banner
                 results['mac'] = host.mac

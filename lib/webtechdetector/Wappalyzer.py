@@ -304,7 +304,7 @@ class Wappalyzer(requests.Session):
                     if version and version not in versions:
                         versions.append(version.strip())
 
-                    if len(versions):
+                    if versions:
                         app.version = max(versions)
 
 
