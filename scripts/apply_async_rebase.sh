@@ -15,4 +15,4 @@ unzip -o "../${ZIP_NAME}"
 git add lib/async_runtime.py lib/execution_v2.py lib/db_v2.py lib/modern_runner_patch.py README_MODERN.md scripts/apply_async_rebase.sh || true
 git commit -m "Add modern async runner overlay (opt-in via --modern-runner)" || true
 git push -u origin "${BRANCH}" || true
-echo "[*] Overlay extracted. Now wire --modern-runner flags and enable the patch in your attack path."
+echo "[*] Overlay extracted. Wire flags and enable patch as per README."

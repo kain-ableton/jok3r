@@ -39,13 +39,10 @@ async def _run_one(cmd: ToolCommand) -> ToolResult:
         timed_out = True
         rc = 124
     return ToolResult(
-        name=cmd.name,
-        stage=cmd.stage,
-        rc=rc,
+        name=cmd.name, stage=cmd.stage, rc=rc,
         stdout=out.decode("utf-8", "ignore"),
         stderr=err.decode("utf-8", "ignore"),
-        timeout=timed_out,
-        meta=cmd.meta,
+        timeout=timed_out, meta=cmd.meta,
     )
 
 async def run_many(commands: List[ToolCommand], max_concurrent: int = 8) -> List[ToolResult]:

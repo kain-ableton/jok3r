@@ -175,7 +175,8 @@ def enable(max_concurrent: int = 8):
                 outputraw = StringUtils.remove_ansi_escape(stdout)
                 co = CommandOutput(cmdline=cmdline, output=stdout, outputraw=outputraw)
                 command_outputs.append(co)
-                postcheck = SmartPostcheck(target.service, r.name, "{0}\n{1}".format(cmdline, outputraw))
+                postcheck = SmartPostcheck(target.service, r.name, "{0}
+{1}".format(cmdline, outputraw))
                 postcheck.run()
 
             results_req = ResultsRequester(sqlsession)
